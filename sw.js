@@ -1,7 +1,7 @@
 // Service worker da Inspeção de Roletes: guarda os arquivos do app para abrir sem internet.
 // Os dados NÃO passam por aqui: ficam no celular e no servidor.
-const C = 'inspecao-roletes-v7';
-const SHELL = ['./', 'index.html', 'painel.html', 'manifest.webmanifest', 'cavalete.jpg', 'cavalete-legenda.jpg', 'dosadora.jpg', 'dosadora-legenda.jpg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'];
+const C = 'inspecao-roletes-v10';
+const SHELL = ['./', 'index.html', 'painel.html', 'manifest.webmanifest', 'cavalete.jpg', 'cavalete-legenda.jpg', 'dosadora.jpg', 'dosadora-legenda.jpg', 'autoalinhador.jpg', 'autoalinhador-legenda.jpg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(C).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

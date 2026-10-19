@@ -121,6 +121,7 @@ label.l:first-child{margin-top:0}
 .cavtog.on.vm{border:1.5px solid var(--vm);background:var(--vmc)}
 .cavtog.on.am{border:1.5px solid var(--am);background:var(--amc)}
 .cavtog.ex{border-style:solid;opacity:.9}
+.cavtog.on.aa{border:1.5px solid #1f5c8b;background:#e4eef7}
 .aviso{background:var(--amc);color:#5a4200;border-radius:12px;padding:11px 13px;font-size:14px;margin:8px 0}
 .alerta{background:var(--vmc);color:#7a1010;border:1.5px solid var(--vm);border-radius:12px;padding:11px 13px;font-size:14px;margin:8px 0;line-height:1.4}
 .aviso.sm,.alerta.sm{font-size:12.5px;padding:7px 10px;margin:5px 0 0}
@@ -242,7 +243,7 @@ const DOS = ['p1', 'p2', 'p3', 'car'];
 const PESAGEM = ['p1', 'p2', 'p3'];
 PESAGEM.forEach(k => { POS[k] = k.toUpperCase(); POSN[k] = 'Rolete de pesagem ' + k.slice(1); });
 POS.car = 'CAR'; POSN.car = 'Rolete de carga';
-const ORD_ALL = ORD.concat(DOS);
+const ORD_ALL = ['le', 'ct', 'ld', 'ge', 'gd', 'ret', 'rge', 'rgd', 'cav'].concat(DOS);
 const ehPes = p => PESAGEM.includes(p);
 const ehDos = e => !!e && e.bal === 'dos';
 const BALDICA = { '': 'Se tiver balança, a inspeção pede para marcar os roletes da zona da balança.', tem: 'Na inspeção aparece a opção "Rolete da zona da balança": ele só vai para troca, pede rolete específico para balança e deixa o semáforo vermelho.', dos: 'Balança dosadora: 3 roletes de pesagem (P1 a P3) mais os roletes de carga, numerados. Todo rolete marcado vai para troca como crítico.' };
@@ -250,8 +251,13 @@ const BALN = { '': 'Não tem balança', tem: 'Tem balança no equipamento', dos:
 const AV_PES = 'Rolete de pesagem: retirar o equipamento de operação e comunicar a instrumentação para acompanhar a troca.';
 const AV_ZB = 'Zona da balança: substituir por rolete específico para balança.';
 const AV_DOS = 'Balança dosadora: troca crítica.';
+const LEGENDA_AA = 'Cavalete autoalinhador: G.E / G.D = roletes guia da carga · GR.E / GR.D = roletes guia do retorno';
 const LEGENDA_DOS = 'Balança dosadora: P1 a P3 = roletes de pesagem · CAR = rolete de carga (com o número do rolete)';
-const CARGA = ['le', 'ct', 'ld'];
+const CARGA = ['le', 'ct', 'ld', 'ge', 'gd'];   // posições cobertas pelo cavalete completo (CAV)
+/* Cavalete autoalinhador: tem também os dois roletes guia */
+POS.ge = 'G.E'; POS.gd = 'G.D'; POS.rge = 'GR.E'; POS.rgd = 'GR.D';
+POSN.ge = 'Rolete guia esquerdo'; POSN.gd = 'Rolete guia direito'; POSN.rge = 'Guia do retorno esquerdo'; POSN.rgd = 'Guia do retorno direito';
+const GUIA = ['ge', 'gd', 'rge', 'rgd'];
 const AREAS = { patios: 'Pátios', cc7: 'CC7' };
 const AREAD = { patios: 'Pátios de minérios', cc7: 'CC7' };
 const DEV = { nome: 'Jeferson Rodrigo dos Santos', cargo: 'Inspetor de automação e instrumentação', area: 'Pátios de Minérios - RED 2', whats: '5531982613138' };
@@ -259,12 +265,13 @@ const FAROL = { vd: { n: 'Verde', s: 'Equipamento bom' }, am: { n: 'Amarelo', s:
 const FAROL_ORD = { vm: 0, am: 1, vd: 2 };
 /* semáforo: três lâmpadas, acesa só a cor escolhida */
 const semaforo = (f, g) => `<span class="sem${g ? ' g' : ''}" role="img" aria-label="${f ? 'Semáforo ' + FAROL[f].n.toLowerCase() : 'Sem avaliação'}"><i class="${f === 'vm' ? 'on vm' : ''}"></i><i class="${f === 'am' ? 'on am' : ''}"></i><i class="${f === 'vd' ? 'on vd' : ''}"></i></span>`;
-const CATN = { carga: 'Rolete de carga', retorno: 'Rolete de retorno', cavalete: 'Cavalete', balanca: 'Rolete de balança' };
-const CATS = ['carga', 'retorno', 'cavalete', 'balanca'];
+const CATN = { carga: 'Rolete de carga', retorno: 'Rolete de retorno', cavalete: 'Cavalete', balanca: 'Rolete de balança', guia: 'Rolete guia' };
+const CATS = ['carga', 'retorno', 'cavalete', 'balanca', 'guia'];
 /* categoria do NI pela posição (igual ao servidor): pesagem e zona da balança pedem rolete de balança */
-const catDe = (pos, zb) => pos === 'cav' ? 'cavalete' : ehPes(pos) ? 'balanca' : pos === 'car' ? 'carga' : zb ? 'balanca' : pos === 'ret' ? 'retorno' : 'carga';
+const catDe = (pos, zb) => pos === 'cav' ? 'cavalete' : GUIA.includes(pos) ? 'guia' : ehPes(pos) ? 'balanca' : pos === 'car' ? 'carga' : zb ? 'balanca' : pos === 'ret' ? 'retorno' : 'carga';
 /* texto do item: dosadora não tem número de cavalete */
-const rotItem = r => r.pos === 'car' ? 'Rolete de carga nº ' + r.cav : (r.cav ? 'Cavalete ' + r.cav + ' · ' : '') + POSN[r.pos];
+const rotItem = r => r.pos === 'car' ? 'Rolete de carga nº ' + r.cav : (r.cav ? 'Cavalete ' + r.cav + (r.aa ? ' (autoalinhador)' : '') + ' · ' : '') + POSN[r.pos];
+const cavTxt = r => (r.cav || '-') + (r.aa ? ' AA' : '');
 /* aviso que acompanha o item nas listas e PDFs */
 function avisoItem(D, r) {
   if (ehPes(r.pos)) return AV_PES;
@@ -331,7 +338,7 @@ const S = {
   base: ls.get('base', null), fila: ls.get('fila', []), sync: ls.get('sync', 0),
   online: true, enviando: false, codigo: ls.get('codigo', '')
 };
-const V = { tela: 'inicio', entrar: 'home', cad: 'equip', ind: 'sem', lista: 'troca', listaSel: ls.get('listaSel', null), atencaoTodos: false, equipId: null,
+const V = { tela: 'inicio', entrar: 'home', cad: 'equip', ind: 'sem', lista: 'troca', listaSel: null, atencaoTodos: false, equipId: null,
   insp: null, fora: 'lista' };
 function salvarInsp() { if (S.eu) ls.set('insp.' + S.eu.id, V.insp); }
 
@@ -482,6 +489,40 @@ function dosSvg(est, interativo) {
     <image href="dosadora.jpg" x="0" y="0" width="820" height="900"/>${carga}${['p3', 'p2', 'p1'].map(pes).join('')}</svg>`;
 }
 
+/* ===== cavalete autoalinhador (foto + regiões de toque) =====
+   viewBox 1200 x 800: em cima o cavalete de carga com os guias G.E e G.D; embaixo o rolete de
+   retorno (RET) com os guias do retorno GR.E e GR.D */
+const AZN = {
+  ge: { d: 'M160 28 L218 58 L182 132 L122 104 Z', x: 74, y: 52 },
+  le: { d: 'M210 112 L432 266 L404 348 L158 192 Z', x: 300, y: 236 },
+  ct: { d: 'M443 262 L748 262 L748 366 L443 366 Z', x: 596, y: 314 },
+  ld: { d: 'M990 112 L768 266 L796 348 L1042 192 Z', x: 900, y: 236 },
+  gd: { d: 'M1040 28 L982 58 L1018 132 L1078 104 Z', x: 1126, y: 52 },
+  ret: { d: 'M204 562 L1000 562 L1000 668 L204 668 Z', x: 600, y: 615 },
+  rge: { d: 'M122 472 L182 472 L182 588 L122 588 Z', x: 72, y: 530 },
+  rgd: { d: 'M1018 472 L1078 472 L1078 588 L1018 588 Z', x: 1128, y: 530 }
+};
+function aaSvg(est, interativo) {
+  est = est || {};
+  const reg = p => {
+    const e = est[p], z = AZN[p], g = GUIA.includes(p);
+    const fill = e ? COR[e.m] : 'transparent', op = e ? (e.s === 'sel' ? .55 : .34) : 0;
+    const stroke = e ? COR[e.m] : (interativo ? (g ? '#1f5c8b' : '#ffffff') : 'none');
+    const dash = e && e.s === 'ex' ? '14 10' : (e ? '' : '12 12');
+    const a = interativo ? ` class="pz" data-a="pos" data-p="${p}" role="button" aria-label="${POSN[p]}"` : '';
+    const w = (POS[p].length > 3 ? 118 : 100) + (e && e.s === 'sel' ? 40 : 0);
+    const lab = `<g pointer-events="none"><rect x="${z.x - w / 2}" y="${z.y - 26}" width="${w}" height="52" rx="14" fill="${e ? COR[e.m] : (g ? '#1f5c8b' : '#263845')}" stroke="#fff" stroke-width="4"/><text x="${z.x}" y="${z.y + 12}" text-anchor="middle" font-size="34" font-weight="800" fill="${e && e.m === 'am' ? '#2b1f00' : '#fff'}" font-family="system-ui,Arial,sans-serif">${POS[p]}${e && e.s === 'sel' ? ' ✓' : ''}</text></g>`;
+    const pad = g ? `<path d="${z.d}" fill="transparent" stroke="transparent" stroke-width="50" stroke-linejoin="round"/>` : '';
+    return `<g${a}>${pad}<path d="${z.d}" fill="${fill}" fill-opacity="${op}" stroke="${stroke}" stroke-width="5" stroke-linejoin="round" ${dash ? `stroke-dasharray="${dash}"` : ''}/>${lab}</g>`;
+  };
+  const c = est.cav;
+  return `<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cavalete autoalinhador: carga L.E, C.T, L.D, guias G.E e G.D; retorno RET com guias GR.E e GR.D">
+    <image href="autoalinhador.jpg" x="0" y="0" width="1200" height="800"/>
+    ${c ? `<rect x="80" y="10" width="1040" height="450" rx="22" fill="${COR[c.m]}" fill-opacity="${c.s === 'sel' ? .14 : .08}" stroke="${COR[c.m]}" stroke-width="8" ${c.s === 'ex' ? 'stroke-dasharray="22 12"' : ''}/>` : ''}
+    ${['ret', 'rge', 'rgd', 'le', 'ct', 'ld', 'ge', 'gd'].map(reg).join('')}
+  </svg>`;
+}
+
 /* ===== desenho do cavalete (foto + regiões de toque) ===== */
 const PZ = {
   le: { d: 'M58 31 L76 8 L203 84 L176 128 Z', x: 128, y: 70 },
@@ -627,7 +668,7 @@ function listaMateriais() {
   const T = tiposAtuais(), U = usoAtual();
   return CATS.map(c => {
     const l = Object.values(T).filter(t => t.cat === c).sort((a, b) => cmpTxt(a.ni, b.ni));
-    return `<div class="card"><div class="row" style="margin-bottom:4px"><h3 class="f" style="margin:0">${({ carga: 'Roletes de carga', retorno: 'Roletes de retorno', cavalete: 'Cavaletes', balanca: 'Roletes de balança' })[c]}</h3><button class="btn sec peq" data-a="novoTipo" data-c="${c}">+ Novo</button></div>
+    return `<div class="card"><div class="row" style="margin-bottom:4px"><h3 class="f" style="margin:0">${({ carga: 'Roletes de carga', retorno: 'Roletes de retorno', cavalete: 'Cavaletes', balanca: 'Roletes de balança', guia: 'Roletes guia (autoalinhador)' })[c]}</h3><button class="btn sec peq" data-a="novoTipo" data-c="${c}">+ Novo</button></div>
     ${l.map(t => `<div class="li tap" data-a="editarTipo" data-id="${t.id}"><div class="f"><b>NI ${esc(t.ni)}</b><div class="mut sm">${esc(t.desc || '')}${U[t.id] ? (t.desc ? ' · ' : '') + plural(U[t.id], 'marcado', 'marcados') + ' agora' : ''}${t._fila ? ' · na fila' : ''}</div></div><b>${brl(t.preco)}</b></div>`).join('') || '<div class="mut">Nenhum cadastrado.</div>'}</div>`;
   }).join('');
 }
@@ -696,7 +737,7 @@ function estadoCav(D, equipId, cav) {
   });
   return { est, ex };
 }
-const padraoDe = e => ({ carga: e.tipoCarga, retorno: e.tipoRetorno, cavalete: e.tipoCav, balanca: e.tipoBal });
+const padraoDe = e => ({ carga: e.tipoCarga, retorno: e.tipoRetorno, cavalete: e.tipoCav, balanca: e.tipoBal, guia: e.tipoGuia });
 function blocoTipos(D, e, I, cats) {
   const padrao = padraoDe(e);
   return cats.map(c => {
@@ -767,6 +808,7 @@ function vInspecao(D) {
   if (ehDos(D.equip[V.insp.equipId])) return vInspDos(D);
   const I = V.insp, e = D.equip[I.equipId], cav = normCav(I.cav), sel = I.sel || [], zb = e.bal === 'tem' && !!I.zb, niv = zb ? 'vm' : I.nivel;
   const { est, ex } = estadoCav(D, e.id, cav);
+  const aa = !!I.aa || Object.values(ex).some(r => r.aa);   // cavalete autoalinhador (marcado agora ou já marcado antes)
   sel.forEach(p => { est[p] = { m: niv, s: 'sel' }; if (p === 'cav') CARGA.forEach(q => { est[q] = { m: niv, s: 'sel' }; }); });
   const cats = [...new Set(sel.map(p => catDe(p, zb)))];
   const tSel = blocoTipos(D, e, I, cats);
@@ -784,13 +826,15 @@ function vInspecao(D) {
     ${exTxt ? `<div class="mut sm" style="margin-top:6px">Já marcados neste cavalete: ${exTxt} (toque na posição para ver)</div>` : ''}
     ${e.bal === 'tem' ? `<button type="button" class="cavtog ${zb ? 'on vm' : ''}" data-a="zb" style="margin-top:12px"><span class="cod" style="${zb ? 'background:' + COR.vm : ''}">BAL</span><span class="f"><b>Rolete da zona da balança</b><br><span class="mut sm">Marque se o rolete faz parte da zona da balança</span></span>${zb ? '✓' : ''}</button>
     ${zb ? `<div class="alerta"><b>Zona da balança:</b> este rolete só pode ir para a troca e deve ser substituído por um <b>rolete específico para balança</b>. O semáforo do equipamento vai automaticamente para vermelho.</div>` : ''}` : ''}
+    <button type="button" class="cavtog ${aa ? 'on aa' : ''}" data-a="aa" style="margin-top:12px"><span class="cod" style="${aa ? 'background:#1f5c8b' : ''}">AA</span><span class="f"><b>Cavalete autoalinhador</b><br><span class="mut sm">${aa ? 'Foto do autoalinhador, com os roletes guia da carga e do retorno' : 'Marque se este cavalete é autoalinhador'}</span></span>${aa ? '✓' : ''}</button>
     <label class="l">Como está o item?</label>
     <div class="nivel">
       <button type="button" class="vm ${niv === 'vm' ? 'on' : ''}" data-a="nivel" data-v="vm"><b><span class="dot vm"></span>Vermelho</b><span>Trocar: vai para a lista da execução</span></button>
       <button type="button" class="am ${niv === 'am' ? 'on' : ''}" data-a="nivel" data-v="am" ${zb ? 'disabled' : ''}><b><span class="dot am"></span>Amarelo</b><span>Atenção: fica só na sua lista</span></button>
     </div>
     <label class="l">Toque no rolete ruim</label>
-    <div class="cavbox">${cavSvg(est, true)}</div>
+    <div class="cavbox">${aa ? aaSvg(est, true) : cavSvg(est, true)}</div>
+    ${aa ? `<div class="dica">${LEGENDA_AA}.</div>` : ''}
     <button type="button" class="cavtog ${cavSel ? 'on ' + niv : ''} ${cavEx ? 'ex' : ''}" data-a="pos" data-p="cav">
       <span class="cod" style="${cavSel ? 'background:' + COR[niv] : ''}">CAV</span><span class="f"><b>Cavalete completo</b><br><span class="mut sm">${cavEx ? 'Já marcado neste cavalete' : 'Marque quando o alvo da troca for o cavalete inteiro'}</span></span>${cavSel ? '✓' : ''}</button>
     ${tSel}
@@ -829,6 +873,7 @@ function equipsComTroca(D) {
 }
 function selLista(D) {
   const disp = equipsComTroca(D).map(e => e.id);
+  if (V.listaSel === null) { const g = ls.get('listaSel', null); if (g && g.i === S.eu.id && Array.isArray(g.s)) V.listaSel = g.s; }   // seleção guardada é de cada inspetor
   let s = (V.listaSel || []).filter(id => disp.includes(id));
   if (!V.listaSel) s = disp.filter(id => D.equip[id].inspId === S.eu.id);
   return { disp, s };
@@ -856,7 +901,7 @@ function vTroca(D) {
   const grupos = L.grupos.map(g => `<div class="card"><div class="row"><h2 class="f" style="margin:0">${esc(g.e.nome)}${ehDos(g.e) ? ' <span class="tag dos">Balança dosadora</span>' : g.e.bal === 'tem' ? ' <span class="tag">Com balança</span>' : ''}</h2><span class="chip vm">${g.l.length}</span></div>
     <div class="mut sm" style="margin-bottom:6px">${esc(g.e.area || '')}${g.e.area ? ' · ' : ''}Inspetor: ${esc(nomeInsp(D, g.e.inspId))}</div>
     <table class="t"><thead><tr><th>${ehDos(g.e) ? 'Nº' : 'Cavalete'}</th><th>Código</th><th>NI / descrição</th><th class="n">Trocado</th></tr></thead><tbody>
-    ${g.l.map(r => { const t = D.tipo[r.tipoId]; return `<tr><td><b style="font-size:16px">${esc(r.cav || '—')}</b></td><td><span class="cod">${POS[r.pos]}</span></td>
+    ${g.l.map(r => { const t = D.tipo[r.tipoId]; return `<tr><td><b style="font-size:16px">${esc(r.cav || '—')}</b>${r.aa ? '<br><span class="tag">AA</span>' : ''}</td><td><span class="cod">${POS[r.pos]}</span></td>
       <td><b>${t ? esc(t.ni) : '—'}</b>${t && t.desc ? '<br><span class="mut sm">' + esc(t.desc) + '</span>' : ''}${r.obs ? '<br><span class="sm">Obs.: ' + esc(r.obs) + '</span>' : ''}${avisoHtml(D, r)}</td>
       <td class="n"><span class="print-only chk"></span><button class="btn vd peq no-print" data-a="baixa" data-id="${r.id}">✓</button></td></tr>`; }).join('')}
     </tbody></table>
@@ -868,6 +913,8 @@ function vTroca(D) {
     <div class="mut">${fData(Date.now())} · Gerada por ${esc(S.eu.nome)} · ${plural(L.n, 'item', 'itens')}</div>
     ${L.grupos.some(g => !ehDos(g.e)) ? `<div class="cavbox" style="margin-top:10px">${cavSvg({}, false)}</div>
     <div class="sm" style="margin-top:6px"><b>Legenda:</b> ${LEGENDA}</div>` : ''}
+    ${L.grupos.some(g => g.l.some(r => r.aa)) ? `<div class="cavbox" style="margin-top:10px">${aaSvg({}, false)}</div>
+    <div class="sm" style="margin-top:6px"><b>Cavalete autoalinhador (AA):</b> G.E / G.D = roletes guia da carga · GR.E / GR.D = roletes guia do retorno</div>` : ''}
     ${L.grupos.some(g => ehDos(g.e)) ? `<div class="cavbox" style="margin-top:10px">${dosSvg({}, false)}</div>
     <div class="sm" style="margin-top:6px"><b>Legenda:</b> ${LEGENDA_DOS}</div>` : ''}
     ${L.grupos.some(g => g.l.some(r => ehPes(r.pos))) ? `<div class="alerta"><b>Atenção:</b> ${AV_PES}</div>` : ''}</div>
@@ -886,6 +933,7 @@ function textoLista(D, ids) {
   L.material.forEach(m => T.push('NI ' + (m.t ? m.t.ni : '—') + (m.t && m.t.desc ? ' (' + m.t.desc + ')' : '') + ': ' + m.n + ' un.'));
   T.push('', '*Total de itens:* ' + L.n, '', '_' + LEGENDA + '_');
   if (L.grupos.some(g => ehDos(g.e))) T.push('_' + LEGENDA_DOS + '_');
+  if (L.grupos.some(g => g.l.some(r => r.aa))) T.push('_' + LEGENDA_AA + '_');
   return T.join('\n');
 }
 function vAtencao(D) {
@@ -985,7 +1033,12 @@ function jpegInfo(b) {
   }
   return null;
 }
-let _figura = null, _figDos = null;
+let _figura = null, _figDos = null, _figAA = null;
+async function figuraAA() {
+  if (_figAA) return _figAA;
+  try { const b = new Uint8Array(await (await fetch('autoalinhador-legenda.jpg')).arrayBuffer()); const i = jpegInfo(b); if (i) _figAA = { b, w: i.w, h: i.h }; } catch (e) { }
+  return _figAA;
+}
 async function figuraDos() {
   if (_figDos) return _figDos;
   try { const b = new Uint8Array(await (await fetch('dosadora-legenda.jpg')).arrayBuffer()); const i = jpegInfo(b); if (i) _figDos = { b, w: i.w, h: i.h }; } catch (e) { }
@@ -997,7 +1050,7 @@ async function figuraCavalete() {
   return _figura;
 }
 async function gerarPdf(D, ids) {
-  const L = montarLista(D, ids), P = new Pdf(), M = 36, LW = P.W - 2 * M, fig = await figuraCavalete(), figDos = L.grupos.some(g => ehDos(g.e)) ? await figuraDos() : null;
+  const L = montarLista(D, ids), P = new Pdf(), M = 36, LW = P.W - 2 * M, fig = await figuraCavalete(), figDos = L.grupos.some(g => ehDos(g.e)) ? await figuraDos() : null, figAA = L.grupos.some(g => g.l.some(r => r.aa)) ? await figuraAA() : null;
   const AZ = '#1f5c8b', ESC = '#263845', MUT = '#5d6b78', LN = '#d6dde4';
   P.ret(0, 0, P.W, 64, { fundo: AZ });
   P.texto('LISTA DE ROLETES PARA TROCA', M, 30, { tam: 17, neg: true, cor: '#ffffff' });
@@ -1050,6 +1103,19 @@ async function gerarPdf(D, ids) {
       }
       y += Math.max(dh + 16, 134);
     }
+    if (!dosG && g.l.some(r => r.aa)) {
+      // correia com cavalete autoalinhador: desenho com os roletes guia
+      const fa = figAA, aw = 190, ah = fa ? aw * fa.h / fa.w : 0;
+      if (y + ah + 30 > fim()) pagina();
+      if (fa) P.imagem(fa, M, y + 8, aw, ah);
+      const tx = M + (fa ? aw + 16 : 0);
+      P.texto('Cavalete autoalinhador (AA)', tx, y + 26, { tam: 11, neg: true });
+      P.texto('G.E / G.D = roletes guia da carga', tx, y + 44, { tam: 9 });
+      P.texto('GR.E / GR.D = roletes guia do retorno', tx, y + 58, { tam: 9 });
+      P.texto('L.E, C.T, L.D = carga · RET = retorno · CAV = cavalete completo', tx, y + 72, { tam: 9 });
+      P.texto('Os cavaletes autoalinhadores aparecem com "AA" ao lado do número.', tx, y + 90, { tam: 8.5, cor: MUT });
+      y += Math.max(ah + 16, 110);
+    }
     cab();
     g.l.forEach((r, i) => {
       const t = D.tipo[r.tipoId], av = avisoItem(D, r), d1 = P.quebra(t ? t.desc || CATN[t.cat] : '', 8.5, false, C[3].w - 10), d2 = P.quebra(r.obs || '', 8.5, false, C[4].w - 10), d3 = av ? P.quebra(av, 8, true, C[4].w - 10) : [];
@@ -1058,7 +1124,7 @@ async function gerarPdf(D, ids) {
       if (y + h > fim()) { pagina(); cab(); }
       if (i % 2) P.ret(M, y, LW, h, { fundo: '#f6f8fa' });
       let x = M;
-      P.texto(r.cav || '-', x + 6, y + 15, { tam: 12, neg: true }); x += C[0].w;
+      P.texto(r.cav || '-', x + 6, y + 15, { tam: 12, neg: true }); if (r.aa) P.texto('AA', x + 36, y + 14.5, { tam: 7.5, neg: true, cor: '#1f5c8b' }); x += C[0].w;
       P.ret(x + 5, y + 4.5, 38, 14, { fundo: ESC }); P.texto(POS[r.pos], x + 24, y + 14.5, { tam: 8.5, neg: true, cor: '#ffffff', al: 'centro' }); x += C[1].w;
       P.texto(t ? t.ni : '-', x + 5, y + 15, { tam: 9.5, neg: true }); x += C[2].w;
       d1.forEach((l, k) => P.texto(l, x + 5, y + 14 + k * 10.5, { tam: 8.5 })); x += C[3].w;
@@ -1092,7 +1158,11 @@ async function gerarPdf(D, ids) {
   P.pages.forEach((pg, i) => { P.p = pg; P.linha(M, P.H - 30, P.W - M, P.H - 30, LN); P.texto('Inspeção de Roletes  ·  ' + LEGENDA, M, P.H - 18, { tam: 7, cor: MUT }); P.texto('Página ' + (i + 1) + ' de ' + np, P.W - M, P.H - 18, { tam: 7.5, cor: MUT, al: 'dir' }); });
   return P.blob();
 }
-const nomePdf = () => { const d = new Date(); return 'lista-roletes-' + d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + '.pdf'; };
+/* nome do arquivo com os equipamentos, a data e a hora: cada PDF tem nome próprio
+   (com o mesmo nome, o celular podia abrir um PDF antigo de outro equipamento) */
+const carimbo = () => { const d = new Date(); return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + '-' + p2(d.getHours()) + 'h' + p2(d.getMinutes()); };
+const nomeArq = t => chave(t).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
+const nomePdf = (D, ids) => { const n = (ids || []).map(id => D && D.equip[id] ? D.equip[id].nome : '').filter(Boolean); return 'lista-roletes-' + (n.length ? nomeArq(n.length > 3 ? n.slice(0, 3).join('-') + '-e-mais-' + (n.length - 3) : n.join('-')) + '-' : '') + carimbo() + '.pdf'; };
 function baixarArquivo(blob, nome) {
   const u = URL.createObjectURL(blob), a = document.createElement('a');
   a.href = u; a.download = nome; document.body.appendChild(a); a.click(); a.remove();
@@ -1141,7 +1211,7 @@ async function pdfLista(modo) {
   if (!montarLista(D, ids).n) return toast('Escolha pelo menos um equipamento.');
   let blob;
   try { blob = await gerarPdf(D, ids); } catch (e) { return toast('Não foi possível gerar o PDF.'); }
-  entregarPdf(blob, nomePdf(), modo, 'Lista de roletes para troca');
+  entregarPdf(blob, nomePdf(D, ids), modo, 'Lista de roletes para troca');
 }
 async function entregarPdf(blob, nome, modo, titulo) {
   if (modo === 'whats') {
@@ -1159,7 +1229,7 @@ async function entregarPdf(blob, nome, modo, titulo) {
 
 /* ===== Relatórios dos indicadores em PDF: pendências e lista de compra ===== */
 const PDFC = { AZ: '#1f5c8b', ESC: '#132331', MUT: '#5d6b78', LN: '#d6dde4', VM: '#c62828', AM: '#e0a100', VD: '#2e7d32' };
-const ORD_CAT = { carga: 1, retorno: 2, cavalete: 3, balanca: 4 };
+const ORD_CAT = { carga: 1, retorno: 2, cavalete: 3, balanca: 4, guia: 5 };
 function pdfNovo(titulo, sub) {
   const P = new Pdf(), M = 36, c = { P, M, LW: P.W - 2 * M, y: 0 };
   P.ret(0, 0, P.W, 64, { fundo: PDFC.ESC });
@@ -1245,7 +1315,7 @@ function pdfPendencias(c, D, itens, titulo) {
     c.P.texto('Inspetor: ' + nomeInsp(D, e.inspId) + '  ·  Semáforo: ' + (e.farol ? FAROL[e.farol].n.toLowerCase() : 'sem avaliação'), c.M + c.LW - 8, c.y + 15, { tam: 8, cor: '#c9d6e2', al: 'dir' });
     c.y += 22;
     pdfTabela(c, [{ t: 'Cavalete', w: 50 }, { t: 'Código', w: 46, al: 'centro' }, { t: 'Situação', w: 62, al: 'centro' }, { t: 'NI', w: 62 }, { t: 'Descrição', w: 150 }, { t: 'Observação', w: c.LW - 370 }],
-      l.map(r => { const t = D.tipo[r.tipoId]; return [{ t: r.cav || '-', neg: true, tam: 10.5 }, { t: POS[r.pos], fundo: PDFC.ESC }, etqNivel(r), { t: t ? t.ni : '-', neg: true, tam: 9 }, t ? (t.desc || CATN[t.cat]) : '', { t: [avisoItem(D, r), r.obs || ''].filter(Boolean).join(' · '), cor: avisoItem(D, r) ? (ehPes(r.pos) ? '#b71c1c' : '#7a5600') : PDFC.MUT }]; }));
+      l.map(r => { const t = D.tipo[r.tipoId]; return [{ t: cavTxt(r), neg: true, tam: 10.5 }, { t: POS[r.pos], fundo: PDFC.ESC }, etqNivel(r), { t: t ? t.ni : '-', neg: true, tam: 9 }, t ? (t.desc || CATN[t.cat]) : '', { t: [avisoItem(D, r), r.obs || ''].filter(Boolean).join(' · '), cor: avisoItem(D, r) ? (ehPes(r.pos) ? '#b71c1c' : '#7a5600') : PDFC.MUT }]; }));
   });
 }
 /* lista de compra: por NI, separando troca e atenção */
@@ -1318,7 +1388,7 @@ function gerarRelatorio(tipo, id) {
   const eqIds = tipo === 'equip' && id ? [id] : (tipo === 'sem' || (tipo === 'equip' && !id)) ? eqs.map(e => e.id)
     : [...new Set(at.filter(r => !id || (tipo === 'insp' ? r.inspId === id : r.tipoId === id)).map(r => r.equipId))].concat(tipo === 'insp' && id ? eqs.filter(e => e.inspId === id).map(e => e.id) : []);
   const titRel = { equip: id ? 'Relatório do equipamento ' + ((D.equip[id] || {}).nome || '') : 'Relatório dos equipamentos', insp: id ? 'Relatório do inspetor ' + nomeInsp(D, id) : 'Relatório por inspetor', tipo: id ? 'Relatório do NI ' + ((D.tipo[id] || {}).ni || '') : 'Lista de compras da área', sem: 'Semáforo dos equipamentos' }[tipo] || 'Relatório';
-  return { eqs: eqIds, titulo: titRel, blob: pdfFechar(c), nome: (chave(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'relatorio') + '-' + (d => d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()))(new Date()) + '.pdf' };
+  return { eqs: eqIds, titulo: titRel, blob: pdfFechar(c), nome: (chave(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'relatorio') + '-' + carimbo() + '.pdf' };
 }
 async function pdfRelatorio(tipo, id, modo) {
   let r;
@@ -1478,7 +1548,8 @@ function mEquip(id, paraInsp) {
     <label class="l">Rolete de carga padrão</label>${selTipo(D, 'carga', 'tipoCarga', e.tipoCarga)}
     <div data-nd ${ehDos(e) ? 'hidden' : ''}>
     <label class="l">Rolete de retorno padrão</label>${selTipo(D, 'retorno', 'tipoRetorno', e.tipoRetorno)}
-    <label class="l">Cavalete padrão</label>${selTipo(D, 'cavalete', 'tipoCav', e.tipoCav)}</div>
+    <label class="l">Cavalete padrão</label>${selTipo(D, 'cavalete', 'tipoCav', e.tipoCav)}
+    <label class="l">Rolete guia padrão (cavalete autoalinhador)</label>${selTipo(D, 'guia', 'tipoGuia', e.tipoGuia)}</div>
     <div data-ds ${ehDos(e) ? '' : 'hidden'}><label class="l">Quantidade de roletes de carga da balança</label><input class="in" name="ncar" inputmode="numeric" value="${esc(ehDos(e) ? e.ncav || '' : '')}">
     <div class="dica">Sem contar os 3 roletes de pesagem (P1, P2 e P3). Na inspeção, o inspetor digita o número do rolete de carga.</div></div>
     <div data-bl ${e.bal ? '' : 'hidden'}><label class="l">Rolete de balança padrão</label>${selTipo(D, 'balanca', 'tipoBal', e.tipoBal)}</div>
@@ -1508,7 +1579,7 @@ function mItem(id) {
   const e = D.equip[r.equipId], t = D.tipo[r.tipoId], meu = r.inspId === S.eu.id || S.admin;
   const dos = ehDos(e), critico = dos || !!r.zb;
   const l = tiposCat(D, catDe(r.pos, r.zb));
-  abrirModal(r.pos === 'car' ? 'Carga nº ' + r.cav : (r.cav ? 'Cavalete ' + r.cav + ' · ' : '') + POS[r.pos], `<div class="cavbox">${dos ? dosSvg({ [r.pos]: { m: 'vm', s: 'sel' } }, false) : cavSvg(r.pos === 'cav' ? { cav: { m: vm(r) ? 'vm' : 'am', s: 'sel' }, le: { m: vm(r) ? 'vm' : 'am', s: 'sel' }, ct: { m: vm(r) ? 'vm' : 'am', s: 'sel' }, ld: { m: vm(r) ? 'vm' : 'am', s: 'sel' } } : { [r.pos]: { m: vm(r) ? 'vm' : 'am', s: 'sel' } }, false)}</div>
+  abrirModal(r.pos === 'car' ? 'Carga nº ' + r.cav : (r.cav ? 'Cavalete ' + r.cav + ' · ' : '') + POS[r.pos], `<div class="cavbox">${dos ? dosSvg({ [r.pos]: { m: 'vm', s: 'sel' } }, false) : (r.aa ? aaSvg : cavSvg)(r.pos === 'cav' ? { cav: { m: vm(r) ? 'vm' : 'am', s: 'sel' }, le: { m: vm(r) ? 'vm' : 'am', s: 'sel' }, ct: { m: vm(r) ? 'vm' : 'am', s: 'sel' }, ld: { m: vm(r) ? 'vm' : 'am', s: 'sel' } } : { [r.pos]: { m: vm(r) ? 'vm' : 'am', s: 'sel' } }, false)}</div>
     <p><b>${esc(e ? e.nome : '')}</b> · ${esc(rotItem(r))} · <span class="chip ${vm(r) ? 'vm' : 'am'}">${critico ? 'Troca · crítico' : vm(r) ? 'Troca' : 'Atenção'}</span>${avisoHtml(D, r)}<span class="mut sm">${esc(tipoTxt(t))} · ${brl(t ? t.preco : 0)}<br>Marcado por ${esc(nomeInsp(D, r.inspId))} em ${fDH(r.criadoEm)}${r.obs ? '<br>Obs.: ' + esc(r.obs) : ''}</span></p>
     ${meu ? `<form data-f="item" data-id="${id}"><label class="l">NI</label><select class="in" name="tipoId">${l.map(x => `<option value="${x.id}" ${x.id === r.tipoId ? 'selected' : ''}>${esc(tipoTxt(x))}</option>`).join('')}</select>
       <label class="l">Observação</label><input class="in" name="obs" maxlength="120" value="${esc(r.obs || '')}"><button class="btn w sec" style="margin-top:10px">Salvar alteração</button></form>` : ''}
@@ -1557,10 +1628,15 @@ const A = {
   },
   cavMais(el) {
     const I = V.insp, n = parseInt(I.cav, 10);
-    I.cav = String(Math.max(1, (isNaN(n) ? 0 : n) + Number(el.dataset.v))); I.sel = []; salvarInsp(); render();
+    I.cav = String(Math.max(1, (isNaN(n) ? 0 : n) + Number(el.dataset.v))); I.sel = []; trocouCav(I); salvarInsp(); render();
   },
   nivel(el) { if (V.insp.zb && el.dataset.v === 'am') return; V.insp.nivel = el.dataset.v; salvarInsp(); render(); },
   zb() { V.insp.zb = !V.insp.zb; salvarInsp(); render(); },
+  aa() {
+    const I = V.insp, D = dados(), { ex } = estadoCav(D, I.equipId, normCav(I.cav));
+    if (Object.values(ex).some(r => r.aa)) { toast('Este cavalete já tem itens marcados como autoalinhador.'); return; }
+    I.aa = !I.aa; if (!I.aa) I.aaCav = ''; if (!I.aa) I.sel = (I.sel || []).filter(p => !GUIA.includes(p)); salvarInsp(); render();
+  },
   pos(el) {
     const I = V.insp, p = el.dataset.p, D = dados(), cav = normCav(I.cav);
     if (ehDos(D.equip[I.equipId])) {
@@ -1570,7 +1646,7 @@ const A = {
       const s0 = I.sel || [];
       I.sel = s0.includes(p) ? s0.filter(x => x !== p) : s0.concat(p); salvarInsp(); render(); return;
     }
-    if (!cav) { toast('Digite primeiro o número do cavalete.'); const i = document.querySelector('[data-k=cav]'); i && i.focus(); return; }
+    if (!cav) { toast('Digite primeiro o número do cavalete e depois toque no rolete.'); const i = document.querySelector('[data-k=cav]'); i && i.focus(); return; }
     const { ex } = estadoCav(D, I.equipId, cav);
     if (ex[p]) { mItem(ex[p].id); return; }
     if (CARGA.includes(p) && ex.cav) { mItem(ex.cav.id); return; }
@@ -1595,18 +1671,18 @@ const A = {
     }
     const temVm = itensAtivos(D).some(r => r.equipId === id && vm(r));
     V.insp = null; salvarInsp();
-    V.listaSel = temVm ? [id] : V.listaSel; ls.set('listaSel', V.listaSel);
+    V.listaSel = temVm ? [id] : V.listaSel; ls.set('listaSel', { i: S.eu.id, s: V.listaSel });
     V.tela = 'lista'; V.lista = temVm ? 'troca' : 'atencao'; render(); scrollTo(0, 0);
     toast(temVm ? 'Inspeção finalizada. Esta é a lista para a execução.' : 'Inspeção finalizada. Não há itens vermelhos neste equipamento.', 4500);
     // ao finalizar, a lista de troca do equipamento vai automaticamente para o e-mail do inspetor
     if (temVm) (async () => {
       const D2 = dados(), e = D2.equip[id];
-      try { const blob = await gerarPdf(D2, [id]); emailAuto(blob, nomePdf(), 'Lista de roletes para troca', [id], 'Equipamento: ' + (e ? e.nome : ''), true); } catch (er) { }
+      try { const blob = await gerarPdf(D2, [id]); emailAuto(blob, nomePdf(D2, [id]), 'Lista de roletes para troca', [id], 'Equipamento: ' + (e ? e.nome : ''), true); } catch (er) { }
     })();
   },
-  listaEq(el) { const { s } = selLista(dados()); const id = el.dataset.id; V.listaSel = s.includes(id) ? s.filter(x => x !== id) : s.concat(id); ls.set('listaSel', V.listaSel); render(); },
-  listaTodos(el) { const D = dados(), { disp } = selLista(D); V.listaSel = el.dataset.v === 'todos' ? disp : disp.filter(id => D.equip[id].inspId === S.eu.id); ls.set('listaSel', V.listaSel); render(); },
-  listaDe(el) { V.listaSel = [el.dataset.id]; ls.set('listaSel', V.listaSel); V.tela = 'lista'; V.lista = 'troca'; render(); scrollTo(0, 0); },
+  listaEq(el) { const { s } = selLista(dados()); const id = el.dataset.id; V.listaSel = s.includes(id) ? s.filter(x => x !== id) : s.concat(id); ls.set('listaSel', { i: S.eu.id, s: V.listaSel }); render(); },
+  listaTodos(el) { const D = dados(), { disp } = selLista(D); V.listaSel = el.dataset.v === 'todos' ? disp : disp.filter(id => D.equip[id].inspId === S.eu.id); ls.set('listaSel', { i: S.eu.id, s: V.listaSel }); render(); },
+  listaDe(el) { V.listaSel = [el.dataset.id]; ls.set('listaSel', { i: S.eu.id, s: V.listaSel }); V.tela = 'lista'; V.lista = 'troca'; render(); scrollTo(0, 0); },
   whats() { const D = dados(); abrirWhats(textoLista(D, selLista(D).s)); },
   whatsInd() { abrirWhats(textoInd(dados())); },
   pdfWhats() { pdfLista('whats'); },
@@ -1691,10 +1767,14 @@ function iniciarInsp(id) {
   salvarInsp(); fecharModal(); V.tela = 'insp'; render(); scrollTo(0, 0);
   if (e && !e.tipoCarga && !tiposCat(D, 'carga').length) toast('Dica: cadastre o NI do rolete de carga para agilizar.', 4000);
 }
+/* O autoalinhador fica ligado enquanto o inspetor está no mesmo cavalete. Ele só desliga sozinho
+   quando o inspetor passa para outro cavalete depois de registrar itens como autoalinhador. */
+function trocouCav(I) { if (I.aaCav && normCav(I.cav) !== I.aaCav) { I.aa = false; I.aaCav = ''; } }
 function adicionar() {
   const I = V.insp, D = dados(), e = D.equip[I.equipId], dos = ehDos(e), cav = dos ? '' : normCav(I.cav);
   if (!e || (!dos && !cav) || !(I.sel || []).length) return;
   const zb = !dos && e.bal === 'tem' && !!I.zb, nivel = (dos || zb) ? 'vm' : I.nivel;
+  const aaOn = !dos && (!!I.aa || itensAtivos(D).some(r => r.equipId === e.id && r.cav === cav && r.aa));
   const padrao = padraoDe(e);
   const ops = [], faltam = [];
   for (const p of I.sel) {
@@ -1707,13 +1787,14 @@ function adicionar() {
       if (itensAtivos(D).some(r => r.equipId === e.id && r.pos === 'car' && r.cav === d.cav)) { toast('O rolete de carga nº ' + d.cav + ' já está marcado.'); return; }
     }
     if (zb) d.zb = true;
+    if (aaOn) d.aa = true;
     ops.push({ c: 'rol', t: 'add', id: uid(), d });
   }
   if (faltam.length) { toast('Escolha o NI: ' + [...new Set(faltam)].join(', ') + '.', 4500); return; }
   if (!ops.length) return;
   const pes = ops.some(o => ehPes(o.d.pos));
   const fazer = () => {
-    I.ids = (I.ids || []).concat(ops.map(o => o.id)); I.sel = []; I.obs = ''; I.zb = false; I.ncar = ''; salvarInsp();
+    I.ids = (I.ids || []).concat(ops.map(o => o.id)); I.sel = []; I.obs = ''; I.zb = false; I.ncar = ''; if (aaOn) { I.aa = true; I.aaCav = cav; } salvarInsp();
     enfileirar(ops);
     // balança: o semáforo do equipamento vai automaticamente para vermelho
     if (dos || zb) marcarFarol('vm');
@@ -1741,7 +1822,7 @@ document.addEventListener('input', ev => {
   const el = ev.target, k = el.dataset && el.dataset.k;
   if (k === 'busca') { const q = chave(el.value); document.querySelectorAll('[data-a=escolherInsp]').forEach(x => { x.hidden = q && !x.dataset.nome.includes(q); }); return; }
   if (!k || !V.insp) return;
-  if (k === 'cav') { V.insp.cav = el.value; if ((V.insp.sel || []).length) V.insp.sel = []; }
+  if (k === 'cav') { V.insp.cav = el.value; trocouCav(V.insp); if ((V.insp.sel || []).length) V.insp.sel = []; }
   else if (k === 'obs') V.insp.obs = el.value;
   else if (k === 'ncar') V.insp.ncar = el.value;
   salvarInsp();
@@ -1757,7 +1838,8 @@ document.addEventListener('change', ev => {
     return;
   }
   if (k === 'tipo' && V.insp) { V.insp.tipo = Object.assign({}, V.insp.tipo, { [el.dataset.c]: el.value }); salvarInsp(); }
-  if ((k === 'cav' || k === 'ncar') && V.insp) render();
+  // redesenha depois do toque: ao fechar o teclado, o toque no botão seguinte não se perde
+  if ((k === 'cav' || k === 'ncar') && V.insp) setTimeout(() => render(), 250);
 });
 document.addEventListener('keydown', ev => { if (ev.key === 'Enter' && ev.target.dataset && ev.target.dataset.k === 'cav') { ev.target.blur(); render(); } });
 
@@ -1827,7 +1909,7 @@ const FORM = {
       const maior = itensAtivos(D).filter(r => r.equipId === id && r.pos !== 'ret' && /^\d+$/.test(r.cav)).reduce((m, r) => Math.max(m, Number(r.cav)), 0);
       if (maior > ncav) return erroForm(dos ? 'Há rolete de carga nº ' + maior + ' marcado. A quantidade não pode ser menor.' : 'Há item marcado no cavalete ' + maior + '. A quantidade não pode ser menor.');
     }
-    const d = { nome, area: f.area.value.trim(), bal, ncav, nret, tipoCarga: f.tipoCarga.value, tipoRetorno: f.tipoRetorno.value, tipoCav: f.tipoCav.value, tipoBal: f.tipoBal.value };
+    const d = { nome, area: f.area.value.trim(), bal, ncav, nret, tipoCarga: f.tipoCarga.value, tipoRetorno: f.tipoRetorno.value, tipoCav: f.tipoCav.value, tipoBal: f.tipoBal.value, tipoGuia: f.tipoGuia.value };
     if (id) enfileirar([{ c: 'equip', t: 'update', id, d }]);
     else {
       const nid = uid();
