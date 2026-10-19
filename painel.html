@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Painel de Roletes</title>
+<meta name="theme-color" content="#0c1822">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
+<style>
+/* Painel para projetar em reunião: fundo grafite, números grandes, semáforo dos equipamentos como peça central. */
+:root{color-scheme:dark;
+--bg:#0c1822;--p1:#132331;--p2:#1b3144;--ln:#25405a;--tx:#eaf0f5;--mut:#93a7b8;--az:#4d9be0;
+--vm:#ef4a3c;--am:#f5c02b;--vd:#43c463;--cz:#6b7f91;
+--f:'Archivo',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 var(--f);font-variant-numeric:tabular-nums}
+button,input{font:inherit;color:inherit}
+h1,h2,h3{margin:0;line-height:1.15;font-stretch:115%;letter-spacing:-.01em}
+:focus-visible{outline:3px solid var(--az);outline-offset:2px}
+.wrap{max-width:1800px;margin:0 auto;padding:22px 28px 30px}
+header{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+.marca{display:flex;align-items:center;gap:14px;flex:1;min-width:260px}
+.marca img{width:46px;height:46px;border-radius:12px}
+.marca h1{font-size:26px;font-weight:800;font-stretch:120%}
+.marca p{margin:2px 0 0;color:var(--mut);font-size:14px}
+.seg{display:flex;background:var(--p1);border:1px solid var(--ln);border-radius:14px;padding:4px}
+.seg button{border:0;background:none;color:var(--mut);padding:9px 18px;border-radius:10px;font-weight:650;cursor:pointer}
+.seg button.on{background:var(--az);color:#06121c}
+.hora{text-align:right;color:var(--mut);font-size:13px;min-width:150px}
+.hora b{display:block;color:var(--tx);font-size:26px;font-weight:700;font-stretch:115%}
+.ic{border:1px solid var(--ln);background:var(--p1);border-radius:12px;padding:10px 14px;cursor:pointer;color:var(--tx);font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.k{background:var(--p1);border:1px solid var(--ln);border-radius:18px;padding:18px 20px;min-width:0;position:relative;overflow:hidden}
+.k .r{font-size:14px;color:var(--mut);display:flex;align-items:center;gap:8px}
+.k .r i{width:12px;height:12px;border-radius:50%;display:inline-block;flex:none}
+.k b{display:block;font-size:clamp(34px,3.6vw,58px);font-weight:800;font-stretch:122%;line-height:1.05;margin-top:8px}
+.k .v{font-size:clamp(15px,1.3vw,21px);font-weight:600;margin-top:4px}
+.k .s{font-size:13px;color:var(--mut);margin-top:6px}
+.bar{display:flex;height:10px;border-radius:99px;overflow:hidden;background:#0a141d;margin-top:10px}
+.bar i{display:block;height:100%}
+.g{background:var(--vd)}.y{background:var(--am)}.rr{background:var(--vm)}
+.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;align-items:start}
+.pn{background:var(--p1);border:1px solid var(--ln);border-radius:18px;padding:18px 20px;min-width:0}
+.pn+.pn{margin-top:18px}
+.pt{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.pt h2{font-size:21px;font-weight:700;flex:1}
+.pt span{color:var(--mut);font-size:14px}
+.cont{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.cont div{display:flex;align-items:center;gap:8px;background:var(--p2);border-radius:99px;padding:6px 14px;font-size:14px}
+.cont b{font-size:18px}
+.cont i{width:12px;height:12px;border-radius:50%}
+.eqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.eq{display:flex;gap:14px;background:var(--p2);border-radius:14px;padding:14px;border-left:5px solid var(--cz);min-width:0}
+.eq.vm{border-left-color:var(--vm)}.eq.am{border-left-color:var(--am)}.eq.vd{border-left-color:var(--vd)}
+.sem{display:flex;flex-direction:column;gap:6px;background:#08121a;padding:7px;border-radius:14px;align-self:flex-start;flex:none}
+.sem i{width:20px;height:20px;border-radius:50%;background:#26394a}
+.sem i.on.vm{background:var(--vm);box-shadow:0 0 14px var(--vm)}.sem i.on.am{background:var(--am);box-shadow:0 0 14px var(--am)}.sem i.on.vd{background:var(--vd);box-shadow:0 0 14px var(--vd)}
+.eq .f{flex:1;min-width:0}
+.eq h3{font-size:20px;font-weight:800;font-stretch:118%}
+.eq .m{font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eq .n{display:flex;gap:12px;font-size:13.5px;margin-top:7px;flex-wrap:wrap}
+.eq .n em{font-style:normal;font-weight:700}
+.eq .st{font-size:12.5px;color:var(--mut);margin-top:3px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:12.5px;color:var(--mut);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--ln)}
+td{padding:9px 8px;border-bottom:1px solid #1c3044;vertical-align:middle}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.tt td{border-bottom:0;font-weight:800;font-size:16px;padding-top:12px}
+.hb{height:7px;border-radius:99px;background:#0a141d;overflow:hidden;display:flex;margin-top:5px;min-width:80px}
+.vmT{color:var(--vm)}.amT{color:var(--am)}
+.vazio{color:var(--mut);padding:18px 4px;text-align:center}
+.rod{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--mut);font-size:13px;margin-top:20px}
+.aviso{background:#3a2a05;color:#ffd77a;border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:14px}
+.con{max-width:460px;margin:12vh auto;background:var(--p1);border:1px solid var(--ln);border-radius:20px;padding:26px}
+.con label{display:block;font-size:14px;font-weight:600;margin:14px 0 6px}
+.con input{width:100%;background:#0a141d;border:1px solid var(--ln);border-radius:12px;padding:12px;color:var(--tx)}
+.con button{margin-top:18px;width:100%;border:0;border-radius:12px;padding:13px;background:var(--az);color:#06121c;font-weight:700;cursor:pointer}
+.con p{color:var(--mut);font-size:14px}
+@media (max-width:1180px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.grid{grid-template-columns:1fr}}
+@media (max-width:640px){.wrap{padding:16px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.hora{display:none}.marca h1{font-size:21px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+/* Endereço /exec do servidor (opcional). O link do administrador já traz o servidor e o código. */
+const SERVIDOR_PADRAO = '';
+const AREAS = { patios: 'Pátios', cc7: 'CC7' };
+const POS = { le: 'L.E', ct: 'C.T', ld: 'L.D', ret: 'RET', cav: 'CAV' };
+const CATN = { carga: 'Rolete de carga', retorno: 'Rolete de retorno', cavalete: 'Cavalete', balanca: 'Rolete de balança' };
+const FAROL = { vd: 'Bom', am: 'Atenção', vm: 'Crítico' };
+const FORD = { vm: 0, am: 1, vd: 2 };
+const LS = 'rl.painel.';
+const ls = { get(k, d) { try { const v = localStorage.getItem(LS + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) { } } };
+const S = { srv: ls.get('srv', SERVIDOR_PADRAO), codigo: ls.get('codigo', ''), area: ls.get('area', 'todas'), data: ls.get('data', null), sync: ls.get('sync', 0), erro: '', carregando: false };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const brl = v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const brlC = v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+const nf = v => (Number(v) || 0).toLocaleString('pt-BR');
+const pct = (a, b) => b ? Math.round(a / b * 1000) / 10 : 0;
+const pt = v => v.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%';
+const p2 = n => String(n).padStart(2, '0');
+const fData = ms => { const d = new Date(ms); return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear(); };
+const cmp = (a, b) => String(a).localeCompare(String(b), 'pt-BR', { numeric: true, sensitivity: 'base' });
+const pl = (n, a, b) => nf(n) + ' ' + (n === 1 ? a : b);
+
+async function api(p) {
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 30000);
+  try { const r = await fetch(S.srv, { method: 'POST', body: JSON.stringify(p), signal: ctl.signal }); return await r.json(); }
+  finally { clearTimeout(t); }
+}
+async function carregar() {
+  if (!S.srv || !S.codigo || S.carregando) return;
+  S.carregando = true;
+  try {
+    const r = await api({ action: 'sync', codigo: S.codigo });
+    if (!r.ok) { S.erro = r.erro === 'codigo-equipe' ? 'Código de acesso incorreto.' : 'Erro do servidor: ' + r.erro; if (r.erro === 'codigo-equipe') { S.codigo = ''; ls.set('codigo', ''); } }
+    else { S.data = r; S.sync = Date.now(); S.erro = ''; ls.set('data', r); ls.set('sync', S.sync); }
+  } catch (e) { S.erro = 'Sem conexão com o servidor. Mostrando os últimos dados recebidos.'; }
+  S.carregando = false; render();
+}
+
+/* ----- cálculos (os mesmos do app) ----- */
+function calcular() {
+  const d = S.data || { insp: [], equip: [], tipo: [], rol: [] };
+  const I = {}, E = {}, T = {};
+  d.insp.forEach(i => { I[i.id] = i; });
+  d.tipo.forEach(t => { T[t.id] = t; });
+  const naArea = id => I[id] && (S.area === 'todas' || I[id].area === S.area);
+  d.equip.forEach(e => { if (e.ativo !== false && naArea(e.inspId)) E[e.id] = e; });
+  const at = d.rol.filter(r => r.status !== 'trocado' && E[r.equipId]);
+  const tr30 = d.rol.filter(r => r.status === 'trocado' && E[r.equipId] && (r.trocadoEm || 0) > Date.now() - 30 * 864e5).length;
+  const vm = r => r.nivel !== 'am', un = r => r.pos === 'cav' ? 3 : 1, pr = r => T[r.tipoId] ? Number(T[r.tipoId].preco) || 0 : 0;
+  const novo = () => ({ vmN: 0, vmV: 0, amN: 0, amV: 0, vmU: 0, amU: 0, semPreco: 0 });
+  const soma = (g, r) => { const k = vm(r) ? 'vm' : 'am'; g[k + 'N']++; g[k + 'V'] += pr(r); g[k + 'U'] += un(r); if (!pr(r)) g.semPreco++; };
+  const G = novo(); at.forEach(r => soma(G, r));
+  const eqs = Object.values(E).map(e => { const g = novo(); at.filter(r => r.equipId === e.id).forEach(r => soma(g, r)); g.total = e.bal === 'dos' ? 3 + (Number(e.ncav) || 0) : (Number(e.ncav) || 0) * 3 + (Number(e.nret) || 0); g.bons = Math.max(0, g.total - g.vmU - g.amU); return Object.assign(g, { e }); })
+    .sort((a, b) => ((FORD[a.e.farol] ?? 3) - (FORD[b.e.farol] ?? 3)) || ((b.vmU + b.amU) / (b.total || 1) - (a.vmU + a.amU) / (a.total || 1)) || cmp(a.e.nome, b.e.nome));
+  G.total = eqs.reduce((s, x) => s + x.total, 0); G.bons = Math.max(0, G.total - G.vmU - G.amU);
+  const mi = new Map();
+  Object.values(I).filter(i => i.ativo && (S.area === 'todas' || i.area === S.area)).forEach(i => mi.set(i.id, Object.assign(novo(), { nome: i.nome, area: i.area, ne: 0 })));
+  Object.values(E).forEach(e => { if (mi.has(e.inspId)) mi.get(e.inspId).ne++; });
+  at.forEach(r => { if (!mi.has(r.inspId)) mi.set(r.inspId, Object.assign(novo(), { nome: I[r.inspId] ? I[r.inspId].nome : '—', ne: 0 })); soma(mi.get(r.inspId), r); });
+  const insp = [...mi.values()].sort((a, b) => (b.vmV + b.amV) - (a.vmV + a.amV) || cmp(a.nome, b.nome));
+  const mc = new Map();
+  at.forEach(r => { if (!mc.has(r.tipoId)) mc.set(r.tipoId, { t: T[r.tipoId], vm: 0, am: 0 }); mc.get(r.tipoId)[vm(r) ? 'vm' : 'am']++; });
+  const compra = [...mc.values()].map(x => Object.assign(x, { pu: x.t ? Number(x.t.preco) || 0 : 0 })).sort((a, b) => (b.pu * b.vm - a.pu * a.vm) || cmp(a.t ? a.t.ni : '', b.t ? b.t.ni : ''));
+  const far = { vd: 0, am: 0, vm: 0, x: 0 }; eqs.forEach(x => { far[FAROL[x.e.farol] ? x.e.farol : 'x']++; });
+  return { G, eqs, insp, compra, far, tr30, I };
+}
+const barra = g => { const a = pct(g.amU, g.total), r = pct(g.vmU, g.total); return `<div class="bar"><i class="g" style="width:${Math.max(0, 100 - a - r)}%"></i><i class="y" style="width:${a}%"></i><i class="rr" style="width:${r}%"></i></div>`; };
+const sem = f => `<span class="sem" role="img" aria-label="Semáforo ${f ? FAROL[f].toLowerCase() : 'sem avaliação'}"><i class="${f === 'vm' ? 'on vm' : ''}"></i><i class="${f === 'am' ? 'on am' : ''}"></i><i class="${f === 'vd' ? 'on vd' : ''}"></i></span>`;
+
+function render() {
+  const app = document.getElementById('app');
+  if (!S.srv || !S.codigo) {
+    app.innerHTML = `<form class="con" id="fCon"><h1>Painel de Roletes</h1><p>Use o link do painel enviado pelo administrador. Sem o link, informe o servidor e o código de acesso da equipe.</p>
+      <label for="cSrv">Endereço do servidor</label><input id="cSrv" value="${esc(S.srv)}" placeholder="https://script.google.com/macros/s/.../exec" required>
+      <label for="cCod">Código de acesso</label><input id="cCod" value="${esc(S.codigo)}" required>
+      ${S.erro ? `<p style="color:#ff9b91">${esc(S.erro)}</p>` : ''}<button>Abrir painel</button></form>`;
+    document.getElementById('fCon').onsubmit = ev => { ev.preventDefault(); S.srv = document.getElementById('cSrv').value.trim(); S.codigo = document.getElementById('cCod').value.trim(); ls.set('srv', S.srv); ls.set('codigo', S.codigo); render(); carregar(); };
+    return;
+  }
+  const C = calcular(), G = C.G, agora = new Date();
+  const areaTxt = S.area === 'todas' ? 'Pátios e CC7' : AREAS[S.area];
+  const kp = `<section class="kpis">
+    <div class="k"><div class="r"><i style="background:var(--vm)"></i>Lista de troca</div><b class="vmT">${nf(G.vmN)}</b><div class="v">${brl(G.vmV)}</div><div class="s">itens vermelhos para a execução</div></div>
+    <div class="k"><div class="r"><i style="background:var(--am)"></i>Pontos de atenção</div><b class="amT">${nf(G.amN)}</b><div class="v">${brl(G.amV)}</div><div class="s">itens amarelos acompanhados</div></div>
+    <div class="k"><div class="r"><i style="background:var(--az)"></i>Investimento para zerar</div><b style="font-size:clamp(26px,2.6vw,42px)">${brlC(G.vmV + G.amV)}</b><div class="s">${G.semPreco ? pl(G.semPreco, 'item sem preço cadastrado', 'itens sem preço cadastrado') : 'troca + atenção'}</div></div>
+    <div class="k"><div class="r"><i style="background:var(--vd)"></i>Roletes bons</div><b>${G.total ? pt(pct(G.bons, G.total)) : '—'}</b>${G.total ? barra(G) : ''}<div class="s">${nf(G.total)} roletes em ${pl(C.eqs.length, 'equipamento', 'equipamentos')}</div></div>
+    <div class="k"><div class="r"><i style="background:#9fb4c6"></i>Trocados em 30 dias</div><b>${nf(C.tr30)}</b><div class="s">baixas dadas pelos inspetores</div></div>
+  </section>`;
+  const eqs = C.eqs.map(x => `<div class="eq ${x.e.farol || ''}">${sem(x.e.farol)}<div class="f"><h3>${esc(x.e.nome)}</h3>
+      <div class="m">${esc(C.I[x.e.inspId] ? C.I[x.e.inspId].nome : '')}${S.area === 'todas' && C.I[x.e.inspId] ? ' · ' + esc(AREAS[C.I[x.e.inspId].area] || '') : ''}</div>
+      ${barra(x)}
+      <div class="n"><span>Bons <em>${pt(pct(x.bons, x.total))}</em></span><span class="vmT">Troca <em>${x.vmN}</em></span><span class="amT">Atenção <em>${x.amN}</em></span></div>
+      <div class="st">${x.e.farol ? FAROL[x.e.farol] + ' · avaliado em ' + fData(x.e.farolEm) : 'Semáforo sem avaliação'}</div></div></div>`).join('');
+  const maxI = Math.max(1, ...C.insp.map(i => i.vmV + i.amV));
+  const insp = C.insp.map(i => `<tr><td><b>${esc(i.nome)}</b><div class="hb"><i class="rr" style="width:${i.vmV / maxI * 100}%"></i><i class="y" style="width:${i.amV / maxI * 100}%"></i></div></td>
+      <td class="n">${i.ne}</td><td class="n vmT"><b>${i.vmN}</b></td><td class="n amT"><b>${i.amN}</b></td><td class="n">${brl(i.vmV + i.amV)}</td></tr>`).join('');
+  let qv = 0, qa = 0, tv = 0, ta = 0;
+  const compra = C.compra.map(x => { qv += x.vm; qa += x.am; tv += x.pu * x.vm; ta += x.pu * (x.vm + x.am);
+    return `<tr><td><b>${esc(x.t ? x.t.ni : '—')}</b><div style="font-size:12.5px;color:var(--mut)">${esc(x.t ? x.t.desc || CATN[x.t.cat] : '')}</div></td><td class="n vmT"><b>${x.vm}</b></td><td class="n amT">${x.am}</td><td class="n">${brl(x.pu * x.vm)}</td><td class="n">${brl(x.pu * (x.vm + x.am))}</td></tr>`; }).join('');
+  app.innerHTML = `<div class="wrap">
+  <header><div class="marca"><img src="icon-192.png" alt=""><div><h1>Inspeção de Roletes</h1><p>Painel de indicadores · ${esc(areaTxt)}</p></div></div>
+    <div class="seg" role="group" aria-label="Área">${[['patios', 'Pátios'], ['cc7', 'CC7'], ['todas', 'Todas']].map(([k, n]) => `<button class="${S.area === k ? 'on' : ''}" data-area="${k}">${n}</button>`).join('')}</div>
+    <button class="ic" id="bTela">Tela cheia</button>
+    <div class="hora"><b id="relogio">${p2(agora.getHours())}:${p2(agora.getMinutes())}</b>${fData(Date.now())}</div></header>
+  ${S.erro ? `<div class="aviso">${esc(S.erro)}</div>` : ''}
+  ${kp}
+  <div class="grid">
+    <section class="pn"><div class="pt"><h2>Semáforo dos equipamentos</h2><span>avaliação do inspetor na inspeção · críticos primeiro</span></div>
+      <div class="cont"><div><i style="background:var(--vd)"></i><b>${C.far.vd}</b> ${C.far.vd === 1 ? 'bom' : 'bons'}</div><div><i style="background:var(--am)"></i><b>${C.far.am}</b> em atenção</div><div><i style="background:var(--vm)"></i><b>${C.far.vm}</b> ${C.far.vm === 1 ? 'crítico' : 'críticos'}</div><div><i style="background:var(--cz)"></i><b>${C.far.x}</b> sem avaliação</div></div>
+      <div class="eqs">${eqs || '<div class="vazio">Nenhum equipamento cadastrado.</div>'}</div></section>
+    <div>
+      <section class="pn"><div class="pt"><h2>Por inspetor</h2><span>quem marcou</span></div>
+        <table><thead><tr><th>Inspetor</th><th class="n">Equip.</th><th class="n">Troca</th><th class="n">Atenção</th><th class="n">Investimento</th></tr></thead><tbody>${insp || '<tr><td colspan="5" class="vazio">Sem inspetores.</td></tr>'}</tbody></table></section>
+      <section class="pn"><div class="pt"><h2>Lista de compras</h2><span>${pl(C.compra.length, 'NI', 'NIs')}</span></div>
+        <table><thead><tr><th>NI</th><th class="n">Troca</th><th class="n">Atenção</th><th class="n">Valor troca</th><th class="n">Troca + atenção</th></tr></thead><tbody>${compra || '<tr><td colspan="5" class="vazio">Nada a comprar.</td></tr>'}
+        ${C.compra.length ? `<tr class="tt"><td>Total</td><td class="n vmT">${qv}</td><td class="n amT">${qa}</td><td class="n">${brl(tv)}</td><td class="n">${brl(ta)}</td></tr>` : ''}</tbody></table></section>
+    </div>
+  </div>
+  <div class="rod"><span>Atualiza sozinho a cada minuto · última atualização ${S.sync ? p2(new Date(S.sync).getHours()) + ':' + p2(new Date(S.sync).getMinutes()) : '—'}</span><span>Desenvolvido por Jeferson Rodrigo dos Santos · Inspetor de automação e instrumentação · Pátios de Minérios - RED 2</span></div>
+  </div>`;
+  app.querySelectorAll('[data-area]').forEach(b => b.onclick = () => { S.area = b.dataset.area; ls.set('area', S.area); render(); });
+  document.getElementById('bTela').onclick = () => {
+    const d = document;
+    try { if (d.fullscreenElement) d.exitFullscreen(); else d.documentElement.requestFullscreen().catch(() => { }); } catch (e) { }
+  };
+}
+(function () {
+  const q = new URLSearchParams(location.search);
+  if (q.get('s')) { S.srv = q.get('s'); ls.set('srv', S.srv); }
+  if (q.get('e')) { S.codigo = q.get('e'); ls.set('codigo', S.codigo); }
+  if (q.get('a') && (AREAS[q.get('a')] || q.get('a') === 'todas')) { S.area = q.get('a'); ls.set('area', S.area); }
+  if (q.get('s') || q.get('e')) history.replaceState(null, '', location.pathname);
+  render(); carregar();
+  setInterval(carregar, 60000);
+  setInterval(() => { const el = document.getElementById('relogio'), d = new Date(); if (el) el.textContent = p2(d.getHours()) + ':' + p2(d.getMinutes()); }, 15000);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1817 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Inspeção de Roletes</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#132331">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
+<style>
+/* Grafite e aço: topo escuro com os números principais; superfícies claras e quietas no resto. */
+:root{color-scheme:light;
+--ink:#132331;--ink2:#1c3245;--az:#1d5a8c;--az2:#3a86c4;--azc:#e6eff7;
+--bg:#eef1f4;--card:#ffffff;--tx:#15212c;--mut:#5f6e7b;--ln:#dde3e9;--ln2:#eaeef2;
+--vm:#c62828;--vmc:#fdeceb;--am:#e0a100;--amt:#7f5b00;--amc:#fff5d9;--vd:#2e7d32;--vdc:#e7f4e8;
+--f:'Archivo',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+--sh:0 1px 2px rgba(19,35,49,.06),0 6px 20px rgba(19,35,49,.06);--r:16px}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 var(--f);-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0;line-height:1.2;font-stretch:112%;letter-spacing:-.01em;text-wrap:balance}
+:focus-visible{outline:3px solid var(--az2);outline-offset:2px}
+.top{position:sticky;top:0;z-index:20;background:var(--ink);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 18px 12px;display:flex;align-items:center;gap:10px}
+.top h1{font-size:17px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top small{display:block;font-size:12px;opacity:.65;font-weight:400;font-stretch:100%;letter-spacing:0;overflow:hidden;text-overflow:ellipsis}
+.st{border:1px solid rgba(255,255,255,.16);border-radius:99px;padding:5px 11px;font-size:12px;background:rgba(255,255,255,.06);color:#d6e2ec;white-space:nowrap;cursor:pointer}
+.st.off{background:#f5b301;border-color:#f5b301;color:#3b2a00;font-weight:600}
+.cta{display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;border-radius:99px;padding:5px 12px 5px 7px;font-size:12px;cursor:pointer}
+.cta svg{width:18px;height:18px}
+main{padding:16px 16px calc(110px + env(safe-area-inset-bottom));max-width:720px;margin:0 auto}
+/* topo estendido: a única área escura e marcante */
+.hero{background:var(--ink);color:#fff;margin:-16px -16px 18px;padding:6px 18px 22px;border-radius:0 0 26px 26px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-40px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,255,255,.035);pointer-events:none}
+.hero h2{font-size:24px;font-weight:700;font-stretch:118%}
+.hero .hs{color:#9fb4c6;font-size:14px;margin-top:3px}
+.hero .row{position:relative;z-index:1}
+.hk{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.1);border-radius:14px;overflow:hidden;margin-top:18px;position:relative;z-index:1}
+.hk>div{background:var(--ink2);padding:12px 12px 11px;min-width:0}
+.hk b{display:block;font-size:26px;line-height:1.05;font-weight:800;font-stretch:118%}
+.hk span{display:flex;align-items:center;gap:6px;font-size:12px;color:#a9bccc;margin-top:4px}
+.hk i{display:block;font-style:normal;font-size:12.5px;color:#e3ebf2;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero .btn.cl{margin-top:16px;position:relative;z-index:1}
+.nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:20;max-width:560px;margin:0 auto;background:rgba(255,255,255,.88);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);border:1px solid rgba(19,35,49,.08);border-radius:22px;box-shadow:0 10px 30px rgba(19,35,49,.16);display:flex;padding:5px}
+.nav button{flex:1;border:0;background:none;padding:7px 2px 6px;font-size:11px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:16px;cursor:pointer}
+.nav button.on{color:var(--az);background:var(--azc);font-weight:700}
+.nav svg{width:23px;height:23px}
+.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.card h2{font-size:18px;margin-bottom:10px;font-weight:700}
+.card h3{font-size:15px;margin-bottom:8px;font-weight:700}
+.mut{color:var(--mut);font-size:14px}
+.sm{font-size:13px}
+.row{display:flex;align-items:center;gap:12px}
+.row>.f{flex:1;min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:12px 18px;font-weight:650;background:var(--az);color:#fff;min-height:48px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 1px 2px rgba(19,35,49,.18);text-decoration:none;transition:transform .08s ease,filter .15s ease}
+.btn:active{transform:translateY(1px);filter:brightness(.96)}
+.btn.w{width:100%}
+.btn svg{width:20px;height:20px;flex:none}
+.btn.sec{background:var(--azc);color:var(--az);box-shadow:none}
+.btn.lin{background:#fff;color:var(--tx);box-shadow:inset 0 0 0 1.5px var(--ln)}
+.btn.cl{background:#fff;color:var(--ink);box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.btn.vm{background:var(--vm)}
+.btn.am{background:var(--am);color:#2b1f00}
+.btn.vd{background:var(--vd)}
+.btn.peq{min-height:36px;padding:7px 13px;font-size:14px;border-radius:10px}
+.btn:disabled{opacity:.42;cursor:default}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns>.btn{flex:1 1 140px}
+label.l{display:block;font-size:14px;font-weight:650;margin:14px 0 6px}
+label.l:first-child{margin-top:0}
+.in{width:100%;border:1.5px solid var(--ln);border-radius:12px;padding:11px 13px;background:#fbfcfd;min-height:48px;transition:border-color .15s,box-shadow .15s}
+.in:focus{outline:none;border-color:var(--az2);background:#fff;box-shadow:0 0 0 4px rgba(58,134,196,.15)}
+.dica{font-size:13px;color:var(--mut);margin-top:5px}
+.tabs{display:flex;background:#e2e7ec;border-radius:14px;padding:4px;margin-bottom:14px}
+.tabs button{flex:1;border:0;background:none;border-radius:10px;padding:9px 4px;font-size:14px;font-weight:650;color:var(--mut);cursor:pointer}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(19,35,49,.12)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border-radius:var(--r);padding:14px;box-shadow:var(--sh);min-width:0}
+.kpi span{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--mut)}
+.kpi span::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--az2);flex:none}
+.kpi.vm span::before{background:var(--vm)}.kpi.am span::before{background:var(--am)}.kpi.vd span::before{background:var(--vd)}
+.kpi b{display:block;font-size:28px;line-height:1.1;font-weight:800;font-stretch:118%;margin-top:6px}
+.kpi i{display:block;font-style:normal;font-weight:600;font-size:15px;margin-top:2px}
+.li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--ln2)}
+.li:first-of-type{border-top:0}
+.li .f{flex:1;min-width:0}
+.li b{display:block;font-weight:650}
+.tap{cursor:pointer}
+.li.tap:active{background:var(--ln2)}
+.chip{display:inline-block;border-radius:99px;padding:3px 9px;font-size:12px;font-weight:700;white-space:nowrap}
+.chip.vm{background:var(--vmc);color:var(--vm)}
+.chip.am{background:var(--amc);color:var(--amt)}
+.chip.vd{background:var(--vdc);color:var(--vd)}
+.chip.az{background:var(--azc);color:var(--az)}
+.cod{display:inline-block;min-width:46px;text-align:center;font-weight:800;border-radius:7px;padding:3px 6px;background:var(--ink);color:#fff;font-size:13px;font-stretch:110%;letter-spacing:.02em}
+.vazio{text-align:center;color:var(--mut);padding:20px 8px}
+.bar{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--ln2);margin:8px 0 5px}
+.bar i{display:block;height:100%}
+.bar .g{background:var(--vd)}.bar .y{background:var(--am)}.bar .r{background:var(--vm)}.bar .b{background:var(--az2)}
+.leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--mut)}
+.leg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0}
+.cavbox{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:8px}
+.cavbox svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.pz{cursor:pointer}
+.stepper{display:flex;align-items:stretch;gap:8px}
+.stepper .in{text-align:center;font-size:26px;font-weight:800;font-stretch:118%}
+.stepper button{width:58px;border:0;border-radius:12px;background:var(--azc);color:var(--az);font-size:28px;font-weight:700;cursor:pointer}
+.nivel{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nivel button{border:1.5px solid var(--ln);background:#fff;border-radius:14px;padding:11px 10px;text-align:left;min-height:66px;cursor:pointer}
+.nivel button b{display:flex;align-items:center;gap:7px;font-size:15px}
+.nivel button span{display:block;font-size:12px;color:var(--mut);margin-top:3px}
+.nivel button.on.vm{border-color:var(--vm);background:var(--vmc);box-shadow:0 0 0 3px rgba(198,40,40,.12)}
+.nivel button.on.am{border-color:var(--am);background:var(--amc);box-shadow:0 0 0 3px rgba(224,161,0,.16)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.dot.vm{background:var(--vm)}.dot.am{background:var(--am)}
+.cavtog{display:flex;align-items:center;gap:12px;width:100%;margin-top:10px;border:1.5px dashed #c6cfd8;background:#fff;border-radius:14px;padding:11px 13px;text-align:left;cursor:pointer}
+.cavtog.on.vm{border:1.5px solid var(--vm);background:var(--vmc)}
+.cavtog.on.am{border:1.5px solid var(--am);background:var(--amc)}
+.cavtog.ex{border-style:solid;opacity:.9}
+.aviso{background:var(--amc);color:#5a4200;border-radius:12px;padding:11px 13px;font-size:14px;margin:8px 0}
+.alerta{background:var(--vmc);color:#7a1010;border:1.5px solid var(--vm);border-radius:12px;padding:11px 13px;font-size:14px;margin:8px 0;line-height:1.4}
+.aviso.sm,.alerta.sm{font-size:12.5px;padding:7px 10px;margin:5px 0 0}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;border-radius:99px;padding:2px 9px;background:#e4eef7;color:#1f5c8b;vertical-align:middle}
+.tag.dos{background:#fff3c4;color:#6b4e00}
+.nivel button[disabled]{opacity:.35;cursor:not-allowed}
+.dosch{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}
+.dosch button{border:1.5px solid var(--ln);background:#fff;border-radius:12px;padding:9px 6px;font-size:14px;font-weight:700;cursor:pointer;text-align:center}
+.dosch button small{display:block;font-weight:500;font-size:11.5px;color:var(--mut)}
+.dosch button.pes{border-color:#e0b400;background:#fffaf0}
+.dosch button.on{background:var(--vm);border-color:var(--vm);color:#fff}.dosch button.on small{color:#fde}
+.dosch button.ex{border-style:dashed;border-color:var(--vm);color:var(--vm)}
+.erro{background:var(--vmc);color:#8e1c1c;border-radius:12px;padding:11px 13px;font-size:14px;margin:8px 0}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th{text-align:left;font-size:12px;color:var(--mut);font-weight:650;padding:7px 6px;border-bottom:1.5px solid var(--ln)}
+table.t td{padding:9px 6px;border-bottom:1px solid var(--ln2);vertical-align:middle}
+table.t td.n,table.t th.n{text-align:right;white-space:nowrap}
+.chk{width:22px;height:22px;border:2px solid #9aa7b3;border-radius:5px;display:inline-block}
+.sel{display:flex;flex-wrap:wrap;gap:7px}
+.sel button{border:1.5px solid var(--ln);background:#fff;border-radius:99px;padding:7px 14px;font-size:14px;cursor:pointer}
+.sel button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom));z-index:60;background:var(--ink);color:#fff;border-radius:14px;padding:12px 16px;font-size:14px;max-width:min(92vw,520px);box-shadow:0 10px 30px rgba(0,0,0,.25);display:none}
+#modal{position:fixed;inset:0;z-index:50;display:none}
+#modal .fundo{position:absolute;inset:0;background:rgba(10,20,30,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#modal .caixa{position:absolute;left:0;right:0;bottom:0;max-height:92vh;overflow:auto;background:#fff;border-radius:24px 24px 0 0;padding:10px 18px calc(20px + env(safe-area-inset-bottom));max-width:720px;margin:0 auto;box-shadow:0 -10px 40px rgba(0,0,0,.2)}
+#modal .caixa::before{content:"";display:block;width:40px;height:5px;border-radius:99px;background:var(--ln);margin:0 auto 12px}
+#modal .cab{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+#modal .cab h2{flex:1;font-size:19px}
+.x{border:0;background:var(--ln2);border-radius:50%;width:36px;height:36px;font-size:20px;line-height:1;cursor:pointer}
+.ent{max-width:440px;margin:0 auto;padding:calc(36px + env(safe-area-inset-top)) 16px 30px}
+.logo{text-align:center;margin-bottom:20px}
+.logo img{width:76px;height:76px;border-radius:20px;box-shadow:var(--sh)}
+.logo h1{font-size:24px;margin-top:10px;font-stretch:118%}
+.print-only{display:none}
+.det summary{cursor:pointer;font-weight:650;padding:4px 0}
+.opc{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;background:var(--card);border-radius:var(--r);padding:15px 16px;margin-bottom:12px;cursor:pointer;box-shadow:var(--sh)}
+.opc .ic{flex:none;width:46px;height:46px;border-radius:13px;background:var(--azc);color:var(--az);display:flex;align-items:center;justify-content:center}
+.opc .ic svg{width:24px;height:24px}
+.opc b{display:block;font-size:16px;font-weight:700}
+.opc small{display:block;color:var(--mut);font-size:13px;margin-top:2px}
+.opc::after{content:"›";margin-left:auto;font-size:24px;color:#a5b1bc;line-height:1}
+.opc.prim{background:#fff;color:var(--ink);box-shadow:0 10px 24px rgba(0,0,0,.2)}
+.opc.prim .ic{background:var(--ink);color:#fff}
+.opc.prim small{color:var(--mut)}
+.voltar{border:0;background:none;color:var(--az);font-weight:650;padding:6px 0;margin-bottom:8px;font-size:15px;cursor:pointer}
+.av{flex:none;width:42px;height:42px;border-radius:50%;background:linear-gradient(145deg,#2a5f8a,#173246);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;font-stretch:110%;letter-spacing:.02em}
+.av.lg{width:56px;height:56px;font-size:20px;background:linear-gradient(145deg,#3a86c4,#1d5a8c);box-shadow:0 0 0 3px rgba(255,255,255,.12)}
+.areas{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;position:relative;z-index:1}
+.area{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;border:1px solid rgba(255,255,255,.14);background:var(--ink2);color:#fff;border-radius:18px;padding:18px 16px 16px;min-height:150px;cursor:pointer;transition:transform .08s ease,background .15s}
+.area:active{transform:scale(.98);background:#24405a}
+.area-n{font-size:32px;font-weight:800;font-stretch:125%;line-height:1;letter-spacing:-.01em}
+.area-s{font-size:13px;color:#a9bccc}
+.area-c{margin-top:auto;font-size:12.5px;color:#e3ebf2;background:rgba(255,255,255,.08);border-radius:99px;padding:4px 10px}
+.dev{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.dev .dk{font-size:12px;color:var(--mut)}
+.dev b{display:block;font-size:16px;font-weight:700;margin-top:1px}
+.dev .btn{margin-top:14px}
+.btn.wa{background:#1f9d55}
+.sem{display:inline-flex;flex-direction:column;gap:3px;background:var(--ink);padding:4px;border-radius:9px;flex:none}
+.sem i{display:block;width:10px;height:10px;border-radius:50%;background:#3a4b5a}
+.sem.g{padding:6px;border-radius:13px;gap:5px}.sem.g i{width:16px;height:16px}
+.sem i.on.vd{background:#43c463;box-shadow:0 0 8px #43c463}.sem i.on.am{background:#f5c02b;box-shadow:0 0 8px #f5c02b}.sem i.on.vm{background:#ef4a3c;box-shadow:0 0 8px #ef4a3c}
+.farois{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.farois button{display:flex;flex-direction:column;align-items:center;gap:6px;border:1.5px solid var(--ln);background:#fff;border-radius:14px;padding:12px 6px;cursor:pointer;text-align:center}
+.farois button b{font-size:14px}
+.farois button small{font-size:11.5px;color:var(--mut);line-height:1.25}
+.farois .lz{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 -3px 6px rgba(0,0,0,.18)}
+.farois .vd .lz{background:#2e9e4b}.farois .am .lz{background:#e0a100}.farois .vm .lz{background:#d23a2e}
+.farois button.on.vd{border-color:var(--vd);background:var(--vdc);box-shadow:0 0 0 3px rgba(46,125,50,.14)}
+.farois button.on.am{border-color:var(--am);background:var(--amc);box-shadow:0 0 0 3px rgba(224,161,0,.16)}
+.farois button.on.vm{border-color:var(--vm);background:var(--vmc);box-shadow:0 0 0 3px rgba(198,40,40,.12)}
+.fsum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.fsum>div{background:var(--card);border-radius:14px;padding:11px 8px;text-align:center;box-shadow:var(--sh)}
+.fsum b{display:block;font-size:24px;font-weight:800;font-stretch:118%;line-height:1.1}
+.fsum span{font-size:12px;color:var(--mut)}
+.fsum .dt{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:0}
+.tot{background:var(--ink);color:#fff;border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.tot>b{font-weight:700;font-size:16px}
+.tot .ts{font-size:12.5px;color:#a9bccc;margin-top:2px}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.1);border-radius:12px;overflow:hidden;margin:12px 0}
+.tg>div{background:var(--ink2);padding:10px;min-width:0}
+.tg span{display:block;font-size:11.5px;color:#a9bccc}
+.tg b{display:block;font-size:22px;font-weight:800;font-stretch:118%;line-height:1.15}
+.tg i{display:block;font-style:normal;font-size:12px;color:#e3ebf2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tot .btn.cl{flex:3 1 200px}.tot .btn.wa{flex:1 1 90px}
+.sec-t{display:flex;align-items:center;gap:10px;margin:22px 2px 10px}
+.sec-t h2{flex:1;font-size:17px;font-weight:700}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  @page{margin:12mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;font-size:12px}
+  .top,.nav,.no-print,#toast,#modal{display:none!important}
+  main{padding:0;max-width:none}
+  .card{box-shadow:none;border:0;padding:0;margin-bottom:10px;break-inside:avoid}
+  .print-only{display:block}
+  .cavbox{max-width:360px;margin:0 auto}
+  table.t{font-size:12px}
+  table.t tr{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+<div id="modal"><div class="fundo" data-a="fechar"></div><div class="caixa" id="caixa"></div></div>
+<script>
+'use strict';
+/* Endereço /exec do servidor (opcional). Com ele preenchido ninguém precisa colar o endereço. */
+const SERVIDOR_PADRAO = '';
+
+/* ===== códigos de posição (os mesmos do servidor) ===== */
+const POS = { le: 'L.E', ct: 'C.T', ld: 'L.D', ret: 'RET', cav: 'CAV' };
+const POSN = { le: 'Lateral esquerdo', ct: 'Central', ld: 'Lateral direito', ret: 'Rolete de retorno', cav: 'Cavalete completo' };
+const ORD = ['le', 'ct', 'ld', 'ret', 'cav'];
+/* Balança dosadora: P1 a P3 = roletes de pesagem (amarelos na foto); CAR = rolete de carga,
+   com o número digitado pelo inspetor (cada balança tem uma quantidade diferente) */
+const DOS = ['p1', 'p2', 'p3', 'car'];
+const PESAGEM = ['p1', 'p2', 'p3'];
+PESAGEM.forEach(k => { POS[k] = k.toUpperCase(); POSN[k] = 'Rolete de pesagem ' + k.slice(1); });
+POS.car = 'CAR'; POSN.car = 'Rolete de carga';
+const ORD_ALL = ORD.concat(DOS);
+const ehPes = p => PESAGEM.includes(p);
+const ehDos = e => !!e && e.bal === 'dos';
+const BALDICA = { '': 'Se tiver balança, a inspeção pede para marcar os roletes da zona da balança.', tem: 'Na inspeção aparece a opção "Rolete da zona da balança": ele só vai para troca, pede rolete específico para balança e deixa o semáforo vermelho.', dos: 'Balança dosadora: 3 roletes de pesagem (P1 a P3) mais os roletes de carga, numerados. Todo rolete marcado vai para troca como crítico.' };
+const BALN = { '': 'Não tem balança', tem: 'Tem balança no equipamento', dos: 'É uma balança dosadora' };
+const AV_PES = 'Rolete de pesagem: retirar o equipamento de operação e comunicar a instrumentação para acompanhar a troca.';
+const AV_ZB = 'Zona da balança: substituir por rolete específico para balança.';
+const AV_DOS = 'Balança dosadora: troca crítica.';
+const LEGENDA_DOS = 'Balança dosadora: P1 a P3 = roletes de pesagem · CAR = rolete de carga (com o número do rolete)';
+const CARGA = ['le', 'ct', 'ld'];
+const AREAS = { patios: 'Pátios', cc7: 'CC7' };
+const AREAD = { patios: 'Pátios de minérios', cc7: 'CC7' };
+const DEV = { nome: 'Jeferson Rodrigo dos Santos', cargo: 'Inspetor de automação e instrumentação', area: 'Pátios de Minérios - RED 2', whats: '5531982613138' };
+const FAROL = { vd: { n: 'Verde', s: 'Equipamento bom' }, am: { n: 'Amarelo', s: 'Equipamento em atenção' }, vm: { n: 'Vermelho', s: 'Situação crítica' } };
+const FAROL_ORD = { vm: 0, am: 1, vd: 2 };
+/* semáforo: três lâmpadas, acesa só a cor escolhida */
+const semaforo = (f, g) => `<span class="sem${g ? ' g' : ''}" role="img" aria-label="${f ? 'Semáforo ' + FAROL[f].n.toLowerCase() : 'Sem avaliação'}"><i class="${f === 'vm' ? 'on vm' : ''}"></i><i class="${f === 'am' ? 'on am' : ''}"></i><i class="${f === 'vd' ? 'on vd' : ''}"></i></span>`;
+const CATN = { carga: 'Rolete de carga', retorno: 'Rolete de retorno', cavalete: 'Cavalete', balanca: 'Rolete de balança' };
+const CATS = ['carga', 'retorno', 'cavalete', 'balanca'];
+/* categoria do NI pela posição (igual ao servidor): pesagem e zona da balança pedem rolete de balança */
+const catDe = (pos, zb) => pos === 'cav' ? 'cavalete' : ehPes(pos) ? 'balanca' : pos === 'car' ? 'carga' : zb ? 'balanca' : pos === 'ret' ? 'retorno' : 'carga';
+/* texto do item: dosadora não tem número de cavalete */
+const rotItem = r => r.pos === 'car' ? 'Rolete de carga nº ' + r.cav : (r.cav ? 'Cavalete ' + r.cav + ' · ' : '') + POSN[r.pos];
+/* aviso que acompanha o item nas listas e PDFs */
+function avisoItem(D, r) {
+  if (ehPes(r.pos)) return AV_PES;
+  if (r.zb) return AV_ZB;
+  if (ehDos(D.equip[r.equipId])) return AV_DOS;
+  return '';
+}
+const avisoHtml = (D, r) => { const a = avisoItem(D, r); return a ? `<div class="${ehPes(r.pos) ? 'alerta' : 'aviso'} sm">${esc(a)}</div>` : ''; };
+/* semáforo travado em vermelho (igual ao servidor) */
+function farolTravado(D, e) {
+  if (!e) return false;
+  const p = itensAtivos(D).filter(r => r.equipId === e.id);
+  return p.some(r => r.zb) || (ehDos(e) && p.length > 0);
+}
+const LEGENDA = 'L.E = lateral esquerdo · C.T = central · L.D = lateral direito · RET = rolete de retorno · CAV = cavalete completo';
+const MSG = {
+  'sessao': 'Sua sessão terminou. Entre de novo.', 'login': 'Matrícula ou senha incorreta.', 'bloqueado': 'Muitas tentativas erradas. Aguarde 15 minutos.',
+  'inativo': 'Seu acesso está desativado. Fale com o administrador.', 'codigo-equipe': 'Código de acesso incorreto. Confira com o administrador.',
+  'servidor-sem-codigo': 'O servidor ainda não tem os códigos configurados.', 'matricula-existe': 'Já existe um cadastro com essa matrícula. Use "Entrar".',
+  'nome-invalido': 'Digite o nome completo.', 'matricula-invalida': 'Matrícula: use só letras e números.', 'senha-invalida': 'A senha deve ter de 4 a 8 números.',
+  'senha-atual': 'A senha atual não confere.', 'sem-permissao': 'Você não tem permissão para isso.', 'duplicado': 'Essa posição já está marcada nesse cavalete.',
+  'cav-fora': 'O número do cavalete é maior que a quantidade de cavaletes do equipamento.', 'equip-existe': 'Já existe um equipamento com esse nome.',
+  'ni-existe': 'Esse NI já está cadastrado.', 'em-uso': 'Esse tipo está em uso e não pode ser apagado ou mudar de categoria.', 'tem-pendencias': 'O equipamento ainda tem itens marcados.',
+  'tipo': 'Escolha um tipo válido (NI).', 'farol-travado': 'O semáforo está travado em vermelho: há rolete da balança para troca.', 'critico': 'Rolete da balança só pode ficar na troca.', 'bal-pendencias': 'Não dá para mudar a balança com itens pendentes no equipamento.', 'posicao': 'Posição inválida para este equipamento.', 'ncav': 'Informe a quantidade de cavaletes.', 'nret': 'Informe a quantidade de roletes de retorno.',
+  'preco': 'Preço inválido.', 'ni': 'Informe o NI.', 'ja-trocado': 'Esse item já foi trocado.', 'not_found': 'Registro não encontrado (pode ter sido apagado).',
+  'proprio': 'Você não pode desativar o seu próprio acesso.', 'farol': 'Escolha a cor do semáforo.', 'area': 'Escolha a área (Pátios ou CC7).', 'nome-existe': 'Já existe um inspetor com esse nome. Toque no nome dele na lista.', 'inspetor': 'Inspetor desativado ou não encontrado.', 'offline': 'Sem conexão com o servidor.', 'equip': 'Equipamento inválido.', 'nome-equip': 'Informe o nome do equipamento.'
+};
+const msg = e => MSG[e] || ('Erro: ' + e);
+
+/* ===== utilidades ===== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const brl = v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const nfmt = v => (Number(v) || 0).toLocaleString('pt-BR');
+const pct = (a, b) => b ? Math.round(a / b * 1000) / 10 : 0;
+const pctTxt = v => v.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%';
+const p2 = n => String(n).padStart(2, '0');
+const fData = ms => { const d = new Date(ms); return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear(); };
+const fDH = ms => ms ? fData(ms) + ' ' + p2(new Date(ms).getHours()) + ':' + p2(new Date(ms).getMinutes()) : '';
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+const chave = s => String(s || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const cmpTxt = (a, b) => String(a).localeCompare(String(b), 'pt-BR', { numeric: true, sensitivity: 'base' });
+const normCav = v => { const s = String(v || '').trim().toUpperCase().slice(0, 8); return /^\d+$/.test(s) ? String(Number(s)) : s; };
+function parsePreco(s) {
+  s = String(s == null ? '' : s).trim().replace(/[R$\s]/g, '');
+  if (!s) return NaN;
+  if (s.indexOf(',') >= 0) s = s.replace(/\./g, '').replace(',', '.');
+  else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+  return Number(s);
+}
+const precoIn = v => v === undefined || v === null || v === '' ? '' : Number(v).toFixed(2).replace('.', ',');
+const plural = (n, a, b) => nfmt(n) + ' ' + (n === 1 ? a : b);
+
+/* ===== armazenamento no aparelho ===== */
+const LS = 'rl.';
+const ls = {
+  get(k, d) { try { const v = localStorage.getItem(LS + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) { } },
+  del(k) { try { localStorage.removeItem(LS + k); } catch (e) { } }
+};
+const S = {
+  srv: ls.get('srv', SERVIDOR_PADRAO), eu: null, admin: ls.get('admin', false), area: ls.get('area', ''),
+  base: ls.get('base', null), fila: ls.get('fila', []), sync: ls.get('sync', 0),
+  online: true, enviando: false, codigo: ls.get('codigo', '')
+};
+const V = { tela: 'inicio', entrar: 'home', cad: 'equip', ind: 'sem', lista: 'troca', listaSel: ls.get('listaSel', null), atencaoTodos: false, equipId: null,
+  insp: null, fora: 'lista' };
+function salvarInsp() { if (S.eu) ls.set('insp.' + S.eu.id, V.insp); }
+
+/* ===== dados: o que veio do servidor + o que está na fila do aparelho ===== */
+let _D = null;
+function mapa(l) { const m = {}; (l || []).forEach(x => { if (x && x.id) m[x.id] = x; }); return m; }
+function dados() {
+  if (_D) return _D;
+  const b = S.base || {};
+  const D = { equip: Object.assign({}, b.equip), tipo: Object.assign({}, b.tipo), rol: Object.assign({}, b.rol), insp: Object.assign({}, b.insp) };
+  S.fila.forEach(o => {
+    const M = D[o.c]; if (!M) return;
+    if (o.t === 'add') { if (!M[o.id]) M[o.id] = Object.assign({ id: o.id }, o.d, { _fila: 1 }); }
+    else if (o.t === 'update') { if (M[o.id]) M[o.id] = Object.assign({}, M[o.id], o.d, { _fila: 1 }); }
+    else if (o.t === 'delete') delete M[o.id];
+    // cavalete completo substitui os roletes de carga do mesmo cavalete (igual ao servidor)
+    if (o.c === 'rol' && o.t === 'add' && o.d.pos === 'cav') Object.values(M).forEach(r => {
+      if (r.id !== o.id && r.equipId === o.d.equipId && r.cav === o.d.cav && r.status !== 'trocado' && CARGA.includes(r.pos)) delete M[r.id];
+    });
+  });
+  if (S.area) {
+    const daArea = id => D.insp[id] && D.insp[id].area === S.area;
+    Object.keys(D.equip).forEach(k => { if (!daArea(D.equip[k].inspId)) delete D.equip[k]; });
+    Object.keys(D.rol).forEach(k => { if (!D.equip[D.rol[k].equipId]) delete D.rol[k]; });
+  }
+  return (_D = D);
+}
+function mudou() { _D = null; }
+function receber(r) {
+  S.base = { equip: mapa(r.equip), tipo: mapa(r.tipo), rol: mapa(r.rol), insp: mapa(r.insp) };
+  S.admin = !!r.admin; ls.set('admin', S.admin);
+  if (S.eu) { const i = S.base.insp[S.eu.id]; if (!i || !i.ativo) { S.eu = null; V.fora = 'lista'; } else S.eu = { id: i.id, nome: i.nome, matricula: i.matricula, area: i.area }; if (S.eu && S.eu.area !== S.area) { S.eu = null; V.fora = 'lista'; } }
+  S.sync = Date.now();
+  ls.set('base', S.base); ls.set('sync', S.sync);
+  mudou();
+}
+
+/* ===== servidor ===== */
+async function api(p, ms) {
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms || 30000);
+  try {
+    const r = await fetch(S.srv, { method: 'POST', body: JSON.stringify(p), signal: ctl.signal, redirect: 'follow' });
+    return await r.json();
+  } finally { clearTimeout(t); }
+}
+let _agendado = 0;
+async function sincronizar(silencioso) {
+  if (S.enviando || !S.codigo || !S.srv) return;
+  S.enviando = true; render(true);
+  let mais = false;
+  try {
+    let r;
+    if (S.fila.length) {
+      const lote = S.fila.slice(0, 40);
+      r = await api({ action: 'ops', codigo: S.codigo, ops: lote });
+      if (r.ok) {
+        const ids = new Set(lote.map(o => o.oid));
+        S.fila = S.fila.filter(o => !ids.has(o.oid)); ls.set('fila', S.fila);
+        const ruins = (r.res || []).filter(x => !x.ok);
+        if (ruins.length) toast('Não foi gravado: ' + [...new Set(ruins.map(x => msg(x.erro)))].join(' '), 6000);
+        mais = S.fila.length > 0;
+      }
+    } else r = await api({ action: 'sync', codigo: S.codigo });
+    if (!r.ok) {
+      if (r.erro === 'codigo-equipe') { sairLocal(msg('codigo-equipe')); return; }
+      throw new Error(r.erro);
+    }
+    receber(r);
+    S.online = true;
+  } catch (e) {
+    S.online = false;
+    if (!silencioso && navigator.onLine) toast('Não foi possível falar com o servidor. Os dados ficam guardados no aparelho.');
+  } finally {
+    S.enviando = false; render(true);
+    if (mais) setTimeout(() => sincronizar(true), 100);
+  }
+}
+function enfileirar(ops) {
+  ops.forEach(o => { o.oid = o.oid || uid(); o.por = o.por || (S.eu ? S.eu.id : 'equipe'); S.fila.push(o); });
+  ls.set('fila', S.fila); mudou(); render();
+  clearTimeout(_agendado); _agendado = setTimeout(() => sincronizar(true), 300);
+}
+function sairLocal(aviso) {
+  S.codigo = ''; S.eu = null; S.area = ''; S.base = null; S.fila = []; V.insp = null; S.admin = false;
+  ['codigo', 'admin', 'area', 'base', 'fila', 'sync', 'listaSel'].forEach(k => ls.del(k));
+  mudou(); fecharModal(); V.tela = 'inicio'; V.fora = 'lista'; render();
+  if (aviso) toast(aviso, 5000);
+}
+
+/* ===== cálculos ===== */
+const ativo = r => r.status !== 'trocado';
+const vm = r => r.nivel !== 'am';
+const unid = r => r.pos === 'cav' ? 3 : 1;           // cavalete completo = 3 roletes de carga
+const precoDe = (D, r) => { const t = D.tipo[r.tipoId]; return t ? Number(t.preco) || 0 : 0; };
+function itensAtivos(D) { return Object.values(D.rol).filter(r => ativo(r) && D.equip[r.equipId]); }
+function totalRoletes(e) { return ehDos(e) ? 3 + (Number(e.ncav) || 0) : (Number(e.ncav) || 0) * 3 + (Number(e.nret) || 0); }
+function novoG(nome) { return { nome, vmN: 0, vmV: 0, amN: 0, amV: 0, vmR: 0, amR: 0, vmC: 0, amC: 0, vmU: 0, amU: 0, semPreco: 0 }; }
+function soma(g, r, D) {
+  const k = vm(r) ? 'vm' : 'am', p = precoDe(D, r);
+  g[k + 'N']++; g[k + 'V'] += p; g[k + 'U'] += unid(r);
+  if (r.pos === 'cav') g[k + 'C']++; else g[k + 'R']++;
+  if (!p) g.semPreco++;
+}
+function resumoEquip(D, e) {
+  const g = novoG(e.nome);
+  itensAtivos(D).filter(r => r.equipId === e.id).forEach(r => soma(g, r, D));
+  g.total = totalRoletes(e);
+  g.bons = Math.max(0, g.total - g.vmU - g.amU);
+  return g;
+}
+const qtdTxt = (r, c) => [r ? plural(r, 'rolete', 'roletes') : '', c ? plural(c, 'cavalete', 'cavaletes') : ''].filter(Boolean).join(' + ') || '0';
+function barra(g) {
+  if (!g.total) return '';
+  const a = pct(g.amU, g.total), r = pct(g.vmU, g.total), b = Math.max(0, 100 - a - r);
+  return `<div class="bar"><i class="g" style="width:${b}%"></i><i class="y" style="width:${a}%"></i><i class="r" style="width:${r}%"></i></div>
+  <div class="leg"><span><i style="background:var(--vd)"></i>Bons ${pctTxt(pct(g.bons, g.total))}</span><span><i style="background:var(--am)"></i>Atenção ${pctTxt(pct(g.amU, g.total))}</span><span><i style="background:var(--vm)"></i>Troca ${pctTxt(pct(g.vmU, g.total))}</span></div>`;
+}
+const nomeInsp = (D, id) => (D.insp[id] && D.insp[id].nome) || (S.eu && S.eu.id === id ? S.eu.nome : '—');
+const meusEquips = D => Object.values(D.equip).filter(e => e.ativo !== false && e.inspId === S.eu.id).sort((a, b) => cmpTxt(a.nome, b.nome));
+const outrosEquips = D => Object.values(D.equip).filter(e => e.ativo !== false && e.inspId !== S.eu.id).sort((a, b) => cmpTxt(a.nome, b.nome));
+const tiposCat = (D, cat) => Object.values(D.tipo).filter(t => t.cat === cat).sort((a, b) => cmpTxt(a.ni, b.ni));
+const tipoTxt = t => t ? 'NI ' + t.ni + (t.desc ? ' · ' + t.desc : '') : 'Tipo não encontrado';
+const ordItem = (a, b) => cmpTxt(a.cav, b.cav) || ORD_ALL.indexOf(a.pos) - ORD_ALL.indexOf(b.pos);
+
+/* ===== balança dosadora (foto + regiões de toque) =====
+   [x0, x1, y0, y1, t0, t1]: rolete desenhado e faixa de toque. P1 é o mais próximo.
+   Os roletes cinza (carga) são todos uma região só: ao tocar, o inspetor digita o número. */
+const DZ = {
+  p1: [45, 765, 560, 652, 525, 700], p2: [98, 715, 408, 487, 380, 523], p3: [132, 665, 300, 366, 293, 378]
+};
+const DZC = [[155, 640, 226, 287], [170, 620, 168, 224], [182, 610, 120, 162], [195, 600, 77, 118], [210, 585, 42, 73], [220, 575, 8, 36]];
+function dosSvg(est, interativo) {
+  est = est || {};
+  const a = p => interativo ? ` class="pz" data-a="pos" data-p="${p}" role="button" aria-label="${POSN[p]}"` : '';
+  const chip = (x, y, w, h, txt, fundo, tc, fs) => `<g pointer-events="none"><rect x="${x - w / 2}" y="${y - h / 2}" width="${w}" height="${h}" rx="10" fill="${fundo}" stroke="#fff" stroke-width="2.5"/><text x="${x}" y="${y + fs * .36}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${tc}" font-family="system-ui,Arial,sans-serif">${txt}</text></g>`;
+  const pes = p => {
+    const [x0, x1, y0, y1, t0, t1] = DZ[p], e = est[p], h = y1 - y0;
+    return `<g${a(p)}><rect x="${x0 - 6}" y="${t0}" width="${x1 - x0 + 12}" height="${t1 - t0}" fill="transparent"/>
+      <rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${h}" rx="${h / 2}" fill="${e ? COR.vm : 'transparent'}" fill-opacity="${e ? (e.s === 'sel' ? .55 : .35) : 0}" stroke="${e ? COR.vm : '#e0a100'}" stroke-width="${e ? 5 : 3}" ${e && e.s === 'sel' ? '' : `stroke-dasharray="${e ? '10 7' : '9 8'}"`} stroke-opacity="${e || interativo ? 1 : 0}"/>
+      ${chip((x0 + x1) / 2, (y0 + y1) / 2, 78, 40, POS[p] + (e && e.s === 'sel' ? ' ✓' : ''), e ? COR.vm : '#e0a100', e ? '#fff' : '#2b1f00', 26)}</g>`;
+  };
+  const ec = est.car;
+  const carga = `<g${a('car')}><rect x="140" y="0" width="680" height="294" fill="transparent"/>
+    ${DZC.map(([x0, x1, y0, y1]) => `<rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" rx="${(y1 - y0) / 2}" fill="${ec ? COR.vm : 'transparent'}" fill-opacity="${ec ? .45 : 0}" stroke="${ec ? COR.vm : '#ffffff'}" stroke-width="3" ${ec ? '' : 'stroke-dasharray="9 8"'} stroke-opacity="${ec || interativo ? 1 : 0}"/>`).join('')}
+    ${chip(712, 150, 150, 46, 'CARGA' + (ec ? ' ✓' : ''), ec ? COR.vm : '#263845', '#fff', 24)}</g>`;
+  return `<svg viewBox="0 0 820 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Balança dosadora: P1 a P3 pesagem, demais roletes de carga">
+    <image href="dosadora.jpg" x="0" y="0" width="820" height="900"/>${carga}${['p3', 'p2', 'p1'].map(pes).join('')}</svg>`;
+}
+
+/* ===== desenho do cavalete (foto + regiões de toque) ===== */
+const PZ = {
+  le: { d: 'M58 31 L76 8 L203 84 L176 128 Z', x: 128, y: 70 },
+  ct: { d: 'M201 91 L346 91 L346 163 L201 163 Z', x: 273, y: 128 },
+  ld: { d: 'M480 31 L462 8 L335 84 L362 128 Z', x: 410, y: 70 }
+};
+const COR = { vm: '#c62828', am: '#e0a100' };
+/* est: {le:{m:'vm'|'am', s:'sel'|'ex'}, ...}; interativo: data-a nas regiões */
+function cavSvg(est, interativo) {
+  est = est || {};
+  const reg = p => {
+    const e = est[p], z = PZ[p] || null;
+    const fill = e ? COR[e.m] : 'transparent', op = e ? (e.s === 'sel' ? .62 : .38) : 0;
+    const stroke = e ? COR[e.m] : (interativo ? '#ffffff' : 'none');
+    const dash = e && e.s === 'ex' ? '7 5' : (e ? '' : '6 6');
+    const a = interativo ? ` class="pz" data-a="pos" data-p="${p}" role="button" aria-label="${POSN[p]}"` : '';
+    const lab = (x, y) => `<g pointer-events="none"><rect x="${x - 26}" y="${y - 14}" width="52" height="28" rx="8" fill="${e ? COR[e.m] : '#263845'}" stroke="#fff" stroke-width="2"/><text x="${x}" y="${y + 6}" text-anchor="middle" font-size="16" font-weight="800" fill="${e && e.m === 'am' ? '#2b1f00' : '#fff'}" font-family="system-ui,Arial,sans-serif">${POS[p]}${e && e.s === 'sel' ? ' ✓' : ''}</text></g>`;
+    if (p === 'ret') {
+      return `<g${a}><rect x="150" y="248" width="246" height="40" fill="transparent"/>
+        <rect x="160" y="252" width="226" height="32" rx="7" fill="url(#gr)" stroke="#4a5761" stroke-width="1.5"/>
+        <rect x="150" y="263" width="10" height="10" fill="#55606a"/><rect x="386" y="263" width="10" height="10" fill="#55606a"/>
+        <rect x="156" y="248" width="234" height="40" rx="9" fill="${fill}" fill-opacity="${op}" stroke="${e ? stroke : (interativo ? '#8b98a4' : 'none')}" stroke-width="3" ${dash ? `stroke-dasharray="${dash}"` : ''}/>
+        ${lab(273, 268)}</g>`;
+    }
+    return `<g${a}><path d="${z.d}" fill="${fill}" fill-opacity="${op}" stroke="${stroke}" stroke-width="3" stroke-linejoin="round" ${dash ? `stroke-dasharray="${dash}"` : ''}/>${lab(z.x, z.y)}</g>`;
+  };
+  const c = est.cav;
+  return `<svg viewBox="0 0 538 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cavalete com roletes L.E, C.T, L.D e retorno">
+    <defs><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9aa3aa"/><stop offset=".45" stop-color="#e9ecee"/><stop offset="1" stop-color="#6c757c"/></linearGradient></defs>
+    <image href="cavalete.jpg" x="0" y="0" width="538" height="224"/>
+    ${c ? `<rect x="3" y="3" width="532" height="220" rx="12" fill="${COR[c.m]}" fill-opacity="${c.s === 'sel' ? .16 : .1}" stroke="${COR[c.m]}" stroke-width="5" ${c.s === 'ex' ? 'stroke-dasharray="12 7"' : ''}/>` : ''}
+    <line x1="20" y1="238" x2="518" y2="238" stroke="#26323b" stroke-width="5" stroke-linecap="round"/>
+    <text x="24" y="232" font-size="12" fill="#5d6b78" font-family="system-ui,Arial,sans-serif">correia (lado de retorno)</text>
+    ${['le', 'ct', 'ld', 'ret'].map(reg).join('')}
+  </svg>`;
+}
+
+/* ===== interface ===== */
+let _pend = false;
+function render(bg) {
+  const a = document.activeElement;
+  if (bg && a && a.closest && a.closest('#app') && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) { _pend = true; return; }
+  _pend = false;
+  const app = $('#app');
+  if (!S.srv) app.innerHTML = vConectar();
+  else if (!S.codigo) app.innerHTML = vAcesso();
+  else if (!S.area) app.innerHTML = vArea();
+  else if (!S.eu) app.innerHTML = vFora();
+  else app.innerHTML = vPrincipal();
+}
+document.addEventListener('focusout', () => setTimeout(() => { if (_pend) render(true); }, 50));
+
+function vConectar() {
+  return `<div class="ent"><div class="logo"><img src="icon-192.png" alt=""><h1>Inspeção de Roletes</h1></div>
+  <form class="card" data-f="conectar"><h2>Conectar ao servidor</h2>
+  <label class="l">Endereço do servidor</label><input class="in" name="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off" required>
+  <div class="dica">Peça ao administrador o link do aplicativo. Com o link, este passo é automático.</div>
+  <button class="btn w" style="margin-top:14px">Conectar</button></form></div>`;
+}
+function vAcesso() {
+  return `<div class="ent"><div class="logo"><img src="icon-192.png" alt=""><h1>Inspeção de Roletes</h1><div class="mut">Transportadores de correia · lista de troca para a execução</div></div>
+  <form class="card" data-f="acesso"><h2>Acesso da equipe</h2>
+  <label class="l" for="aCod">Código de acesso</label><input class="in" id="aCod" name="codigo" autocomplete="off" required>
+  <div class="dica">É o mesmo para todos os inspetores. Com o link enviado pelo administrador, este passo é automático.</div>
+  <button class="btn w" style="margin-top:14px">Entrar</button></form>
+  <div style="text-align:center"><button class="btn sec peq" data-a="trocarServidor">Trocar servidor</button></div></div>`;
+}
+const iniciais = n => String(n || '').trim().split(/\s+/).filter(Boolean).map((x, i, a) => i === 0 || i === a.length - 1 ? x[0] : '').join('').toUpperCase().slice(0, 2);
+function statusTxt() {
+  return S.enviando ? 'Enviando…' : (!S.online ? 'Sem internet' + (S.fila.length ? ' · ' + S.fila.length + ' na fila' : '') : (S.fila.length ? S.fila.length + ' na fila' : (S.sync ? 'Atualizado ' + p2(new Date(S.sync).getHours()) + ':' + p2(new Date(S.sync).getMinutes()) : 'Atualizar')));
+}
+function cartaoDev() {
+  const txt = encodeURIComponent('Olá, Jeferson! Estou usando o app Inspeção de Roletes e gostaria de falar sobre ele.');
+  return `<section class="dev"><div class="row"><span class="av">${esc(iniciais(DEV.nome))}</span><div class="f"><div class="dk">Desenvolvido por</div><b>${esc(DEV.nome)}</b><div class="mut sm">${esc(DEV.cargo)}</div><div class="mut sm">${esc(DEV.area)}</div></div></div>
+    <a class="btn wa w" href="https://wa.me/${DEV.whats}?text=${txt}" target="_blank" rel="noopener noreferrer">${ICO.whats} Falar com o desenvolvedor</a></section>`;
+}
+function vArea() {
+  const D = S.base || {}, I = Object.values(D.insp || {}).filter(i => i.ativo);
+  const card = k => {
+    const n = I.filter(i => i.area === k).length;
+    return `<button class="area" data-a="escolherArea" data-v="${k}"><span class="area-n">${esc(AREAS[k])}</span>${AREAD[k] !== AREAS[k] ? `<span class="area-s">${esc(AREAD[k])}</span>` : ''}<span class="area-c">${plural(n, 'inspetor', 'inspetores')}</span></button>`;
+  };
+  return `<header class="top"><h1></h1><button class="st ${S.online ? '' : 'off'}" data-a="sync">${esc(statusTxt())}</button></header>
+  <main><section class="hero"><h2>Inspeção de Roletes</h2><div class="hs">De qual área você é?</div>
+    <div class="areas">${card('patios')}${card('cc7')}</div></section>
+  <div class="mut sm" style="text-align:center;margin:-4px 0 18px">O aparelho lembra a área escolhida. Para trocar, toque no nome da área no alto da tela.</div>
+  ${cartaoDev()}</main>`;
+}
+function vFora() {
+  const D = dados();
+  const tit = { lista: 'Inspeção de Roletes', cadastro: 'Cadastrar inspetor', mat: 'Roletes e cavaletes', ind: 'Indicadores', admin: 'Inspetores' }[V.fora] || 'Inspeção de Roletes';
+  let corpo;
+  if (V.fora === 'cadastro') corpo = `<form class="card" data-f="cadastroInsp"><h2>Cadastrar inspetor</h2>
+    <label class="l" for="cNome">Nome completo</label><input class="in" id="cNome" name="nome" autocomplete="name" required>
+    <label class="l" for="cMat">Matrícula (opcional)</label><input class="in" id="cMat" name="matricula" autocomplete="off">
+    <div class="erro" id="fe" style="display:none"></div>
+    <button class="btn w" style="margin-top:14px">Cadastrar e abrir minha página</button>
+    <div class="dica" style="margin-top:8px">Área: <b>${esc(AREAD[S.area])}</b>. Depois do cadastro, o seu nome aparece na lista da tela inicial. Nas próximas vezes é só tocar nele.</div></form>`;
+  else if (V.fora === 'mat') corpo = vMateriais(D);
+  else if (V.fora === 'ind') corpo = vIndicadores(D);
+  else if (V.fora === 'admin') corpo = vAdminInsp(D);
+  else corpo = vListaInsp(D);
+  return `<header class="top"><h1>${V.fora === 'lista' ? '' : esc(tit)}</h1><button class="cta" data-a="trocarArea" aria-label="Trocar de área">${ICO.local}<span>${esc(AREAS[S.area])}</span></button><button class="st ${S.online ? '' : 'off'}" data-a="sync">${esc(statusTxt())}</button></header>
+  <main>${V.fora !== 'lista' ? '<button class="voltar" data-a="fora" data-v="lista">‹ Inspetores</button>' : ''}${corpo}</main>`;
+}
+function vListaInsp(D) {
+  const ult = ls.get('ultimo', ''), at = itensAtivos(D);
+  const l = Object.values(D.insp).filter(i => i.ativo && i.area === S.area).sort((a, b) => cmpTxt(a.nome, b.nome));
+  const linha = i => {
+    const ne = Object.values(D.equip).filter(e => e.inspId === i.id && e.ativo !== false).length;
+    const vmN = at.filter(r => r.inspId === i.id && vm(r)).length, amN = at.filter(r => r.inspId === i.id && !vm(r)).length;
+    return `<div class="li tap" data-a="escolherInsp" data-id="${i.id}" data-nome="${esc(chave(i.nome))}"><span class="av">${esc(iniciais(i.nome))}</span>
+      <div class="f"><b>${esc(i.nome)}</b><div class="mut sm">${i.matricula ? 'Matrícula ' + esc(i.matricula) + ' · ' : ''}${plural(ne, 'equipamento', 'equipamentos')}${i.id === ult ? ' · último neste aparelho' : ''}</div></div>
+      ${vmN ? `<span class="chip vm">${vmN}</span>` : ''}${amN ? `<span class="chip am">${amN}</span>` : ''}<span style="font-size:24px;color:#a5b1bc">›</span></div>`;
+  };
+  const G = novoG(''); at.forEach(r => soma(G, r, D));
+  return `<section class="hero"><h2>Inspeção de Roletes</h2><div class="hs">${esc(AREAD[S.area])}</div>
+    <div class="hk"><div><b>${nfmt(l.length)}</b><span>Inspetores</span></div><div><b>${nfmt(G.vmN)}</b><span><i class="dot vm"></i>Para troca</span></div><div><b>${nfmt(G.amN)}</b><span><i class="dot am"></i>Atenção</span></div></div>
+    <div style="height:16px"></div><button class="opc prim" data-a="fora" data-v="cadastro" style="margin:0"><span class="ic">${ICO.novo}</span><span><b>Cadastrar inspetor</b><small>Primeira vez? Cadastre o seu nome</small></span></button></section>
+  <div class="sec-t"><h2>Toque no seu nome</h2></div>
+  <div class="card" style="padding-top:6px;padding-bottom:6px">
+    ${l.length > 8 ? '<input class="in" data-k="busca" placeholder="Procurar nome" style="margin-bottom:6px" aria-label="Procurar inspetor">' : ''}
+    ${l.map(linha).join('') || `<div class="vazio">Nenhum inspetor de ${esc(AREAS[S.area])} cadastrado ainda. Toque em "Cadastrar inspetor".</div>`}</div>
+  <div class="sec-t"><h2>Para todos</h2></div>
+  <button class="opc" data-a="fora" data-v="mat"><span class="ic">${ICO.mat}</span><span><b>Roletes e cavaletes</b><small>Cadastro geral de NI e preços, usado por todos</small></span></button>
+  <button class="opc" data-a="fora" data-v="ind"><span class="ic">${ICO.ind}</span><span><b>Indicadores da área</b><small>Itens para troca, atenção e investimento</small></span></button>
+  ${S.admin ? `<div class="card"><h2>Administração</h2><div class="btns"><button class="btn vd" data-a="linkCadastro">Enviar link do app</button><button class="btn sec" data-a="abrirPlanilha">Abrir planilha</button><button class="btn sec" data-a="fora" data-v="admin">Editar inspetores</button></div><button class="btn w" style="margin-top:8px" data-a="linkPainel">${ICO.ind} Painel para reuniões (notebook)</button></div>` : ''}
+  ${S.fila.length ? `<div class="aviso">${S.fila.length} registro(s) guardado(s) neste aparelho, esperando internet para enviar.</div>` : ''}
+  <div style="height:8px"></div>${cartaoDev()}`;
+}
+function vAdminInsp(D) {
+  return `<div class="card"><h2>Inspetores</h2><div class="mut sm" style="margin-bottom:6px">Desativar tira o nome da lista. Os itens já marcados continuam.</div>
+  ${Object.values(D.insp).sort((a, b) => cmpTxt(a.nome, b.nome)).map(i => `<div class="li"><span class="av">${esc(iniciais(i.nome))}</span><div class="f"><b>${esc(i.nome)}</b><div class="mut sm">${esc(AREAS[i.area] || 'Sem área')} · ${i.matricula ? 'Matrícula ' + esc(i.matricula) : 'Sem matrícula'}${i.ativo ? '' : ' · <b style="color:var(--vm)">desativado</b>'}</div></div>
+    <button class="btn sec peq" data-a="editarInsp" data-id="${i.id}">Editar</button><button class="btn ${i.ativo ? 'lin' : 'vd'} peq" data-a="inspAtivo" data-id="${i.id}" data-v="${i.ativo ? 0 : 1}">${i.ativo ? 'Desativar' : 'Ativar'}</button></div>`).join('') || '<div class="mut">Nenhum.</div>'}</div>`;
+}
+
+/* ----- Roletes e cavaletes: cadastro geral, igual para todos ----- */
+function tiposAtuais() { return dados().tipo; }
+function usoAtual() { const u = {}; itensAtivos(dados()).forEach(r => { u[r.tipoId] = (u[r.tipoId] || 0) + 1; }); return u; }
+function listaMateriais() {
+  const T = tiposAtuais(), U = usoAtual();
+  return CATS.map(c => {
+    const l = Object.values(T).filter(t => t.cat === c).sort((a, b) => cmpTxt(a.ni, b.ni));
+    return `<div class="card"><div class="row" style="margin-bottom:4px"><h3 class="f" style="margin:0">${({ carga: 'Roletes de carga', retorno: 'Roletes de retorno', cavalete: 'Cavaletes', balanca: 'Roletes de balança' })[c]}</h3><button class="btn sec peq" data-a="novoTipo" data-c="${c}">+ Novo</button></div>
+    ${l.map(t => `<div class="li tap" data-a="editarTipo" data-id="${t.id}"><div class="f"><b>NI ${esc(t.ni)}</b><div class="mut sm">${esc(t.desc || '')}${U[t.id] ? (t.desc ? ' · ' : '') + plural(U[t.id], 'marcado', 'marcados') + ' agora' : ''}${t._fila ? ' · na fila' : ''}</div></div><b>${brl(t.preco)}</b></div>`).join('') || '<div class="mut">Nenhum cadastrado.</div>'}</div>`;
+  }).join('');
+}
+function vMateriais() {
+  return `<div class="card"><h2 style="margin-bottom:4px">Roletes e cavaletes</h2><div class="mut sm">Cadastro geral, igual para todos os inspetores. É daqui que sai o NI escolhido na hora de marcar para troca. Toque num item para mudar o preço.</div></div>${listaMateriais()}`;
+}
+
+const ICO = {
+  inicio: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+  insp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/><path d="M8 11h6M11 8v6"/></svg>',
+  lista: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke-width="3"/></svg>',
+  ind: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  cad: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/></svg>',
+  mat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="8" width="18" height="8" rx="4"/><path d="M7 8v8M17 8v8"/></svg>',
+  conta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
+  pdf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14l3 3 3-3"/></svg>',
+  local: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+  whats: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3a.5.5 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.2-.2-.4-.3z"/></svg>',
+  novo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="8" r="4"/><path d="M3 21c1.3-3.8 4-6 7-6 1.5 0 2.9.5 4 1.4M19 14v6M16 17h6"/></svg>'
+};
+function vPrincipal() {
+  const D = dados();
+  const tit = { inicio: 'Minha página', insp: 'Inspeção', lista: 'Listas', ind: 'Indicadores', mat: 'Roletes e cavaletes', conta: 'Minha página', equip: 'Equipamento' }[V.tela];
+  const st = statusTxt();
+  const corpo = { inicio: vInicio, insp: vInspecao, lista: vListas, ind: vIndicadores, mat: vMateriais, conta: vConta, equip: vEquip }[V.tela](D);
+  const nav = [['inicio', 'Início'], ['insp', 'Inspeção'], ['lista', 'Listas'], ['ind', 'Indicadores'], ['mat', 'Materiais']]
+    .map(([k, n]) => `<button class="${V.tela === k || (k === 'inicio' && (V.tela === 'equip' || V.tela === 'conta')) ? 'on' : ''}" data-a="tela" data-v="${k}">${ICO[k]}${n}</button>`).join('');
+  return `<header class="top"><h1>${esc(tit)}${V.tela === 'inicio' ? '' : `<small>${esc(S.eu ? S.eu.nome : '')}</small>`}</h1><button class="st ${S.online ? '' : 'off'}" data-a="sync">${esc(st)}</button><button class="cta" data-a="trocarInsp" aria-label="Trocar de inspetor">${ICO.conta}<span>Trocar</span></button></header>
+  <main>${corpo}</main><nav class="nav">${nav}</nav>`;
+}
+
+/* ----- Início (página do inspetor) ----- */
+function vInicio(D) {
+  const meus = meusEquips(D), ativos = itensAtivos(D);
+  const g = novoG(''), ga = novoG('');
+  ativos.filter(r => r.inspId === S.eu.id).forEach(r => soma(g, r, D));
+  ativos.forEach(r => soma(ga, r, D));
+  const lin = meus.map(e => {
+    const r = resumoEquip(D, e);
+    return `<div class="li tap" data-a="abrirEquip" data-id="${e.id}">${semaforo(e.farol)}<div class="f"><b>${esc(e.nome)}</b>
+      <div class="mut sm">${esc(e.area || '')}${e.area ? ' · ' : ''}${nfmt(r.total)} roletes</div>${barra(r)}</div>
+      <div style="text-align:right">${r.vmN ? `<span class="chip vm">${r.vmN} troca</span><br>` : ''}${r.amN ? `<span class="chip am">${r.amN} atenção</span>` : ''}${!r.vmN && !r.amN ? '<span class="chip vd">OK</span>' : ''}</div></div>`;
+  }).join('');
+  return `<section class="hero"><div class="row"><span class="av lg">${esc(iniciais(S.eu.nome))}</span><div class="f"><h2>${esc(S.eu.nome)}</h2><div class="hs">${S.eu.matricula ? 'Matrícula ' + esc(S.eu.matricula) : 'Inspetor'}</div></div></div>
+    <div class="hk"><div><b>${nfmt(g.vmN)}</b><span><i class="dot vm"></i>Para troca</span><i>${brl(g.vmV)}</i></div><div><b>${nfmt(g.amN)}</b><span><i class="dot am"></i>Atenção</span><i>${brl(g.amV)}</i></div><div><b>${nfmt(meus.length)}</b><span>Equipamentos</span><i>${nfmt(meus.reduce((a, e) => a + totalRoletes(e), 0))} roletes</i></div></div>
+    <button class="btn cl w" data-a="tela" data-v="insp">${ICO.insp} ${V.insp ? 'Continuar inspeção · ' + esc((D.equip[V.insp.equipId] || {}).nome || '') : 'Iniciar inspeção'}</button></section>
+  <div class="sec-t"><h2>Meus equipamentos</h2><button class="btn sec peq" data-a="novoEquip">+ Novo</button></div>
+  <div class="card">
+  ${lin || `<div class="vazio">Você ainda não tem equipamentos.<br><br><button class="btn" data-a="novoEquip">Cadastrar equipamento</button></div>`}</div>
+  ${(() => { const out = outrosEquips(D), arq = Object.values(D.equip).filter(e => e.ativo === false);
+    const li = e => { const r = resumoEquip(D, e); return `<div class="li tap" data-a="abrirEquip" data-id="${e.id}"><div class="f"><b>${esc(e.nome)}</b><div class="mut sm">${esc(nomeInsp(D, e.inspId))}</div></div>${r.vmN ? `<span class="chip vm">${r.vmN}</span>` : ''}${r.amN ? `<span class="chip am">${r.amN}</span>` : ''}</div>`; };
+    return (out.length ? `<details class="card det"><summary>Equipamentos de outros inspetores (${out.length})</summary>${out.map(li).join('')}</details>` : '') + (arq.length ? `<details class="card det"><summary>Arquivados (${arq.length})</summary>${arq.map(li).join('')}</details>` : ''); })()}
+  <div class="card tap" data-a="tela" data-v="ind"><div class="row"><div class="f"><h3 style="margin-bottom:4px">Toda a área · ${esc(AREAS[S.area])}</h3><div class="mut">${plural(ga.vmN, 'item', 'itens')} para troca, ${brl(ga.vmV)}. ${plural(ga.amN, 'item', 'itens')} em atenção, ${brl(ga.amV)}.</div></div><span style="font-size:24px;color:#a5b1bc">›</span></div></div>${cartaoDev()}`;
+}
+
+/* ----- Inspeção ----- */
+function estadoCav(D, equipId, cav) {
+  const est = {}, ex = {};
+  if (!cav) return { est, ex };
+  itensAtivos(D).filter(r => r.equipId === equipId && r.cav === cav).forEach(r => {
+    ex[r.pos] = r;
+    est[r.pos] = { m: vm(r) ? 'vm' : 'am', s: 'ex' };
+    if (r.pos === 'cav') CARGA.forEach(p => { if (!est[p]) est[p] = { m: vm(r) ? 'vm' : 'am', s: 'ex' }; });
+  });
+  return { est, ex };
+}
+const padraoDe = e => ({ carga: e.tipoCarga, retorno: e.tipoRetorno, cavalete: e.tipoCav, balanca: e.tipoBal });
+function blocoTipos(D, e, I, cats) {
+  const padrao = padraoDe(e);
+  return cats.map(c => {
+    const l = tiposCat(D, c), v = (I.tipo && I.tipo[c]) || padrao[c] || (l.length === 1 ? l[0].id : '');
+    return `<label class="l">${CATN[c]} (NI)</label>
+    ${l.length ? `<select class="in" data-k="tipo" data-c="${c}"><option value="">Escolha o NI…</option>${l.map(t => `<option value="${t.id}" ${t.id === v ? 'selected' : ''}>${esc(tipoTxt(t))} · ${brl(t.preco)}</option>`).join('')}</select>` : `<div class="aviso">Nenhum tipo de ${CATN[c].toLowerCase()} cadastrado.</div>`}
+    <button type="button" class="btn sec peq" style="margin-top:6px" data-a="novoTipo" data-c="${c}">+ Cadastrar ${CATN[c].toLowerCase()}</button>`;
+  }).join('');
+}
+function blocoFarolInsp(D, e, I) {
+  if (farolTravado(D, e)) return `<div class="row" style="gap:12px">${semaforo('vm', 1)}<div class="f"><b>Vermelho · situação crítica</b><div class="mut sm">Travado automaticamente: ${ehDos(e) ? 'balança dosadora com rolete para troca' : 'rolete da zona da balança para troca'}. Libera quando os itens forem trocados.</div></div></div>`;
+  return `${blocoFarol(I.farol || '', 'farolInsp')}
+    ${!I.farol && e.farol ? `<div class="dica">Última avaliação: ${FAROL[e.farol].n.toLowerCase()}, em ${fData(e.farolEm)} por ${esc(nomeInsp(D, e.farolPor))}.</div>` : ''}`;
+}
+function rodapeInsp(D, e, I) {
+  const nesta = (I.ids || []).map(id => D.rol[id]).filter(Boolean).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+  const outros = itensAtivos(D).filter(r => r.equipId === e.id && !(I.ids || []).includes(r.id)).sort(ordItem);
+  return `<div class="card"><h3>Registrados nesta inspeção (${nesta.length})</h3>
+    ${nesta.length ? nesta.map(r => linhaItem(D, r, true)).join('') : '<div class="mut">Nada registrado ainda.</div>'}</div>
+  ${outros.length ? `<details class="card det"><summary>Já marcados antes neste equipamento (${outros.length})</summary>${outros.map(r => linhaItem(D, r, false)).join('')}</details>` : ''}
+  <button class="btn w vd" data-a="finalizar" style="margin-bottom:8px">Finalizar inspeção e gerar lista</button>
+  <button class="btn w sec" data-a="cancelarInsp">Sair sem gerar lista</button>`;
+}
+function estadoDos(D, equipId) {
+  const est = {}, ex = {};
+  const car = [];
+  itensAtivos(D).filter(r => r.equipId === equipId && DOS.includes(r.pos)).forEach(r => {
+    if (r.pos === 'car') { car.push(r); return; }
+    ex[r.pos] = r; est[r.pos] = { m: 'vm', s: 'ex' };
+  });
+  car.sort((a, b) => cmpTxt(a.cav, b.cav));
+  return { est, ex, car };
+}
+/* inspeção da balança dosadora: sem número de cavalete, todo rolete vai para troca (crítico) */
+function vInspDos(D) {
+  const I = V.insp, e = D.equip[I.equipId], sel = (I.sel || []).filter(p => DOS.includes(p));
+  const { est, ex, car } = estadoDos(D, e.id);
+  sel.forEach(p => { est[p] = { m: 'vm', s: 'sel' }; });
+  const temCar = sel.includes('car'), num = normCav(I.ncar), numEx = temCar && num && car.find(r => r.cav === num);
+  const numFora = num && /^\d+$/.test(num) && Number(num) > (Number(e.ncav) || 0);
+  const pronto = sel.length && (!temCar || (num && !numEx));
+  const cats = [...new Set(sel.map(p => catDe(p)))].sort((a, b) => ORD_CAT[b] - ORD_CAT[a]);
+  return `<div class="card"><div class="row"><div class="f"><div class="mut sm">Inspecionando</div><h2 style="margin:0">${esc(e.nome)} <span class="tag dos">Balança dosadora</span></h2>
+    <div class="mut sm">3 roletes de pesagem + ${nfmt(e.ncav)} roletes de carga</div></div><button class="btn sec peq" data-a="trocarEquipInsp">Trocar</button></div></div>
+  <div class="card"><h3 style="margin-bottom:2px">Semáforo do equipamento</h3><div class="mut sm" style="margin-bottom:10px">Na balança dosadora, qualquer rolete para troca deixa o semáforo vermelho.</div>
+    ${blocoFarolInsp(D, e, I)}</div>
+  <div class="card">
+    <div class="alerta" style="margin-top:0"><b>Balança dosadora:</b> todo rolete marcado vai para a lista de troca e é considerado <b>crítico</b>.</div>
+    <label class="l">Toque no rolete ruim</label>
+    <div class="cavbox">${dosSvg(est, true)}</div>
+    <div class="dosch">${DOS.map(p => `<button type="button" class="${ehPes(p) ? 'pes' : ''}${sel.includes(p) ? ' on' : ''}${ex[p] ? ' ex' : ''}" data-a="pos" data-p="${p}">${p === 'car' ? 'Carga' : POS[p]}<small>${ehPes(p) ? 'Pesagem' : 'Digite o nº'}${ex[p] ? ' · marcado' : ''}</small></button>`).join('')}</div>
+    <div class="dica">Amarelos (P1, P2 e P3) = roletes de pesagem. Os demais são roletes de carga: toque e digite o número do rolete.</div>
+    ${temCar ? `<label class="l">Número do rolete de carga</label>
+    <div class="stepper"><button type="button" data-a="carMais" data-v="-1" aria-label="Anterior">−</button><input class="in" data-k="ncar" inputmode="numeric" value="${esc(I.ncar || '')}" placeholder="nº"><button type="button" data-a="carMais" data-v="1" aria-label="Próximo">+</button></div>
+    <div class="dica">Esta balança tem ${nfmt(e.ncav)} roletes de carga, além dos 3 de pesagem.</div>
+    ${numFora ? `<div class="aviso">A ${esc(e.nome)} tem ${nfmt(e.ncav)} roletes de carga. Confira o número.</div>` : ''}
+    ${numEx ? `<div class="aviso">O rolete de carga nº ${esc(num)} já está marcado para troca.</div>` : ''}` : ''}
+    ${car.length ? `<div class="mut sm" style="margin-top:8px">Roletes de carga já marcados: ${car.map(r => `<span class="chip vm tap" data-a="item" data-id="${r.id}">nº ${esc(r.cav)}</span>`).join(' ')}</div>` : ''}
+    ${sel.some(ehPes) ? `<div class="alerta"><b>Rolete de pesagem.</b> Retirar o equipamento de operação e comunicar a instrumentação para acompanhar a troca.</div>` : ''}
+    ${blocoTipos(D, e, I, cats)}
+    <label class="l">Observação (opcional)</label><input class="in" data-k="obs" maxlength="120" value="${esc(I.obs || '')}" placeholder="Ex.: rolamento travado, ruído">
+    <button class="btn w vm" style="margin-top:14px" data-a="adicionar" ${pronto ? '' : 'disabled'}>${!sel.length ? 'Escolha o rolete' : temCar && !num ? 'Digite o número do rolete de carga' : 'Registrar ' + sel.map(p => p === 'car' ? 'carga nº ' + esc(num) : POS[p]).join(', ') + ' para troca'}</button>
+  </div>
+  ${rodapeInsp(D, e, I)}`;
+}
+function vInspecao(D) {
+  if (!V.insp || !D.equip[V.insp.equipId]) return vEscolherEquip(D);
+  if (ehDos(D.equip[V.insp.equipId])) return vInspDos(D);
+  const I = V.insp, e = D.equip[I.equipId], cav = normCav(I.cav), sel = I.sel || [], zb = e.bal === 'tem' && !!I.zb, niv = zb ? 'vm' : I.nivel;
+  const { est, ex } = estadoCav(D, e.id, cav);
+  sel.forEach(p => { est[p] = { m: niv, s: 'sel' }; if (p === 'cav') CARGA.forEach(q => { est[q] = { m: niv, s: 'sel' }; }); });
+  const cats = [...new Set(sel.map(p => catDe(p, zb)))];
+  const tSel = blocoTipos(D, e, I, cats);
+  const cavFora = cav && /^\d+$/.test(cav) && Number(cav) > (Number(e.ncav) || 0);
+  const exTxt = Object.values(ex).sort(ordItem).map(r => `<span class="chip ${vm(r) ? 'vm' : 'am'}">${POS[r.pos]}</span>`).join(' ');
+  const cavSel = sel.includes('cav'), cavEx = ex.cav;
+  return `<div class="card"><div class="row"><div class="f"><div class="mut sm">Inspecionando</div><h2 style="margin:0">${esc(e.nome)}</h2>
+    <div class="mut sm">${nfmt(e.ncav)} cavaletes · ${nfmt(e.nret)} roletes de retorno${e.bal === 'tem' ? ' · <span class="tag">Com balança</span>' : ''}</div></div><button class="btn sec peq" data-a="trocarEquipInsp">Trocar</button></div></div>
+  <div class="card"><h3 style="margin-bottom:2px">Semáforo do equipamento</h3><div class="mut sm" style="margin-bottom:10px">Pela sua avaliação, independente da quantidade de roletes marcados.</div>
+    ${blocoFarolInsp(D, e, I)}</div>
+  <div class="card">
+    <label class="l">Número do cavalete</label>
+    <div class="stepper"><button type="button" data-a="cavMais" data-v="-1" aria-label="Anterior">−</button><input class="in" data-k="cav" inputmode="numeric" value="${esc(I.cav || '')}" placeholder="nº"><button type="button" data-a="cavMais" data-v="1" aria-label="Próximo">+</button></div>
+    ${cavFora ? `<div class="aviso">O ${esc(e.nome)} tem ${nfmt(e.ncav)} cavaletes. Confira o número.</div>` : ''}
+    ${exTxt ? `<div class="mut sm" style="margin-top:6px">Já marcados neste cavalete: ${exTxt} (toque na posição para ver)</div>` : ''}
+    ${e.bal === 'tem' ? `<button type="button" class="cavtog ${zb ? 'on vm' : ''}" data-a="zb" style="margin-top:12px"><span class="cod" style="${zb ? 'background:' + COR.vm : ''}">BAL</span><span class="f"><b>Rolete da zona da balança</b><br><span class="mut sm">Marque se o rolete faz parte da zona da balança</span></span>${zb ? '✓' : ''}</button>
+    ${zb ? `<div class="alerta"><b>Zona da balança:</b> este rolete só pode ir para a troca e deve ser substituído por um <b>rolete específico para balança</b>. O semáforo do equipamento vai automaticamente para vermelho.</div>` : ''}` : ''}
+    <label class="l">Como está o item?</label>
+    <div class="nivel">
+      <button type="button" class="vm ${niv === 'vm' ? 'on' : ''}" data-a="nivel" data-v="vm"><b><span class="dot vm"></span>Vermelho</b><span>Trocar: vai para a lista da execução</span></button>
+      <button type="button" class="am ${niv === 'am' ? 'on' : ''}" data-a="nivel" data-v="am" ${zb ? 'disabled' : ''}><b><span class="dot am"></span>Amarelo</b><span>Atenção: fica só na sua lista</span></button>
+    </div>
+    <label class="l">Toque no rolete ruim</label>
+    <div class="cavbox">${cavSvg(est, true)}</div>
+    <button type="button" class="cavtog ${cavSel ? 'on ' + niv : ''} ${cavEx ? 'ex' : ''}" data-a="pos" data-p="cav">
+      <span class="cod" style="${cavSel ? 'background:' + COR[niv] : ''}">CAV</span><span class="f"><b>Cavalete completo</b><br><span class="mut sm">${cavEx ? 'Já marcado neste cavalete' : 'Marque quando o alvo da troca for o cavalete inteiro'}</span></span>${cavSel ? '✓' : ''}</button>
+    ${tSel}
+    <label class="l">Observação (opcional)</label><input class="in" data-k="obs" maxlength="120" value="${esc(I.obs || '')}" placeholder="Ex.: rolamento travado, ruído">
+    <button class="btn w ${niv === 'am' ? 'am' : 'vm'}" style="margin-top:14px" data-a="adicionar" ${sel.length && cav ? '' : 'disabled'}>${sel.length ? 'Registrar ' + sel.map(p => POS[p]).join(', ') + (cav ? ' no cavalete ' + esc(cav) : '') : 'Escolha o cavalete e a posição'}</button>
+  </div>
+  ${rodapeInsp(D, e, I)}`;
+}
+function blocoFarol(f, acao) {
+  return `<div class="farois">${['vd', 'am', 'vm'].map(k => `<button type="button" class="${k}${f === k ? ' on' : ''}" data-a="${acao}" data-v="${k}"><span class="lz"></span><b>${FAROL[k].n}</b><small>${FAROL[k].s}</small></button>`).join('')}</div>`;
+}
+function marcarFarol(f) {
+  const I = V.insp; if (!I) return;
+  I.farol = f; salvarInsp();
+  enfileirar([{ c: 'equip', t: 'update', id: I.equipId, d: { farol: f, farolEm: Date.now(), farolPor: S.eu.id } }]);
+}
+function linhaItem(D, r, desfazer) {
+  const t = D.tipo[r.tipoId];
+  return `<div class="li"><span class="cod" style="background:${COR[vm(r) ? 'vm' : 'am']};${vm(r) ? '' : 'color:#2b1f00'}">${POS[r.pos]}</span>
+    <div class="f tap" data-a="item" data-id="${r.id}"><b>${esc(rotItem(r))}</b><div class="mut sm">${esc(tipoTxt(t))}${r.obs ? ' · ' + esc(r.obs) : ''}${r._fila ? ' · na fila' : ''}</div>${avisoHtml(D, r)}</div>
+    ${desfazer ? `<button class="btn sec peq" data-a="desfazer" data-id="${r.id}">Desfazer</button>` : `<button class="btn sec peq" data-a="item" data-id="${r.id}">⋯</button>`}</div>`;
+}
+function vEscolherEquip(D) {
+  const meus = meusEquips(D), out = outrosEquips(D);
+  const li = e => { const r = resumoEquip(D, e); return `<div class="li tap" data-a="iniciarInsp" data-id="${e.id}"><div class="f"><b>${esc(e.nome)}</b><div class="mut sm">${esc(e.area || '')}${e.area ? ' · ' : ''}${ehDos(e) ? 'Balança dosadora' : nfmt(e.ncav) + ' cavaletes' + (e.bal === 'tem' ? ' · com balança' : '')}</div></div>${r.vmN ? `<span class="chip vm">${r.vmN}</span>` : ''}${r.amN ? `<span class="chip am">${r.amN}</span>` : ''}<span style="font-size:22px;color:var(--mut)">›</span></div>`; };
+  return `<div class="card"><h2>Qual equipamento você vai inspecionar?</h2>
+  ${meus.map(li).join('') || '<div class="mut">Você ainda não cadastrou equipamentos.</div>'}
+  <button class="btn w sec" style="margin-top:10px" data-a="novoEquip" data-insp="1">+ Cadastrar equipamento</button></div>
+  ${out.length ? `<details class="card det"><summary>Equipamentos de outros inspetores (${out.length})</summary>${out.map(li).join('')}</details>` : ''}`;
+}
+
+/* ----- Listas: troca (execução) e pontos de atenção ----- */
+function equipsComTroca(D) {
+  const ids = new Set(itensAtivos(D).filter(vm).map(r => r.equipId));
+  return Object.values(D.equip).filter(e => ids.has(e.id)).sort((a, b) => (a.inspId === S.eu.id ? 0 : 1) - (b.inspId === S.eu.id ? 0 : 1) || cmpTxt(a.nome, b.nome));
+}
+function selLista(D) {
+  const disp = equipsComTroca(D).map(e => e.id);
+  let s = (V.listaSel || []).filter(id => disp.includes(id));
+  if (!V.listaSel) s = disp.filter(id => D.equip[id].inspId === S.eu.id);
+  return { disp, s };
+}
+function vListas(D) {
+  const tabs = `<div class="tabs no-print"><button class="${V.lista === 'troca' ? 'on' : ''}" data-a="listaTab" data-v="troca">Lista de troca</button><button class="${V.lista === 'atencao' ? 'on' : ''}" data-a="listaTab" data-v="atencao">Pontos de atenção</button></div>`;
+  return tabs + (V.lista === 'atencao' ? vAtencao(D) : vTroca(D));
+}
+function montarLista(D, ids) {
+  const itens = itensAtivos(D).filter(r => vm(r) && ids.includes(r.equipId));
+  const grupos = ids.map(id => ({ e: D.equip[id], l: itens.filter(r => r.equipId === id).sort(ordItem) })).filter(g => g.l.length);
+  const mat = new Map();
+  itens.forEach(r => { const t = D.tipo[r.tipoId], k = r.tipoId; if (!mat.has(k)) mat.set(k, { t, n: 0 }); mat.get(k).n++; });
+  const material = [...mat.values()].sort((a, b) => cmpTxt(a.t ? CATN[a.t.cat] : '', b.t ? CATN[b.t.cat] : '') || cmpTxt(a.t ? a.t.ni : '', b.t ? b.t.ni : ''));
+  const total = material.reduce((s, m) => s + m.n * (m.t ? Number(m.t.preco) || 0 : 0), 0);
+  return { grupos, material, total, n: itens.length };
+}
+function vTroca(D) {
+  const { disp, s } = selLista(D);
+  if (!disp.length) return `<div class="card vazio">Nenhum item vermelho (para troca) no momento.<br><br><button class="btn" data-a="tela" data-v="insp">Iniciar inspeção</button></div>`;
+  const L = montarLista(D, s);
+  const chips = `<div class="card no-print"><h3>Equipamentos na lista</h3><div class="sel">${disp.map(id => `<button class="${s.includes(id) ? 'on' : ''}" data-a="listaEq" data-id="${id}">${esc(D.equip[id].nome)}</button>`).join('')}</div>
+    <div class="btns" style="margin-top:10px"><button class="btn sec peq" data-a="listaTodos" data-v="meus">Só os meus</button><button class="btn sec peq" data-a="listaTodos" data-v="todos">Todos</button></div></div>`;
+  if (!L.n) return chips + '<div class="card vazio">Escolha pelo menos um equipamento.</div>';
+  const grupos = L.grupos.map(g => `<div class="card"><div class="row"><h2 class="f" style="margin:0">${esc(g.e.nome)}${ehDos(g.e) ? ' <span class="tag dos">Balança dosadora</span>' : g.e.bal === 'tem' ? ' <span class="tag">Com balança</span>' : ''}</h2><span class="chip vm">${g.l.length}</span></div>
+    <div class="mut sm" style="margin-bottom:6px">${esc(g.e.area || '')}${g.e.area ? ' · ' : ''}Inspetor: ${esc(nomeInsp(D, g.e.inspId))}</div>
+    <table class="t"><thead><tr><th>${ehDos(g.e) ? 'Nº' : 'Cavalete'}</th><th>Código</th><th>NI / descrição</th><th class="n">Trocado</th></tr></thead><tbody>
+    ${g.l.map(r => { const t = D.tipo[r.tipoId]; return `<tr><td><b style="font-size:16px">${esc(r.cav || '—')}</b></td><td><span class="cod">${POS[r.pos]}</span></td>
+      <td><b>${t ? esc(t.ni) : '—'}</b>${t && t.desc ? '<br><span class="mut sm">' + esc(t.desc) + '</span>' : ''}${r.obs ? '<br><span class="sm">Obs.: ' + esc(r.obs) + '</span>' : ''}${avisoHtml(D, r)}</td>
+      <td class="n"><span class="print-only chk"></span><button class="btn vd peq no-print" data-a="baixa" data-id="${r.id}">✓</button></td></tr>`; }).join('')}
+    </tbody></table>
+    <div class="no-print" style="margin-top:8px"><button class="btn sec peq" data-a="baixaEquip" data-id="${g.e.id}">Todos deste equipamento foram trocados</button></div></div>`).join('');
+  const mat = `<div class="card"><h2>Resumo de material</h2><table class="t"><thead><tr><th>NI</th><th>Item</th><th class="n">Qtd</th></tr></thead><tbody>
+    ${L.material.map(m => `<tr><td><b>${m.t ? esc(m.t.ni) : '—'}</b></td><td>${m.t ? esc(CATN[m.t.cat]) + (m.t.desc ? '<br><span class="mut sm">' + esc(m.t.desc) + '</span>' : '') : ''}</td><td class="n"><b>${m.n}</b></td></tr>`).join('')}
+    <tr><td colspan="2"><b>Total de itens</b></td><td class="n"><b>${L.n}</b></td></tr></tbody></table></div>`;
+  return chips + `<div class="card"><h2>Lista de roletes para troca</h2>
+    <div class="mut">${fData(Date.now())} · Gerada por ${esc(S.eu.nome)} · ${plural(L.n, 'item', 'itens')}</div>
+    ${L.grupos.some(g => !ehDos(g.e)) ? `<div class="cavbox" style="margin-top:10px">${cavSvg({}, false)}</div>
+    <div class="sm" style="margin-top:6px"><b>Legenda:</b> ${LEGENDA}</div>` : ''}
+    ${L.grupos.some(g => ehDos(g.e)) ? `<div class="cavbox" style="margin-top:10px">${dosSvg({}, false)}</div>
+    <div class="sm" style="margin-top:6px"><b>Legenda:</b> ${LEGENDA_DOS}</div>` : ''}
+    ${L.grupos.some(g => g.l.some(r => ehPes(r.pos))) ? `<div class="alerta"><b>Atenção:</b> ${AV_PES}</div>` : ''}</div>
+  <div class="btns no-print" style="margin-bottom:8px"><button class="btn vd" data-a="pdfWhats">Enviar PDF no WhatsApp</button><button class="btn" data-a="pdfBaixar">Baixar PDF</button></div>
+  <div class="no-print" style="text-align:center;margin-bottom:12px"><button class="btn sec peq" data-a="whats">Enviar como texto</button></div>
+  ${grupos}${mat}`;
+}
+function textoLista(D, ids) {
+  const L = montarLista(D, ids), T = ['*LISTA DE ROLETES PARA TROCA*', (AREAD[S.area] ? AREAD[S.area] + ' · ' : '') + fData(Date.now()) + ' · ' + S.eu.nome, ''];
+  L.grupos.forEach(g => {
+    T.push('*' + g.e.nome + '*' + (g.e.area ? ' (' + g.e.area + ')' : '') + (ehDos(g.e) ? ' · balança dosadora' : ''));
+    g.l.forEach(r => { const t = D.tipo[r.tipoId], a = avisoItem(D, r); T.push((r.pos === 'car' ? 'Rolete de carga nº ' + r.cav : (r.cav ? 'Cavalete ' + r.cav + ' · ' : '') + POS[r.pos]) + ' · NI ' + (t ? t.ni : '—') + (r.obs ? ' · ' + r.obs : '') + (a ? ' · ⚠ ' + a : '')); });
+    T.push('');
+  });
+  T.push('*Material*');
+  L.material.forEach(m => T.push('NI ' + (m.t ? m.t.ni : '—') + (m.t && m.t.desc ? ' (' + m.t.desc + ')' : '') + ': ' + m.n + ' un.'));
+  T.push('', '*Total de itens:* ' + L.n, '', '_' + LEGENDA + '_');
+  if (L.grupos.some(g => ehDos(g.e))) T.push('_' + LEGENDA_DOS + '_');
+  return T.join('\n');
+}
+function vAtencao(D) {
+  const l = itensAtivos(D).filter(r => !vm(r) && (V.atencaoTodos || r.inspId === S.eu.id));
+  const eqs = [...new Set(l.map(r => r.equipId))].map(id => D.equip[id]).sort((a, b) => cmpTxt(a.nome, b.nome));
+  const v = l.reduce((s, r) => s + precoDe(D, r), 0);
+  return `<div class="card"><div class="row"><div class="f"><h2 style="margin:0">Pontos de atenção</h2><div class="mut sm">Itens amarelos: não vão para a execução</div></div></div>
+    <div class="sel" style="margin-top:10px"><button class="${V.atencaoTodos ? '' : 'on'}" data-a="atTodos" data-v="0">Meus</button><button class="${V.atencaoTodos ? 'on' : ''}" data-a="atTodos" data-v="1">Todos os inspetores</button></div>
+    <div class="mut" style="margin-top:10px">${plural(l.length, 'item', 'itens')} · ${brl(v)} se todos forem trocados</div></div>
+  ${eqs.map(e => `<div class="card"><h3>${esc(e.nome)}</h3>${l.filter(r => r.equipId === e.id).sort(ordItem).map(r => linhaAt(D, r)).join('')}</div>`).join('') || '<div class="card vazio">Nenhum ponto de atenção.</div>'}`;
+}
+function linhaAt(D, r) {
+  const t = D.tipo[r.tipoId];
+  return `<div class="li"><span class="cod" style="background:var(--am);color:#2b1f00">${POS[r.pos]}</span><div class="f tap" data-a="item" data-id="${r.id}"><b>${esc(rotItem(r))}</b>
+    <div class="mut sm">${esc(tipoTxt(t))}${r.obs ? ' · ' + esc(r.obs) : ''} · ${fData(r.criadoEm || Date.now())}${V.atencaoTodos ? ' · ' + esc(nomeInsp(D, r.inspId)) : ''}</div></div>
+    ${r.inspId === S.eu.id || S.admin ? `<button class="btn vm peq" data-a="promover" data-id="${r.id}">Trocar</button>` : ''}</div>`;
+}
+
+
+/* ===== PDF da lista de troca (gerado no próprio aparelho, funciona sem internet) ===== */
+const LH=[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584,350,556,350,222,556,333,1000,556,556,333,1000,667,333,1000,350,611,350,350,222,222,333,333,350,556,1000,333,1000,500,333,944,350,500,667,278,333,556,556,556,556,260,556,333,737,370,556,584,333,737,333,400,584,333,333,333,556,537,278,333,333,365,556,834,834,834,611,667,667,667,667,667,667,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,500,556,556,556,556,278,278,278,278,556,556,556,556,556,556,556,584,611,556,556,556,556,500,556,500];
+const LB=[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584,350,556,350,278,556,500,1000,556,556,333,1000,667,333,1000,350,611,350,350,278,278,500,500,350,556,1000,333,1000,556,333,944,350,500,667,278,333,556,556,556,556,280,556,333,737,370,556,584,333,737,333,400,584,333,333,333,611,556,278,333,333,365,556,834,834,834,611,722,722,722,722,722,722,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,556,556,556,556,556,278,278,278,278,611,611,611,611,611,611,611,584,611,611,611,611,611,556,611,556];
+const W1252={"8364": 128, "8218": 130, "402": 131, "8222": 132, "8230": 133, "8224": 134, "8225": 135, "710": 136, "8240": 137, "352": 138, "8249": 139, "338": 140, "381": 142, "8216": 145, "8217": 146, "8220": 147, "8221": 148, "8226": 149, "8211": 150, "8212": 151, "732": 152, "8482": 153, "353": 154, "8250": 155, "339": 156, "382": 158, "376": 159};
+function Pdf() { this.pages = []; this.imgs = []; this.novaPagina(); }
+Pdf.prototype = {
+  W: 595.28, H: 841.89,
+  novaPagina() { this.p = []; this.pages.push(this.p); },
+  enc(t) {
+    let o = '';
+    for (const ch of String(t == null ? '' : t)) {
+      let c = ch.codePointAt(0);
+      if (c >= 128 && c < 160 || c > 255) c = W1252[c] || ({ 8211: 150, 8212: 151, 10003: 86 })[c] || 63;
+      const x = String.fromCharCode(c);
+      o += x === '\\' || x === '(' || x === ')' ? '\\' + x : x;
+    }
+    return o;
+  },
+  larg(t, tam, neg) {
+    const L = neg ? LB : LH; let w = 0;
+    for (const ch of String(t)) { let c = ch.codePointAt(0); if (c >= 128 && c < 160 || c > 255) c = W1252[c] || 63; w += (L[c - 32] || 556); }
+    return w * tam / 1000;
+  },
+  quebra(t, tam, neg, max) {
+    const pal = String(t || '').split(/\s+/).filter(Boolean), L = []; let at = '';
+    pal.forEach(w => { const n = at ? at + ' ' + w : w; if (this.larg(n, tam, neg) <= max || !at) at = n; else { L.push(at); at = w; } });
+    if (at) L.push(at);
+    return L.length ? L : [''];
+  },
+  cor(h) { h = h.replace('#', ''); return [0, 2, 4].map(i => (parseInt(h.substr(i, 2), 16) / 255).toFixed(3)).join(' '); },
+  texto(t, x, y, o) {
+    o = o || {}; const tam = o.tam || 10, neg = !!o.neg;
+    if (o.al === 'dir') x -= this.larg(t, tam, neg); else if (o.al === 'centro') x -= this.larg(t, tam, neg) / 2;
+    this.p.push('BT /' + (neg ? 'F2' : 'F1') + ' ' + tam + ' Tf ' + this.cor(o.cor || '#1d2a35') + ' rg ' + x.toFixed(2) + ' ' + (this.H - y).toFixed(2) + ' Td (' + this.enc(t) + ') Tj ET');
+  },
+  ret(x, y, w, h, o) {
+    o = o || {}; let op = '';
+    if (o.fundo) op += this.cor(o.fundo) + ' rg ';
+    if (o.borda) op += this.cor(o.borda) + ' RG ' + (o.lw || .8) + ' w ';
+    this.p.push(op + x.toFixed(2) + ' ' + (this.H - y - h).toFixed(2) + ' ' + w.toFixed(2) + ' ' + h.toFixed(2) + ' re ' + (o.fundo && o.borda ? 'B' : o.fundo ? 'f' : 'S'));
+  },
+  linha(x1, y1, x2, y2, c, lw) { this.p.push(this.cor(c || '#d6dde4') + ' RG ' + (lw || .6) + ' w ' + x1.toFixed(2) + ' ' + (this.H - y1).toFixed(2) + ' m ' + x2.toFixed(2) + ' ' + (this.H - y2).toFixed(2) + ' l S'); },
+  imagem(jpg, x, y, w, h) {
+    let i = this.imgs.indexOf(jpg);
+    if (i < 0) { this.imgs.push(jpg); i = this.imgs.length - 1; }
+    this.p.push('q ' + w.toFixed(2) + ' 0 0 ' + h.toFixed(2) + ' ' + x.toFixed(2) + ' ' + (this.H - y - h).toFixed(2) + ' cm /Im' + i + ' Do Q');
+  },
+  blob() {
+    const partes = [], offs = []; let tam = 0;
+    const add = x => { const b = typeof x === 'string' ? Uint8Array.from(x, c => c.charCodeAt(0) & 255) : x; partes.push(b); tam += b.length; };
+    const obj = (n, corpo) => { offs[n] = tam; add(n + ' 0 obj\n'); corpo.forEach(add); add('\nendobj\n'); };
+    const np = this.pages.length, ni = this.imgs.length, base = 5 + ni;
+    add('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+    obj(1, ['<< /Type /Catalog /Pages 2 0 R >>']);
+    obj(2, ['<< /Type /Pages /Count ' + np + ' /Kids [' + this.pages.map((_, i) => (base + i * 2) + ' 0 R').join(' ') + '] >>']);
+    obj(3, ['<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>']);
+    obj(4, ['<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>']);
+    const xo = this.imgs.map((_, i) => '/Im' + i + ' ' + (5 + i) + ' 0 R').join(' ');
+    this.imgs.forEach((j, i) => obj(5 + i, ['<< /Type /XObject /Subtype /Image /Width ' + j.w + ' /Height ' + j.h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + j.b.length + ' >>\nstream\n', j.b, '\nendstream']));
+    this.pages.forEach((p, i) => {
+      const c = p.join('\n');
+      obj(base + i * 2, ['<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + this.W + ' ' + this.H + '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >>' + (ni ? ' /XObject << ' + xo + ' >>' : '') + ' >> /Contents ' + (base + i * 2 + 1) + ' 0 R >>']);
+      obj(base + i * 2 + 1, ['<< /Length ' + c.length + ' >>\nstream\n', c, '\nendstream']);
+    });
+    const n = base + np * 2, xref = tam;
+    let x = 'xref\n0 ' + n + '\n0000000000 65535 f \n';
+    for (let i = 1; i < n; i++) x += String(offs[i]).padStart(10, '0') + ' 00000 n \n';
+    add(x + 'trailer\n<< /Size ' + n + ' /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF');
+    return new Blob(partes, { type: 'application/pdf' });
+  }
+};
+function jpegInfo(b) {
+  let i = 2;
+  while (i < b.length) {
+    const m = b[i + 1], len = b[i + 2] << 8 | b[i + 3];
+    if (m >= 0xC0 && m <= 0xC3) return { h: b[i + 5] << 8 | b[i + 6], w: b[i + 7] << 8 | b[i + 8] };
+    i += 2 + len;
+  }
+  return null;
+}
+let _figura = null, _figDos = null;
+async function figuraDos() {
+  if (_figDos) return _figDos;
+  try { const b = new Uint8Array(await (await fetch('dosadora-legenda.jpg')).arrayBuffer()); const i = jpegInfo(b); if (i) _figDos = { b, w: i.w, h: i.h }; } catch (e) { }
+  return _figDos;
+}
+async function figuraCavalete() {
+  if (_figura) return _figura;
+  try { const b = new Uint8Array(await (await fetch('cavalete-legenda.jpg')).arrayBuffer()); const i = jpegInfo(b); if (i) _figura = { b, w: i.w, h: i.h }; } catch (e) { }
+  return _figura;
+}
+async function gerarPdf(D, ids) {
+  const L = montarLista(D, ids), P = new Pdf(), M = 36, LW = P.W - 2 * M, fig = await figuraCavalete(), figDos = L.grupos.some(g => ehDos(g.e)) ? await figuraDos() : null;
+  const AZ = '#1f5c8b', ESC = '#263845', MUT = '#5d6b78', LN = '#d6dde4';
+  P.ret(0, 0, P.W, 64, { fundo: AZ });
+  P.texto('LISTA DE ROLETES PARA TROCA', M, 30, { tam: 17, neg: true, cor: '#ffffff' });
+  P.texto((AREAD[S.area] ? AREAD[S.area] + '  ·  ' : '') + fData(Date.now()) + '  ·  Gerada por ' + S.eu.nome + '  ·  ' + plural(L.n, 'item', 'itens') + '  ·  ' + plural(L.grupos.length, 'equipamento', 'equipamentos'), M, 49, { tam: 9.5, cor: '#dce8f3' });
+  let y = 80;
+  const fw = 250, fh = fig ? fw * fig.h / fig.w : 0;
+  if (fig) P.imagem(fig, M, y, fw, fh);
+  const lx = M + fw + 22;
+  P.texto('Como ler a lista', lx, y + 12, { tam: 11, neg: true });
+  ORD.forEach((k, i) => {
+    const yy = y + 26 + i * 21;
+    P.ret(lx, yy, 40, 15, { fundo: ESC });
+    P.texto(POS[k], lx + 20, yy + 11, { tam: 9, neg: true, cor: '#ffffff', al: 'centro' });
+    P.texto(POSN[k], lx + 48, yy + 11, { tam: 10 });
+  });
+  P.texto('Cada linha traz o número do cavalete e o código', lx, y + 26 + 5 * 21 + 6, { tam: 8.5, cor: MUT });
+  P.texto('da posição. Marque "Trocado" ao terminar.', lx, y + 26 + 5 * 21 + 17, { tam: 8.5, cor: MUT });
+  const ya = y + 26 + 5 * 21 + 44;
+  P.texto('Executado por', lx, ya, { tam: 8.5, cor: MUT }); P.linha(lx + 62, ya + 1, M + LW, ya + 1, '#7d8b97', .7);
+  P.texto('Data', lx, ya + 20, { tam: 8.5, cor: MUT }); P.linha(lx + 62, ya + 21, lx + 170, ya + 21, '#7d8b97', .7);
+  y = Math.max(y + fh, ya + 21) + 22;
+  const C = [{ t: 'Cavalete', w: 56 }, { t: 'Código', w: 50 }, { t: 'NI', w: 68 }, { t: 'Descrição', w: 160 }, { t: 'Observação', w: 135 }, { t: 'Trocado', w: LW - 469 }];
+  const fim = () => P.H - 50;
+  const pagina = () => { P.novaPagina(); y = 40; };
+  let dosG = false;
+  const cab = () => {
+    P.ret(M, y, LW, 18, { fundo: '#e4eef7' }); let x = M;
+    C.forEach(c => { P.texto(dosG && c.t === 'Cavalete' ? 'Nº rolete' : c.t, c.t === 'Trocado' ? x + c.w / 2 : x + 5, y + 12.5, { tam: 8.5, neg: true, cor: AZ, al: c.t === 'Trocado' ? 'centro' : undefined }); x += c.w; });
+    y += 18;
+  };
+  L.grupos.forEach(g => {
+    if (y + 70 > fim()) pagina();
+    P.ret(M, y, LW, 24, { fundo: ESC });
+    P.texto(g.e.nome, M + 8, y + 16, { tam: 12, neg: true, cor: '#ffffff' });
+    P.texto((g.e.area ? g.e.area + '  ·  ' : '') + 'Inspetor: ' + nomeInsp(D, g.e.inspId) + '  ·  ' + plural(g.l.length, 'item', 'itens'), M + LW - 8, y + 16, { tam: 8.5, cor: '#dce8f3', al: 'dir' });
+    y += 24; dosG = ehDos(g.e);
+    if (dosG) {
+      // balança dosadora: figura com P1 a P3 (pesagem) e os roletes de carga (CAR + número)
+      const fd = figDos, dw = 150, dh = fd ? dw * fd.h / fd.w : 0;
+      if (y + dh + 30 > fim()) pagina();
+      if (fd) P.imagem(fd, M, y + 8, dw, dh);
+      const tx = M + (fd ? dw + 16 : 0);
+      P.texto('Balança dosadora', tx, y + 24, { tam: 11, neg: true });
+      P.texto('P1, P2 e P3 = roletes de pesagem (amarelos)', tx, y + 42, { tam: 9 });
+      P.texto('CAR = rolete de carga, com o número na 1ª coluna', tx, y + 56, { tam: 9 });
+      P.texto('Todo rolete desta balança é troca crítica.', tx, y + 74, { tam: 9, neg: true, cor: '#b71c1c' });
+      if (g.l.some(r => ehPes(r.pos))) {
+        P.ret(tx, y + 86, M + LW - tx, 40, { fundo: '#fde7e7' });
+        P.quebra(AV_PES, 9, true, M + LW - tx - 16).forEach((l, k) => P.texto(l, tx + 8, y + 100 + k * 11, { tam: 9, neg: true, cor: '#b71c1c' }));
+      }
+      y += Math.max(dh + 16, 134);
+    }
+    cab();
+    g.l.forEach((r, i) => {
+      const t = D.tipo[r.tipoId], av = avisoItem(D, r), d1 = P.quebra(t ? t.desc || CATN[t.cat] : '', 8.5, false, C[3].w - 10), d2 = P.quebra(r.obs || '', 8.5, false, C[4].w - 10), d3 = av ? P.quebra(av, 8, true, C[4].w - 10) : [];
+      const nObs = d2.length + d3.length;
+      const h = Math.max(22, 10 + Math.max(d1.length, nObs) * 10.5);
+      if (y + h > fim()) { pagina(); cab(); }
+      if (i % 2) P.ret(M, y, LW, h, { fundo: '#f6f8fa' });
+      let x = M;
+      P.texto(r.cav || '-', x + 6, y + 15, { tam: 12, neg: true }); x += C[0].w;
+      P.ret(x + 5, y + 4.5, 38, 14, { fundo: ESC }); P.texto(POS[r.pos], x + 24, y + 14.5, { tam: 8.5, neg: true, cor: '#ffffff', al: 'centro' }); x += C[1].w;
+      P.texto(t ? t.ni : '-', x + 5, y + 15, { tam: 9.5, neg: true }); x += C[2].w;
+      d1.forEach((l, k) => P.texto(l, x + 5, y + 14 + k * 10.5, { tam: 8.5 })); x += C[3].w;
+      d3.forEach((l, k) => P.texto(l, x + 5, y + 14 + k * 10.5, { tam: 8, neg: true, cor: ehPes(r.pos) ? '#b71c1c' : '#7a5600' }));
+      d2.forEach((l, k) => P.texto(l, x + 5, y + 14 + (k + d3.length) * 10.5, { tam: 8.5, cor: MUT })); x += C[4].w;
+      P.ret(x + C[5].w / 2 - 6, y + h / 2 - 6, 12, 12, { borda: '#7d8b97', lw: 1 });
+      y += h; P.linha(M, y, M + LW, y, LN);
+    });
+    y += 16;
+  });
+  // resumo de material
+  if (y + 90 > fim()) pagina();
+  P.texto('Resumo de material', M, y + 12, { tam: 13, neg: true }); y += 20;
+  const R = [{ t: 'NI', w: 90 }, { t: 'Categoria', w: 120 }, { t: 'Descrição', w: LW - 290 }, { t: 'Quantidade', w: 80, d: 1 }];
+  const cabR = () => { P.ret(M, y, LW, 18, { fundo: '#e4eef7' }); let x = M; R.forEach(c => { P.texto(c.t, c.d ? x + c.w - 6 : x + 5, y + 12.5, { tam: 8.5, neg: true, cor: AZ, al: c.d ? 'dir' : undefined }); x += c.w; }); y += 18; };
+  cabR();
+  let qt = 0;
+  L.material.forEach(m => {
+    if (y + 22 > fim()) { pagina(); cabR(); }
+    const t = m.t; let x = M; qt += m.n;
+    P.texto(t ? t.ni : '-', x + 5, y + 14, { tam: 9.5, neg: true }); x += R[0].w;
+    P.texto(t ? CATN[t.cat] : '', x + 5, y + 14, { tam: 8.5 }); x += R[1].w;
+    P.texto(P.quebra(t ? t.desc || '' : '', 8.5, false, R[2].w - 10)[0], x + 5, y + 14, { tam: 8.5 }); x += R[2].w;
+    P.texto(String(m.n), x + R[3].w - 6, y + 14, { tam: 10, neg: true, al: 'dir' });
+    y += 20; P.linha(M, y, M + LW, y, LN);
+  });
+  P.ret(M, y, LW, 22, { fundo: '#e4eef7' });
+  P.texto('Total de itens', M + 5, y + 15, { tam: 10, neg: true });
+  P.texto(String(qt), M + LW - 6, y + 15, { tam: 11, neg: true, al: 'dir' });
+  const np = P.pages.length;
+  P.pages.forEach((pg, i) => { P.p = pg; P.linha(M, P.H - 30, P.W - M, P.H - 30, LN); P.texto('Inspeção de Roletes  ·  ' + LEGENDA, M, P.H - 18, { tam: 7, cor: MUT }); P.texto('Página ' + (i + 1) + ' de ' + np, P.W - M, P.H - 18, { tam: 7.5, cor: MUT, al: 'dir' }); });
+  return P.blob();
+}
+const nomePdf = () => { const d = new Date(); return 'lista-roletes-' + d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + '.pdf'; };
+function baixarArquivo(blob, nome) {
+  const u = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = u; a.download = nome; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 60000);
+}
+async function pdfLista(modo) {
+  const D = dados(), ids = selLista(D).s;
+  if (!montarLista(D, ids).n) return toast('Escolha pelo menos um equipamento.');
+  let blob;
+  try { blob = await gerarPdf(D, ids); } catch (e) { return toast('Não foi possível gerar o PDF.'); }
+  entregarPdf(blob, nomePdf(), modo, 'Lista de roletes para troca');
+}
+async function entregarPdf(blob, nome, modo, titulo) {
+  if (modo === 'whats') {
+    const f = new File([blob], nome, { type: 'application/pdf' });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) {
+      try { await navigator.share({ files: [f], title: titulo, text: titulo + ' · ' + fData(Date.now()) }); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    baixarArquivo(blob, nome);
+    toast('Este aparelho não envia o arquivo direto. O PDF foi baixado: anexe na conversa do WhatsApp.', 6000);
+    return;
+  }
+  baixarArquivo(blob, nome); toast('PDF baixado.');
+}
+
+/* ===== Relatórios dos indicadores em PDF: pendências e lista de compra ===== */
+const PDFC = { AZ: '#1f5c8b', ESC: '#132331', MUT: '#5d6b78', LN: '#d6dde4', VM: '#c62828', AM: '#e0a100', VD: '#2e7d32' };
+const ORD_CAT = { carga: 1, retorno: 2, cavalete: 3, balanca: 4 };
+function pdfNovo(titulo, sub) {
+  const P = new Pdf(), M = 36, c = { P, M, LW: P.W - 2 * M, y: 0 };
+  P.ret(0, 0, P.W, 64, { fundo: PDFC.ESC });
+  P.texto(titulo, M, 30, { tam: 16, neg: true, cor: '#ffffff' });
+  P.texto(sub, M, 49, { tam: 9.5, cor: '#c9d6e2' });
+  c.y = 82;
+  c.fim = () => P.H - 46;
+  c.pagina = () => { P.novaPagina(); c.y = 40; };
+  c.cabe = h => { if (c.y + h > c.fim()) c.pagina(); };
+  return c;
+}
+function pdfFechar(c) {
+  const P = c.P, np = P.pages.length;
+  P.pages.forEach((pg, i) => { P.p = pg; P.linha(c.M, P.H - 30, P.W - c.M, P.H - 30, PDFC.LN); P.texto('Inspeção de Roletes  ·  ' + (AREAD[S.area] || '') + '  ·  gerado em ' + fDH(Date.now()), c.M, P.H - 18, { tam: 7.5, cor: PDFC.MUT }); P.texto('Página ' + (i + 1) + ' de ' + np, P.W - c.M, P.H - 18, { tam: 7.5, cor: PDFC.MUT, al: 'dir' }); });
+  return P.blob();
+}
+function pdfTitulo(c, t, sub) {
+  c.cabe(60);
+  c.P.texto(t, c.M, c.y + 13, { tam: 13, neg: true });
+  if (sub) c.P.texto(sub, c.M + c.P.larg(t, 13, true) + 10, c.y + 13, { tam: 9, cor: PDFC.MUT });
+  c.y += 22;
+}
+/* caixas de resumo lado a lado: [[rótulo, valor, cor], ...] */
+function pdfResumo(c, caixas) {
+  const P = c.P, gap = 8, w = (c.LW - gap * (caixas.length - 1)) / caixas.length;
+  c.cabe(54);
+  caixas.forEach((k, i) => {
+    const x = c.M + i * (w + gap);
+    P.ret(x, c.y, w, 46, { fundo: '#f2f5f8' });
+    P.ret(x, c.y, 3, 46, { fundo: k[2] || PDFC.AZ });
+    P.texto(k[0], x + 10, c.y + 15, { tam: 8, cor: PDFC.MUT });
+    P.texto(P.quebra(k[1], 12, true, w - 16)[0], x + 10, c.y + 34, { tam: 12, neg: true });
+  });
+  c.y += 60;
+}
+/* tabela com quebra de página e cabeçalho repetido. célula = texto ou {t, neg, cor, fundo (etiqueta), tam} */
+function pdfTabela(c, cols, linhas) {
+  const P = c.P;
+  const cab = () => {
+    P.ret(c.M, c.y, c.LW, 18, { fundo: '#e4eef7' }); let x = c.M;
+    cols.forEach(k => { const xx = k.al === 'dir' ? x + k.w - 5 : k.al === 'centro' ? x + k.w / 2 : x + 5; P.texto(k.t, xx, c.y + 12.5, { tam: 8, neg: true, cor: PDFC.AZ, al: k.al }); x += k.w; });
+    c.y += 18;
+  };
+  c.cabe(40); cab();
+  linhas.forEach((ln, i) => {
+    const cel = ln.map(v => typeof v === 'object' && v !== null ? v : { t: v });
+    const lin = cel.map((v, j) => v.fundo ? [String(v.t)] : P.quebra(String(v.t == null ? '' : v.t), v.tam || 8.5, !!v.neg, cols[j].w - 10));
+    const h = Math.max(20, 9 + Math.max(...lin.map(l => l.length)) * 10.5);
+    if (c.y + h > c.fim()) { c.pagina(); cab(); }
+    if (ln.total) P.ret(c.M, c.y, c.LW, h, { fundo: '#fdecea' }); else if (i % 2) P.ret(c.M, c.y, c.LW, h, { fundo: '#f6f8fa' });
+    let x = c.M;
+    cel.forEach((v, j) => {
+      const k = cols[j], tam = v.tam || 8.5;
+      if (v.fundo) {
+        const wt = Math.max(30, P.larg(v.t, 8, true) + 12), bx = k.al === 'centro' ? x + (k.w - wt) / 2 : x + 5;
+        P.ret(bx, c.y + h / 2 - 7, wt, 14, { fundo: v.fundo }); P.texto(v.t, bx + wt / 2, c.y + h / 2 + 3, { tam: 8, neg: true, cor: v.corT || '#ffffff', al: 'centro' });
+      } else lin[j].forEach((l, q) => {
+        const xx = k.al === 'dir' ? x + k.w - 5 : k.al === 'centro' ? x + k.w / 2 : x + 5;
+        P.texto(l, xx, c.y + 13.5 + q * 10.5, { tam, neg: !!v.neg, cor: v.cor || PDFC.ESC, al: k.al });
+      });
+      x += k.w;
+    });
+    c.y += h; P.linha(c.M, c.y, c.M + c.LW, c.y, PDFC.LN);
+  });
+  c.y += 14;
+}
+const etqNivel = r => vm(r) ? { t: 'Troca', fundo: PDFC.VM } : { t: 'Atenção', fundo: PDFC.AM, corT: '#2b1f00' };
+const etqFarol = f => f ? { t: FAROL[f].n, fundo: { vd: PDFC.VD, am: PDFC.AM, vm: PDFC.VM }[f], corT: f === 'am' ? '#2b1f00' : '#ffffff' } : { t: 'Sem avaliação', fundo: '#b8c2cc', corT: '#132331' };
+function resumoItens(D, itens) { const g = novoG(''); itens.forEach(r => soma(g, r, D)); return g; }
+function pdfCaixasItens(c, g) {
+  pdfResumo(c, [['Para troca (vermelho)', g.vmN + ' itens · ' + brl(g.vmV), PDFC.VM], ['Em atenção (amarelo)', g.amN + ' itens · ' + brl(g.amV), PDFC.AM], ['Investimento para zerar', brl(g.vmV + g.amV), PDFC.AZ]]);
+}
+/* pendências agrupadas por equipamento */
+function pdfPendencias(c, D, itens, titulo) {
+  pdfTitulo(c, titulo || 'Pendências', plural(itens.length, 'item', 'itens'));
+  if (!itens.length) { c.P.texto('Nenhuma pendência.', c.M, c.y + 8, { tam: 9.5, cor: PDFC.MUT }); c.y += 24; return; }
+  const ids = [...new Set(itens.map(r => r.equipId))].sort((a, b) => cmpTxt(D.equip[a].nome, D.equip[b].nome));
+  ids.forEach(id => {
+    const e = D.equip[id], l = itens.filter(r => r.equipId === id).sort((a, b) => (vm(a) ? 0 : 1) - (vm(b) ? 0 : 1) || ordItem(a, b));
+    c.cabe(64);
+    c.P.ret(c.M, c.y, c.LW, 22, { fundo: PDFC.ESC });
+    c.P.texto(e.nome, c.M + 8, c.y + 15, { tam: 11, neg: true, cor: '#ffffff' });
+    c.P.texto('Inspetor: ' + nomeInsp(D, e.inspId) + '  ·  Semáforo: ' + (e.farol ? FAROL[e.farol].n.toLowerCase() : 'sem avaliação'), c.M + c.LW - 8, c.y + 15, { tam: 8, cor: '#c9d6e2', al: 'dir' });
+    c.y += 22;
+    pdfTabela(c, [{ t: 'Cavalete', w: 50 }, { t: 'Código', w: 46, al: 'centro' }, { t: 'Situação', w: 62, al: 'centro' }, { t: 'NI', w: 62 }, { t: 'Descrição', w: 150 }, { t: 'Observação', w: c.LW - 370 }],
+      l.map(r => { const t = D.tipo[r.tipoId]; return [{ t: r.cav || '-', neg: true, tam: 10.5 }, { t: POS[r.pos], fundo: PDFC.ESC }, etqNivel(r), { t: t ? t.ni : '-', neg: true, tam: 9 }, t ? (t.desc || CATN[t.cat]) : '', { t: [avisoItem(D, r), r.obs || ''].filter(Boolean).join(' · '), cor: avisoItem(D, r) ? (ehPes(r.pos) ? '#b71c1c' : '#7a5600') : PDFC.MUT }]; }));
+  });
+}
+/* lista de compra: por NI, separando troca e atenção */
+function pdfCompra(c, D, itens, titulo) {
+  const m = new Map();
+  itens.forEach(r => { if (!m.has(r.tipoId)) m.set(r.tipoId, { t: D.tipo[r.tipoId], vm: 0, am: 0 }); m.get(r.tipoId)[vm(r) ? 'vm' : 'am']++; });
+  const l = [...m.values()].sort((a, b) => ((a.t ? ORD_CAT[a.t.cat] : 9) - (b.t ? ORD_CAT[b.t.cat] : 9)) || cmpTxt(a.t ? a.t.ni : '', b.t ? b.t.ni : ''));
+  pdfTitulo(c, titulo || 'Lista de compra', plural(l.length, 'NI', 'NIs'));
+  if (!l.length) { c.P.texto('Nada a comprar.', c.M, c.y + 8, { tam: 9.5, cor: PDFC.MUT }); c.y += 24; return; }
+  let tv = 0, tt = 0, qv = 0, qa = 0;
+  const linhas = l.map(x => {
+    const pu = x.t ? Number(x.t.preco) || 0 : 0; tv += pu * x.vm; tt += pu * (x.vm + x.am); qv += x.vm; qa += x.am;
+    return [{ t: x.t ? x.t.ni : '-', neg: true, tam: 9 }, (x.t ? x.t.desc || CATN[x.t.cat] : ''), { t: String(x.vm), neg: true }, String(x.am), brl(pu), { t: brl(pu * x.vm), neg: true }, brl(pu * (x.vm + x.am))];
+  });
+  const tot = [{ t: 'Total', neg: true }, '', { t: String(qv), neg: true }, { t: String(qa), neg: true }, '', { t: brl(tv), neg: true, cor: PDFC.VM }, { t: brl(tt), neg: true }]; tot.total = 1;
+  linhas.push(tot);
+  pdfTabela(c, [{ t: 'NI', w: 62 }, { t: 'Item', w: 152 }, { t: 'Troca', w: 42, al: 'dir' }, { t: 'Atenção', w: 48, al: 'dir' }, { t: 'Preço unit.', w: 68, al: 'dir' }, { t: 'Valor troca', w: 74, al: 'dir' }, { t: 'Troca + atenção', w: c.LW - 446, al: 'dir' }], linhas);
+  c.P.texto('Valor troca: só os itens vermelhos (lista da execução). Troca + atenção: inclui também os amarelos.', c.M, c.y - 4, { tam: 7.5, cor: PDFC.MUT });
+  c.y += 10;
+}
+function pdfEquipamentos(c, D, eqs, titulo) {
+  pdfTitulo(c, titulo || 'Equipamentos', plural(eqs.length, 'equipamento', 'equipamentos'));
+  const l = eqs.map(e => Object.assign(resumoEquip(D, e), { e })).sort((a, b) => ((FAROL_ORD[a.e.farol] ?? 3) - (FAROL_ORD[b.e.farol] ?? 3)) || (b.vmV - a.vmV) || cmpTxt(a.nome, b.nome));
+  pdfTabela(c, [{ t: 'Semáforo', w: 70, al: 'centro' }, { t: 'Equipamento', w: 72 }, { t: 'Inspetor', w: 108 }, { t: 'Roletes', w: 44, al: 'dir' }, { t: 'Bons', w: 44, al: 'dir' }, { t: 'Atenção', w: 46, al: 'dir' }, { t: 'Troca', w: 42, al: 'dir' }, { t: 'Valor troca', w: c.LW - 426, al: 'dir' }],
+    l.map(g => [etqFarol(g.e.farol), { t: g.nome, neg: true }, nomeInsp(D, g.e.inspId), nfmt(g.total), pctTxt(pct(g.bons, g.total)), pctTxt(pct(g.amU, g.total)), pctTxt(pct(g.vmU, g.total)), { t: brl(g.vmV), neg: true }]));
+}
+/* tipo = equip | insp | tipo | sem; id = chave, ou '' para o total da seção */
+function gerarRelatorio(tipo, id) {
+  const D = dados(), at = itensAtivos(D), eqs = Object.values(D.equip).filter(e => e.ativo !== false), ar = AREAD[S.area] || '';
+  const dt = fData(Date.now());
+  let c, nome;
+  if (tipo === 'equip' && id) {
+    const e = D.equip[id], it = at.filter(r => r.equipId === id), g = resumoEquip(D, e);
+    c = pdfNovo('Relatório do equipamento ' + e.nome, ar + '  ·  Inspetor: ' + nomeInsp(D, e.inspId) + '  ·  ' + dt);
+    pdfResumo(c, [['Semáforo', e.farol ? FAROL[e.farol].s : 'Sem avaliação', e.farol ? { vd: PDFC.VD, am: PDFC.AM, vm: PDFC.VM }[e.farol] : '#b8c2cc'], ['Roletes', nfmt(g.total) + ' (' + nfmt(e.ncav) + ' cavaletes)', PDFC.AZ], ['Bons / atenção / troca', pctTxt(pct(g.bons, g.total)) + ' / ' + pctTxt(pct(g.amU, g.total)) + ' / ' + pctTxt(pct(g.vmU, g.total)), PDFC.VD]]);
+    if (e.farol) { c.P.texto('Semáforo avaliado em ' + fData(e.farolEm) + ' por ' + nomeInsp(D, e.farolPor) + '.', c.M, c.y - 4, { tam: 8.5, cor: PDFC.MUT }); c.y += 10; }
+    pdfCaixasItens(c, g); pdfPendencias(c, D, it); pdfCompra(c, D, it); nome = 'relatorio-' + e.nome;
+  } else if (tipo === 'insp' && id) {
+    const it = at.filter(r => r.inspId === id), n = nomeInsp(D, id);
+    c = pdfNovo('Relatório do inspetor', n + '  ·  ' + ar + '  ·  ' + dt);
+    pdfCaixasItens(c, resumoItens(D, it)); pdfPendencias(c, D, it); pdfCompra(c, D, it); nome = 'relatorio-' + n;
+  } else if (tipo === 'tipo' && id) {
+    const t = D.tipo[id], it = at.filter(r => r.tipoId === id);
+    c = pdfNovo('Relatório do NI ' + (t ? t.ni : ''), (t ? CATN[t.cat] + (t.desc ? ' · ' + t.desc : '') + '  ·  ' + brl(t.preco) + ' un.  ·  ' : '') + ar + '  ·  ' + dt);
+    pdfCaixasItens(c, resumoItens(D, it)); pdfCompra(c, D, it, 'Compra deste NI'); pdfPendencias(c, D, it, 'Onde está marcado'); nome = 'relatorio-ni-' + (t ? t.ni : '');
+  } else if (tipo === 'tipo') {
+    c = pdfNovo('Lista de compras da área', ar + '  ·  todos os componentes marcados  ·  ' + dt);
+    pdfCaixasItens(c, resumoItens(D, at)); pdfCompra(c, D, at, 'Lista de compras'); nome = 'lista-de-compras';
+  } else if (tipo === 'insp') {
+    c = pdfNovo('Relatório por inspetor', ar + '  ·  ' + dt);
+    pdfCaixasItens(c, resumoItens(D, at));
+    const ids = [...new Set(Object.values(D.insp).filter(i => i.area === S.area && i.ativo).map(i => i.id).concat(at.map(r => r.inspId)))];
+    pdfTitulo(c, 'Inspetores', plural(ids.length, 'inspetor', 'inspetores'));
+    pdfTabela(c, [{ t: 'Inspetor', w: 150 }, { t: 'Equip.', w: 44, al: 'dir' }, { t: 'Troca', w: 46, al: 'dir' }, { t: 'Valor troca', w: 86, al: 'dir' }, { t: 'Atenção', w: 50, al: 'dir' }, { t: 'Valor atenção', w: c.LW - 376, al: 'dir' }],
+      ids.map(i => ({ i, g: resumoItens(D, at.filter(r => r.inspId === i)) })).sort((a, b) => b.g.vmV - a.g.vmV || cmpTxt(nomeInsp(D, a.i), nomeInsp(D, b.i)))
+        .map(x => [{ t: nomeInsp(D, x.i), neg: true }, String(eqs.filter(e => e.inspId === x.i).length), String(x.g.vmN), { t: brl(x.g.vmV), neg: true }, String(x.g.amN), brl(x.g.amV)]));
+    pdfPendencias(c, D, at); pdfCompra(c, D, at); nome = 'relatorio-inspetores';
+  } else {
+    const sem = tipo === 'sem';
+    c = pdfNovo(sem ? 'Semáforo dos equipamentos' : 'Relatório dos equipamentos', ar + '  ·  ' + dt);
+    const n = { vd: 0, am: 0, vm: 0, x: 0 }; eqs.forEach(e => { n[FAROL[e.farol] ? e.farol : 'x']++; });
+    const G = resumoItens(D, at); G.total = eqs.reduce((s, e) => s + totalRoletes(e), 0); G.bons = Math.max(0, G.total - G.vmU - G.amU);
+    pdfResumo(c, [['Verdes', String(n.vd), PDFC.VD], ['Amarelos', String(n.am), PDFC.AM], ['Vermelhos', String(n.vm), PDFC.VM], ['Sem avaliação', String(n.x), '#b8c2cc'], ['Roletes bons', pctTxt(pct(G.bons, G.total)), PDFC.AZ]]);
+    pdfCaixasItens(c, G);
+    pdfEquipamentos(c, D, eqs);
+    if (!sem) { pdfPendencias(c, D, at); pdfCompra(c, D, at); }
+    nome = sem ? 'semaforo-equipamentos' : 'relatorio-equipamentos';
+  }
+  return { blob: pdfFechar(c), nome: (chave(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'relatorio') + '-' + new Date().toISOString().slice(0, 10) + '.pdf' };
+}
+async function pdfRelatorio(tipo, id, modo) {
+  let r;
+  try { r = gerarRelatorio(tipo, id); } catch (e) { return toast('Não foi possível gerar o PDF.'); }
+  entregarPdf(r.blob, r.nome, modo, 'Relatório de roletes');
+}
+function mIndGrupo(tipo, id) {
+  const D = dados(), at = itensAtivos(D);
+  let tit, it, extra = '';
+  if (tipo === 'equip') { const e = D.equip[id]; if (!e) return; tit = e.nome; it = at.filter(r => r.equipId === id); const g = resumoEquip(D, e); extra = `<div class="row" style="gap:10px;margin-bottom:6px">${semaforo(e.farol, 1)}<div class="f"><b>${e.farol ? FAROL[e.farol].s : 'Semáforo sem avaliação'}</b><div class="mut sm">Inspetor: ${esc(nomeInsp(D, e.inspId))} · ${nfmt(g.total)} roletes</div></div></div>${barra(g)}`; }
+  else if (tipo === 'insp') { tit = nomeInsp(D, id); it = at.filter(r => r.inspId === id); }
+  else { const t = D.tipo[id]; tit = 'NI ' + (t ? t.ni : ''); it = at.filter(r => r.tipoId === id); extra = t ? `<div class="mut" style="margin-bottom:8px">${esc(CATN[t.cat])}${t.desc ? ' · ' + esc(t.desc) : ''} · ${brl(t.preco)} un.</div>` : ''; }
+  const g = resumoItens(D, it), eqN = new Set(it.map(r => r.equipId)).size, tN = new Set(it.map(r => r.tipoId)).size;
+  abrirModal(tit, `${extra}<div class="kpis" style="margin-top:10px"><div class="kpi vm"><span>Para troca</span><b>${g.vmN}</b><i>${brl(g.vmV)}</i></div><div class="kpi am"><span>Em atenção</span><b>${g.amN}</b><i>${brl(g.amV)}</i></div></div>
+    <div class="mut sm" style="margin-bottom:12px">${plural(it.length, 'pendência', 'pendências')} em ${plural(eqN, 'equipamento', 'equipamentos')}; ${plural(tN, 'NI', 'NIs')} na lista de compra. Investimento para zerar: <b>${brl(g.vmV + g.amV)}</b>.</div>
+    <div class="dica" style="margin-bottom:10px">O PDF traz a lista de pendências e a lista de compra.</div>
+    <div class="btns"><button class="btn" data-a="relPdf" data-k="${tipo}" data-id="${id}" data-m="baixar">${ICO.pdf} Baixar PDF</button><button class="btn wa" data-a="relPdf" data-k="${tipo}" data-id="${id}" data-m="whats">${ICO.whats} Enviar PDF no WhatsApp</button></div>
+    ${tipo === 'equip' && S.eu ? `<button class="btn sec w" style="margin-top:8px" data-a="abrirEquip" data-id="${id}">Abrir o equipamento</button>` : ''}`);
+}
+function totalSecao(D, at, eqs) {
+  const g = resumoItens(D, at), nNi = new Set(at.map(r => r.tipoId)).size;
+  const nIns = Object.values(D.insp).filter(i => i.area === S.area && i.ativo).length;
+  const info = {
+    sem: ['Total da seção', plural(eqs.length, 'equipamento', 'equipamentos') + ' com semáforo e estado dos roletes', 'Relatório do semáforo (PDF)', 'equipamento'],
+    equip: ['Total da seção', plural(eqs.length, 'equipamento', 'equipamentos') + ', todas as pendências e a lista de compra', 'Relatório dos equipamentos (PDF)', 'equipamento'],
+    insp: ['Total da seção', plural(nIns, 'inspetor', 'inspetores') + ', pendências de cada um e a lista de compra', 'Relatório dos inspetores (PDF)', 'inspetor'],
+    tipo: ['Lista de compras da área', plural(nNi, 'NI', 'NIs') + ' de rolete e cavalete, com quantidades e valores', 'Lista de compras (PDF)', 'NI']
+  }[V.ind];
+  return `<section class="tot"><b>${info[0]}</b><div class="ts">${esc(info[1])}</div>
+    <div class="tg"><div><span>Para troca</span><b>${nfmt(g.vmN)}</b><i>${brl(g.vmV)}</i></div><div><span>Em atenção</span><b>${nfmt(g.amN)}</b><i>${brl(g.amV)}</i></div><div><span>Total</span><b>${nfmt(g.vmN + g.amN)}</b><i>${brl(g.vmV + g.amV)}</i></div></div>
+    <div class="btns"><button class="btn cl" data-a="relPdf" data-k="${V.ind}" data-id="" data-m="baixar">${ICO.pdf} ${info[2]}</button><button class="btn wa" data-a="relPdf" data-k="${V.ind}" data-id="" data-m="whats">${ICO.whats} Enviar</button></div>
+    <div class="ts" style="margin-top:10px">Toque num ${info[3]} abaixo para o relatório só dele.</div></section>`;
+}
+
+/* ----- Indicadores ----- */
+function vIndicadores(D) {
+  const at = itensAtivos(D), G = novoG('Área');
+  at.forEach(r => soma(G, r, D));
+  const eqs = Object.values(D.equip).filter(e => e.ativo !== false);
+  G.total = eqs.reduce((s, e) => s + totalRoletes(e), 0);
+  G.bons = Math.max(0, G.total - G.vmU - G.amU);
+  const trocados30 = Object.values(D.rol).filter(r => r.status === 'trocado' && (r.trocadoEm || 0) > Date.now() - 30 * 864e5).length;
+  let grupos;
+  if (V.ind === 'sem') grupos = [];
+  else if (V.ind === 'equip') grupos = eqs.map(e => Object.assign(resumoEquip(D, e), { k: e.id, sub: (e.area ? e.area + ' · ' : '') + nfmt(totalRoletes(e)) + ' roletes' }));
+  else if (V.ind === 'insp') {
+    const m = new Map();
+    Object.values(D.insp).filter(i => i.area === S.area && i.ativo).forEach(i => m.set(i.id, Object.assign(novoG(i.nome), { k: i.id })));
+    at.forEach(r => { if (!m.has(r.inspId)) m.set(r.inspId, Object.assign(novoG(nomeInsp(D, r.inspId)), { k: r.inspId })); soma(m.get(r.inspId), r, D); });
+    grupos = [...m.values()];
+  } else {
+    const m = new Map();
+    at.forEach(r => { const t = D.tipo[r.tipoId]; if (!m.has(r.tipoId)) m.set(r.tipoId, Object.assign(novoG(t ? 'NI ' + t.ni : '—'), { k: r.tipoId, sub: t ? CATN[t.cat] + (t.desc ? ' · ' + t.desc : '') + ' · ' + brl(t.preco) + ' un.' : '' })); soma(m.get(r.tipoId), r, D); });
+    grupos = [...m.values()];
+  }
+  grupos.sort((a, b) => (b.vmV - a.vmV) || (b.vmN - a.vmN) || (b.amN - a.amN) || cmpTxt(a.nome, b.nome));
+  const max = Math.max(1, ...grupos.map(g => g.vmV + g.amV));
+  const linhas = grupos.map(g => `<div class="li tap" style="display:block" data-a="indGrupo" data-k="${V.ind}" data-id="${esc(g.k)}"><div class="row"><b class="f">${esc(g.nome)}</b><b>${brl(g.vmV)}</b><span style="font-size:22px;color:#a5b1bc;margin-left:2px">›</span></div>
+    ${g.sub ? `<div class="mut sm">${esc(g.sub)}</div>` : ''}
+    ${V.ind === 'equip' && g.total ? barra(g) : `<div class="bar"><i class="r" style="width:${g.vmV / max * 100}%"></i><i class="y" style="width:${g.amV / max * 100}%"></i></div>`}
+    <div class="sm" style="margin-top:4px"><span class="chip vm">Troca</span> ${qtdTxt(g.vmR, g.vmC)} · ${brl(g.vmV)}</div>
+    <div class="sm" style="margin-top:3px"><span class="chip am">Atenção</span> ${qtdTxt(g.amR, g.amC)} · ${brl(g.amV)}</div></div>`).join('');
+  return `<div class="kpis">
+    <div class="kpi vm"><span>Lista de troca (vermelho)</span><b>${nfmt(G.vmN)}</b><i>${brl(G.vmV)}</i></div>
+    <div class="kpi am"><span>Pontos de atenção (amarelo)</span><b>${nfmt(G.amN)}</b><i>${brl(G.amV)}</i></div>
+    <div class="kpi"><span>Investimento para zerar tudo</span><b style="font-size:19px">${brl(G.vmV + G.amV)}</b></div>
+    <div class="kpi vd"><span>Trocados (30 dias)</span><b>${nfmt(trocados30)}</b></div>
+  </div>
+  <div class="card"><h3>Estado dos roletes da área</h3>
+    <div class="mut sm">${nfmt(G.total)} roletes em ${plural(eqs.length, 'equipamento', 'equipamentos')} (cavaletes × 3 + retorno)</div>
+    ${G.total ? barra(G) : '<div class="mut">Cadastre os equipamentos com a quantidade de cavaletes.</div>'}
+    <div class="sm" style="margin-top:6px">${nfmt(G.bons)} bons · ${nfmt(G.amU)} em atenção · ${nfmt(G.vmU)} para troca</div>
+    ${G.semPreco ? `<div class="aviso">${plural(G.semPreco, 'item marcado está', 'itens marcados estão')} com NI sem preço. O investimento está incompleto.</div>` : ''}</div>
+  <div class="tabs"><button class="${V.ind === 'sem' ? 'on' : ''}" data-a="indTab" data-v="sem">Semáforo</button><button class="${V.ind === 'equip' ? 'on' : ''}" data-a="indTab" data-v="equip">Equipamento</button><button class="${V.ind === 'insp' ? 'on' : ''}" data-a="indTab" data-v="insp">Inspetor</button><button class="${V.ind === 'tipo' ? 'on' : ''}" data-a="indTab" data-v="tipo">Tipo (NI)</button></div>
+  ${totalSecao(D, at, eqs)}
+  ${V.ind === 'sem' ? vSemaforo(D, eqs) : `<div class="card">${linhas || '<div class="vazio">Sem dados.</div>'}</div>`}
+  <button class="btn w vd" data-a="whatsInd">Enviar resumo no WhatsApp</button>`;
+}
+function vSemaforo(D, eqs) {
+  const n = { vd: 0, am: 0, vm: 0, x: 0 };
+  eqs.forEach(e => { n[FAROL[e.farol] ? e.farol : 'x']++; });
+  const l = eqs.map(e => Object.assign(resumoEquip(D, e), { e }))
+    .sort((a, b) => ((FAROL_ORD[a.e.farol] ?? 3) - (FAROL_ORD[b.e.farol] ?? 3)) || (b.vmU + b.amU) / (b.total || 1) - (a.vmU + a.amU) / (a.total || 1) || cmpTxt(a.nome, b.nome));
+  const cor = { vd: '#2e9e4b', am: '#e0a100', vm: '#d23a2e', x: '#b8c2cc' };
+  return `<div class="fsum">${[['vd', 'Bons'], ['am', 'Atenção'], ['vm', 'Críticos'], ['x', 'Sem avaliação']].map(([k, t]) => `<div><b>${n[k]}</b><span><i class="dt" style="background:${cor[k]}"></i>${t}</span></div>`).join('')}</div>
+  <div class="card">${l.map(g => `<div class="li tap" data-a="indGrupo" data-k="equip" data-id="${g.e.id}" style="align-items:flex-start">${semaforo(g.e.farol, 1)}
+    <div class="f"><div class="row" style="gap:8px"><b class="f">${esc(g.nome)}</b>${g.e.farol ? `<span class="chip ${g.e.farol}">${FAROL[g.e.farol].n}</span>` : '<span class="chip az">Sem avaliação</span>'}</div>
+      <div class="mut sm">${esc(nomeInsp(D, g.e.inspId))} · ${nfmt(g.total)} roletes</div>
+      ${barra(g)}
+      <div class="mut sm" style="margin-top:4px">${g.e.farol ? 'Avaliado em ' + fData(g.e.farolEm) + ' por ' + esc(nomeInsp(D, g.e.farolPor)) : 'O semáforo é preenchido na inspeção.'}</div></div></div>`).join('') || '<div class="vazio">Nenhum equipamento cadastrado nesta área.</div>'}</div>`;
+}
+function textoInd(D) {
+  const at = itensAtivos(D), G = novoG(''), eqs = Object.values(D.equip).filter(e => e.ativo !== false);
+  at.forEach(r => soma(G, r, D));
+  G.total = eqs.reduce((s, e) => s + totalRoletes(e), 0);
+  const T = ['*INDICADORES DE ROLETES*', (AREAD[S.area] || '') + ' · ' + fData(Date.now()), '',
+    '*Lista de troca:* ' + G.vmN + ' itens · ' + brl(G.vmV), '*Pontos de atenção:* ' + G.amN + ' itens · ' + brl(G.amV),
+    '*Investimento para zerar tudo:* ' + brl(G.vmV + G.amV)];
+  if (G.total) T.push('*Roletes bons:* ' + pctTxt(pct(Math.max(0, G.total - G.vmU - G.amU), G.total)) + ' de ' + nfmt(G.total));
+  const sf = { vd: '🟢', am: '🟡', vm: '🔴' };
+  T.push('', '*Semáforo dos equipamentos*');
+  eqs.slice().sort((a, b) => ((FAROL_ORD[a.farol] ?? 3) - (FAROL_ORD[b.farol] ?? 3)) || cmpTxt(a.nome, b.nome)).forEach(e => {
+    const g = resumoEquip(D, e);
+    T.push((sf[e.farol] || '⚪') + ' ' + e.nome + ': ' + (e.farol ? FAROL[e.farol].s.toLowerCase() : 'sem avaliação') + (g.total ? ' · bons ' + pctTxt(pct(g.bons, g.total)) : '') + (g.vmN ? ' · troca ' + g.vmN + ' (' + brl(g.vmV) + ')' : '') + (g.amN ? ' · atenção ' + g.amN : ''));
+  });
+  return T.join('\n');
+}
+
+/* ----- Conta ----- */
+function vConta(D) { V.tela = 'inicio'; return vInicio(D); }
+function vEquip(D) {
+  const e = D.equip[V.equipId];
+  if (!e) { V.tela = 'inicio'; return vInicio(D); }
+  const r = resumoEquip(D, e), meu = e.inspId === S.eu.id || S.admin;
+  const at = itensAtivos(D).filter(x => x.equipId === e.id).sort(ordItem);
+  const tr = Object.values(D.rol).filter(x => x.equipId === e.id && x.status === 'trocado').sort((a, b) => (b.trocadoEm || 0) - (a.trocadoEm || 0)).slice(0, 15);
+  const tp = id => D.tipo[id] ? 'NI ' + D.tipo[id].ni : 'não definido';
+  return `<button class="voltar" data-a="tela" data-v="inicio">‹ Minha página</button><div class="card">
+    <h2 style="margin-bottom:2px">${esc(e.nome)}</h2><div class="mut">${esc(e.area || '')}${e.area ? ' · ' : ''}Inspetor: ${esc(nomeInsp(D, e.inspId))}${e.ativo === false ? ' · arquivado' : ''}</div>
+    <div class="sm" style="margin-top:8px">${ehDos(e) ? '<span class="tag dos">Balança dosadora</span> 3 roletes de pesagem + ' + nfmt(e.ncav) + ' de carga · <b>' + nfmt(r.total) + ' roletes</b>' : `${e.bal === 'tem' ? '<span class="tag">Com balança</span> ' : ''}${nfmt(e.ncav)} cavaletes × 3 = ${nfmt(e.ncav * 3)} roletes de carga · ${nfmt(e.nret)} de retorno · <b>${nfmt(r.total)} roletes</b>`}</div>
+    ${barra(r)}
+    <div class="sm" style="margin-top:6px">${nfmt(r.bons)} bons · ${nfmt(r.amU)} em atenção · ${nfmt(r.vmU)} para troca</div>
+    <div class="row" style="margin-top:12px;gap:10px">${semaforo(e.farol, 1)}<div class="f"><b>${e.farol ? FAROL[e.farol].s : 'Semáforo sem avaliação'}</b><div class="mut sm">${e.farol ? 'Avaliado em ' + fData(e.farolEm) + ' por ' + esc(nomeInsp(D, e.farolPor)) : 'É preenchido pelo inspetor na inspeção.'}</div></div></div>
+    <div class="mut sm" style="margin-top:8px">Padrão: carga ${esc(tp(e.tipoCarga))}${ehDos(e) ? '' : ` · retorno ${esc(tp(e.tipoRetorno))} · cavalete ${esc(tp(e.tipoCav))}`}${e.bal ? ` · balança ${esc(tp(e.tipoBal))}` : ''}</div>
+    <div class="btns" style="margin-top:12px">${e.ativo !== false ? `<button class="btn" data-a="iniciarInsp" data-id="${e.id}">Inspecionar</button>` : ''}${r.vmN ? `<button class="btn vd" data-a="listaDe" data-id="${e.id}">Lista de troca</button>` : ''}${meu ? `<button class="btn sec" data-a="editarEquip" data-id="${e.id}">Editar</button>` : ''}</div></div>
+  <div class="kpis"><div class="kpi vm"><span>Para troca</span><b>${r.vmN}</b><i>${brl(r.vmV)}</i></div><div class="kpi am"><span>Atenção</span><b>${r.amN}</b><i>${brl(r.amV)}</i></div></div>
+  <div class="card"><h3>Itens marcados</h3>${at.map(x => linhaItem(D, x, false)).join('') || '<div class="mut">Nenhum.</div>'}</div>
+  ${tr.length ? `<details class="card det"><summary>Trocados recentemente (${tr.length})</summary>${tr.map(x => `<div class="li"><span class="cod">${POS[x.pos]}</span><div class="f"><b>${esc(rotItem(x))}</b><div class="mut sm">${fDH(x.trocadoEm)} · baixa por ${esc(nomeInsp(D, x.trocadoPor))}</div></div>${x.trocadoPor === S.eu.id || S.admin ? `<button class="btn sec peq" data-a="desfazerBaixa" data-id="${x.id}">Desfazer</button>` : ''}</div>`).join('')}</details>` : ''}`;
+}
+
+/* ===== janelas ===== */
+let _volta = null;
+function abrirModal(tit, html) { $('#caixa').innerHTML = `<div class="cab"><h2>${esc(tit)}</h2><button class="x" data-a="fechar" aria-label="Fechar">×</button></div>${html}`; $('#modal').style.display = 'block'; }
+function fecharModal() { $('#modal').style.display = 'none'; $('#caixa').innerHTML = ''; }
+function toast(t, ms) { const el = $('#toast'); el.textContent = t; el.style.display = 'block'; clearTimeout(el._t); el._t = setTimeout(() => { el.style.display = 'none'; }, ms || 3200); }
+function confirmar(tit, texto, ok, rotulo, cls) {
+  abrirModal(tit, `<p>${texto}</p><div class="btns"><button class="btn sec" data-a="fechar">Cancelar</button><button class="btn ${cls || ''}" data-a="confirmarOk">${esc(rotulo || 'Confirmar')}</button></div>`);
+  _volta = ok;
+}
+function selTipo(D, cat, nome, v) {
+  const l = tiposCat(D, cat);
+  return `<select class="in" name="${nome}"><option value="">Não definido</option>${l.map(t => `<option value="${t.id}" ${t.id === v ? 'selected' : ''}>${esc(tipoTxt(t))}</option>`).join('')}</select>`;
+}
+function mEquip(id, paraInsp) {
+  const D = dados(), e = id ? D.equip[id] : {};
+  abrirModal(id ? 'Editar equipamento' : 'Novo equipamento', `<form data-f="equip" data-id="${id || ''}" data-insp="${paraInsp ? 1 : ''}">
+    <label class="l">Nome do transportador</label><input class="in" name="nome" maxlength="40" value="${esc(e.nome || '')}" placeholder="Ex.: TR-101" required>
+    <label class="l">Área ou descrição (opcional)</label><input class="in" name="area" maxlength="50" value="${esc(e.area || '')}" placeholder="Ex.: Pátio 2">
+    <label class="l">O equipamento é uma balança dosadora ou tem balança?</label><select class="in" name="bal">${['', 'tem', 'dos'].map(b => `<option value="${b}" ${(e.bal || '') === b ? 'selected' : ''}>${BALN[b]}</option>`).join('')}</select>
+    <div class="dica" id="balDica">${BALDICA[e.bal || '']}</div>
+    <div data-nd ${ehDos(e) ? 'hidden' : ''}>
+    <label class="l">Quantidade de cavaletes de carga</label><input class="in" name="ncav" inputmode="numeric" value="${esc(e.ncav || '')}">
+    <div class="dica">Cada cavalete tem 3 roletes (L.E, C.T e L.D).</div>
+    <label class="l">Quantidade de roletes de retorno</label><input class="in" name="nret" inputmode="numeric" value="${esc(e.nret == null ? '' : e.nret)}">
+    <div class="dica">Os roletes por baixo da correia. O app soma: cavaletes × 3 + retorno.</div></div>
+    <label class="l">Rolete de carga padrão</label>${selTipo(D, 'carga', 'tipoCarga', e.tipoCarga)}
+    <div data-nd ${ehDos(e) ? 'hidden' : ''}>
+    <label class="l">Rolete de retorno padrão</label>${selTipo(D, 'retorno', 'tipoRetorno', e.tipoRetorno)}
+    <label class="l">Cavalete padrão</label>${selTipo(D, 'cavalete', 'tipoCav', e.tipoCav)}</div>
+    <div data-ds ${ehDos(e) ? '' : 'hidden'}><label class="l">Quantidade de roletes de carga da balança</label><input class="in" name="ncar" inputmode="numeric" value="${esc(ehDos(e) ? e.ncav || '' : '')}">
+    <div class="dica">Sem contar os 3 roletes de pesagem (P1, P2 e P3). Na inspeção, o inspetor digita o número do rolete de carga.</div></div>
+    <div data-bl ${e.bal ? '' : 'hidden'}><label class="l">Rolete de balança padrão</label>${selTipo(D, 'balanca', 'tipoBal', e.tipoBal)}</div>
+    <div class="dica">O padrão já vem escolhido na inspeção. Os NI vêm do cadastro geral de Roletes e cavaletes.</div>
+    <div class="erro" id="fe" style="display:none"></div>
+    <button class="btn w" style="margin-top:14px">Salvar</button>
+    ${id && e.ativo !== false ? `<button type="button" class="btn w lin" style="margin-top:8px" data-a="arquivarEquip" data-id="${id}">Arquivar equipamento</button>` : ''}
+    ${id && e.ativo === false ? `<button type="button" class="btn w vd" style="margin-top:8px" data-a="reativarEquip" data-id="${id}">Reativar equipamento</button>` : ''}
+  </form>`);
+}
+function mTipo(id, cat) {
+  const T = tiposAtuais(), t = id ? T[id] : { cat: cat || 'carga' }, U = usoAtual();
+  if (!t) return;
+  abrirModal(id ? 'NI ' + t.ni : 'Novo ' + CATN[t.cat].toLowerCase(), `<form data-f="tipo" data-id="${id || ''}">
+    <label class="l" for="tCat">Categoria</label><select class="in" id="tCat" name="cat">${CATS.map(c => `<option value="${c}" ${t.cat === c ? 'selected' : ''}>${CATN[c]}</option>`).join('')}</select>
+    <label class="l" for="tNi">NI</label><input class="in" id="tNi" name="ni" maxlength="30" value="${esc(t.ni || '')}" required>
+    <label class="l" for="tDesc">Descrição (opcional)</label><input class="in" id="tDesc" name="desc" maxlength="70" value="${esc(t.desc || '')}" placeholder="Ex.: Rolete carga Ø152 x 380 mm">
+    <label class="l" for="tPreco">Preço de compra (R$)</label><input class="in" id="tPreco" name="preco" inputmode="decimal" value="${esc(precoIn(t.preco))}" placeholder="0,00" required>
+    <div class="dica">O cadastro é um só para todos os inspetores. Mudar o preço atualiza o investimento em todos os indicadores.</div>
+    <div class="erro" id="fe" style="display:none"></div>
+    <button class="btn w" style="margin-top:14px">Salvar</button>
+    ${id && !U[id] ? `<button type="button" class="btn w lin" style="margin-top:8px" data-a="apagarTipo" data-id="${id}">Apagar do cadastro</button>` : ''}
+  </form>`);
+}
+function mItem(id) {
+  const D = dados(), r = D.rol[id]; if (!r) return;
+  const e = D.equip[r.equipId], t = D.tipo[r.tipoId], meu = r.inspId === S.eu.id || S.admin;
+  const dos = ehDos(e), critico = dos || !!r.zb;
+  const l = tiposCat(D, catDe(r.pos, r.zb));
+  abrirModal(r.pos === 'car' ? 'Carga nº ' + r.cav : (r.cav ? 'Cavalete ' + r.cav + ' · ' : '') + POS[r.pos], `<div class="cavbox">${dos ? dosSvg({ [r.pos]: { m: 'vm', s: 'sel' } }, false) : cavSvg(r.pos === 'cav' ? { cav: { m: vm(r) ? 'vm' : 'am', s: 'sel' }, le: { m: vm(r) ? 'vm' : 'am', s: 'sel' }, ct: { m: vm(r) ? 'vm' : 'am', s: 'sel' }, ld: { m: vm(r) ? 'vm' : 'am', s: 'sel' } } : { [r.pos]: { m: vm(r) ? 'vm' : 'am', s: 'sel' } }, false)}</div>
+    <p><b>${esc(e ? e.nome : '')}</b> · ${esc(rotItem(r))} · <span class="chip ${vm(r) ? 'vm' : 'am'}">${critico ? 'Troca · crítico' : vm(r) ? 'Troca' : 'Atenção'}</span>${avisoHtml(D, r)}<span class="mut sm">${esc(tipoTxt(t))} · ${brl(t ? t.preco : 0)}<br>Marcado por ${esc(nomeInsp(D, r.inspId))} em ${fDH(r.criadoEm)}${r.obs ? '<br>Obs.: ' + esc(r.obs) : ''}</span></p>
+    ${meu ? `<form data-f="item" data-id="${id}"><label class="l">NI</label><select class="in" name="tipoId">${l.map(x => `<option value="${x.id}" ${x.id === r.tipoId ? 'selected' : ''}>${esc(tipoTxt(x))}</option>`).join('')}</select>
+      <label class="l">Observação</label><input class="in" name="obs" maxlength="120" value="${esc(r.obs || '')}"><button class="btn w sec" style="margin-top:10px">Salvar alteração</button></form>` : ''}
+    <div class="btns" style="margin-top:12px">
+      ${meu && !vm(r) ? `<button class="btn vm" data-a="promover" data-id="${id}">Passar para troca (vermelho)</button>` : ''}
+      ${meu && vm(r) && !critico ? `<button class="btn am" data-a="rebaixar" data-id="${id}">Voltar para atenção</button>` : ''}
+      <button class="btn vd" data-a="baixa" data-id="${id}">${vm(r) ? 'Foi trocado' : 'Resolvido / trocado'}</button>
+      ${meu ? `<button class="btn lin" data-a="apagarItem" data-id="${id}">Apagar marcação</button>` : ''}</div>`);
+}
+
+/* ===== ações ===== */
+const A = {
+  fechar: fecharModal,
+  fora(el) { V.fora = el.dataset.v; render(); scrollTo(0, 0); },
+  escolherArea(el) { S.area = el.dataset.v; ls.set('area', S.area); mudou(); V.fora = 'lista'; V.listaSel = null; ls.del('listaSel'); render(); scrollTo(0, 0); },
+  trocarArea() { S.area = ''; S.eu = null; V.insp = null; ls.del('area'); mudou(); render(); scrollTo(0, 0); },
+  escolherInsp(el) { escolherInsp(el.dataset.id); },
+  trocarInsp() { S.eu = null; V.insp = null; V.fora = 'lista'; V.tela = 'inicio'; fecharModal(); render(); scrollTo(0, 0); },
+  confirmarOk() { const f = _volta; _volta = null; fecharModal(); f && f(); },
+  tela(el) { V.tela = el.dataset.v; fecharModal(); render(); scrollTo(0, 0); },
+  sync() { sincronizar(); },
+  trocarServidor() { S.srv = ''; ls.del('srv'); render(); },
+  indTab(el) { V.ind = el.dataset.v; render(); },
+  indGrupo(el) { mIndGrupo(el.dataset.k, el.dataset.id); },
+  relPdf(el) { pdfRelatorio(el.dataset.k, el.dataset.id, el.dataset.m); },
+  listaTab(el) { V.lista = el.dataset.v; render(); },
+  atTodos(el) { V.atencaoTodos = el.dataset.v === '1'; render(); },
+  abrirEquip(el) { if (!S.eu) return; V.equipId = el.dataset.id; fecharModal(); V.tela = 'equip'; render(); scrollTo(0, 0); },
+  novoEquip(el) { mEquip(null, el.dataset.insp === '1'); },
+  editarEquip(el) { mEquip(el.dataset.id); },
+  novoTipo(el) { mTipo(null, el.dataset.c); },
+  editarTipo(el) { mTipo(el.dataset.id); },
+  item(el) { mItem(el.dataset.id); },
+  iniciarInsp(el) { iniciarInsp(el.dataset.id); },
+  trocarEquipInsp() {
+    const ok = () => { V.insp = null; salvarInsp(); render(); };
+    if ((V.insp.ids || []).length) confirmar('Trocar de equipamento', 'Os itens já registrados continuam salvos. Quer gerar a lista depois?', ok, 'Trocar'); else ok();
+  },
+  cancelarInsp() {
+    confirmar('Sair da inspeção', 'Os itens registrados continuam salvos e aparecem nas listas.', () => { V.insp = null; salvarInsp(); V.tela = 'inicio'; render(); }, 'Sair');
+  },
+  carMais(el) {
+    const I = V.insp, n = parseInt(I.ncar, 10);
+    I.ncar = String(Math.max(1, (isNaN(n) ? 0 : n) + Number(el.dataset.v))); salvarInsp(); render();
+  },
+  cavMais(el) {
+    const I = V.insp, n = parseInt(I.cav, 10);
+    I.cav = String(Math.max(1, (isNaN(n) ? 0 : n) + Number(el.dataset.v))); I.sel = []; salvarInsp(); render();
+  },
+  nivel(el) { if (V.insp.zb && el.dataset.v === 'am') return; V.insp.nivel = el.dataset.v; salvarInsp(); render(); },
+  zb() { V.insp.zb = !V.insp.zb; salvarInsp(); render(); },
+  pos(el) {
+    const I = V.insp, p = el.dataset.p, D = dados(), cav = normCav(I.cav);
+    if (ehDos(D.equip[I.equipId])) {
+      const { ex } = estadoDos(D, I.equipId);
+      if (ex[p]) { mItem(ex[p].id); return; }
+      if (p === 'car' && !(I.sel || []).includes('car')) { I.sel = (I.sel || []).concat('car'); salvarInsp(); render(); const i = document.querySelector('[data-k=ncar]'); if (i) { i.scrollIntoView({ block: 'center' }); i.focus(); } return; }
+      const s0 = I.sel || [];
+      I.sel = s0.includes(p) ? s0.filter(x => x !== p) : s0.concat(p); salvarInsp(); render(); return;
+    }
+    if (!cav) { toast('Digite primeiro o número do cavalete.'); const i = document.querySelector('[data-k=cav]'); i && i.focus(); return; }
+    const { ex } = estadoCav(D, I.equipId, cav);
+    if (ex[p]) { mItem(ex[p].id); return; }
+    if (CARGA.includes(p) && ex.cav) { mItem(ex.cav.id); return; }
+    let s = I.sel || [];
+    if (s.includes(p)) s = s.filter(x => x !== p);
+    else if (p === 'cav') s = s.filter(x => !CARGA.includes(x)).concat('cav');
+    else if (CARGA.includes(p)) s = s.filter(x => x !== 'cav').concat(p);
+    else s = s.concat(p);
+    I.sel = s; salvarInsp(); render();
+  },
+  adicionar() { adicionar(); },
+  desfazer(el) { enfileirar([{ c: 'rol', t: 'delete', id: el.dataset.id }]); V.insp.ids = (V.insp.ids || []).filter(x => x !== el.dataset.id); salvarInsp(); render(); toast('Registro desfeito.'); },
+  farolInsp(el) { const D = dados(); if (el.dataset.v !== 'vm' && farolTravado(D, D.equip[V.insp.equipId])) { toast(msg('farol-travado')); return; } marcarFarol(el.dataset.v); toast('Semáforo: ' + FAROL[el.dataset.v].s.toLowerCase() + '.'); },
+  farolFinal(el) { marcarFarol(el.dataset.v); fecharModal(); A.finalizar(); },
+  finalizar() {
+    const I = V.insp, D = dados(), id = I.equipId;
+    // balança: semáforo vermelho automático, sem perguntar
+    if (farolTravado(D, D.equip[id]) && I.farol !== 'vm') marcarFarol('vm');
+    if (!I.farol) {
+      abrirModal('Semáforo do ' + ((D.equip[id] || {}).nome || 'equipamento'), `<p class="mut" style="margin-top:0">Antes de gerar a lista, avalie o equipamento pela sua experiência, independente da quantidade de roletes marcados.</p>${blocoFarol('', 'farolFinal')}`);
+      return;
+    }
+    const temVm = itensAtivos(D).some(r => r.equipId === id && vm(r));
+    V.insp = null; salvarInsp();
+    V.listaSel = temVm ? [id] : V.listaSel; ls.set('listaSel', V.listaSel);
+    V.tela = 'lista'; V.lista = temVm ? 'troca' : 'atencao'; render(); scrollTo(0, 0);
+    toast(temVm ? 'Inspeção finalizada. Esta é a lista para a execução.' : 'Inspeção finalizada. Não há itens vermelhos neste equipamento.', 4500);
+  },
+  listaEq(el) { const { s } = selLista(dados()); const id = el.dataset.id; V.listaSel = s.includes(id) ? s.filter(x => x !== id) : s.concat(id); ls.set('listaSel', V.listaSel); render(); },
+  listaTodos(el) { const D = dados(), { disp } = selLista(D); V.listaSel = el.dataset.v === 'todos' ? disp : disp.filter(id => D.equip[id].inspId === S.eu.id); ls.set('listaSel', V.listaSel); render(); },
+  listaDe(el) { V.listaSel = [el.dataset.id]; ls.set('listaSel', V.listaSel); V.tela = 'lista'; V.lista = 'troca'; render(); scrollTo(0, 0); },
+  whats() { const D = dados(); abrirWhats(textoLista(D, selLista(D).s)); },
+  whatsInd() { abrirWhats(textoInd(dados())); },
+  pdfWhats() { pdfLista('whats'); },
+  pdfBaixar() { pdfLista('baixar'); },
+  baixa(el) {
+    const D = dados(), r = D.rol[el.dataset.id]; if (!r) return;
+    confirmar('Confirmar troca', `${r.pos === 'car' ? '<b>Rolete de carga nº ' + esc(r.cav) + '</b>' : (r.cav ? 'Cavalete <b>' + esc(r.cav) + '</b> · ' : '') + '<b>' + POS[r.pos] + '</b> (' + POSN[r.pos] + ')'} de ${esc((D.equip[r.equipId] || {}).nome || '')} foi trocado?`,
+      () => { enfileirar([{ c: 'rol', t: 'update', id: r.id, d: { status: 'trocado', trocadoEm: Date.now(), trocadoPor: S.eu.id } }]); toast('Baixa registrada.'); }, 'Sim, foi trocado', 'vd');
+  },
+  baixaEquip(el) {
+    const D = dados(), e = D.equip[el.dataset.id], l = itensAtivos(D).filter(r => r.equipId === e.id && vm(r));
+    confirmar('Dar baixa em todos', `Confirmar que os <b>${l.length}</b> itens vermelhos de <b>${esc(e.nome)}</b> foram trocados?`,
+      () => { enfileirar(l.map(r => ({ c: 'rol', t: 'update', id: r.id, d: { status: 'trocado', trocadoEm: Date.now(), trocadoPor: S.eu.id } }))); toast('Baixa registrada.'); }, 'Sim, todos trocados', 'vd');
+  },
+  desfazerBaixa(el) { enfileirar([{ c: 'rol', t: 'update', id: el.dataset.id, d: { status: 'pendente', trocadoEm: null, trocadoPor: null } }]); },
+  promover(el) { fecharModal(); enfileirar([{ c: 'rol', t: 'update', id: el.dataset.id, d: { nivel: 'vm' } }]); toast('Passou para a lista de troca.'); },
+  rebaixar(el) { fecharModal(); enfileirar([{ c: 'rol', t: 'update', id: el.dataset.id, d: { nivel: 'am' } }]); toast('Voltou para pontos de atenção.'); },
+  apagarItem(el) {
+    const id = el.dataset.id;
+    confirmar('Apagar marcação', 'A marcação será apagada (use quando foi registrada por engano).', () => {
+      enfileirar([{ c: 'rol', t: 'delete', id }]);
+      if (V.insp) { V.insp.ids = (V.insp.ids || []).filter(x => x !== id); salvarInsp(); render(); }
+    }, 'Apagar', 'vm');
+  },
+  arquivarEquip(el) {
+    const D = dados(), id = el.dataset.id;
+    if (itensAtivos(D).some(r => r.equipId === id)) { toast(msg('tem-pendencias') + ' Dê baixa ou apague antes de arquivar.', 5000); return; }
+    confirmar('Arquivar equipamento', 'Ele sai das listas e dos indicadores. Você pode reativar depois.', () => { enfileirar([{ c: 'equip', t: 'update', id, d: { ativo: false } }]); V.tela = 'inicio'; render(); }, 'Arquivar');
+  },
+  reativarEquip(el) { fecharModal(); enfileirar([{ c: 'equip', t: 'update', id: el.dataset.id, d: { ativo: true } }]); },
+  apagarTipo(el) {
+    const id = el.dataset.id;
+    if (Object.values(dados().rol).some(r => r.tipoId === id) || Object.values(dados().equip).some(e => [e.tipoCarga, e.tipoRetorno, e.tipoCav].includes(id))) { toast(msg('em-uso'), 5000); return; }
+    confirmar('Apagar do cadastro', 'Apagar este NI do cadastro geral?', () => {
+      enfileirar([{ c: 'tipo', t: 'delete', id }]);
+    }, 'Apagar', 'vm');
+  },
+  async linkCadastro() {
+    try {
+      const r = await api({ action: 'links', codigo: S.codigo });
+      if (!r.ok) return toast(msg(r.erro));
+      if (!r.codigoEquipe) return toast('Troque o CODIGO_EQUIPE no servidor antes de enviar o link.', 5000);
+      const link = location.origin + location.pathname + '?s=' + encodeURIComponent(S.srv) + '&e=' + encodeURIComponent(r.codigoEquipe);
+      abrirWhats('*Inspeção de Roletes*\nAbra no Chrome, toque em "Cadastrar inspetor" (só na primeira vez) e depois no menu ⋮ > "Instalar app":\n' + link);
+    } catch (e) { toast('Sem conexão com o servidor.'); }
+  },
+  async linkPainel() {
+    try {
+      const r = await api({ action: 'links', codigo: S.codigo });
+      if (!r.ok) return toast(msg(r.erro));
+      const base = location.origin + location.pathname.replace(/[^/]*$/, '');
+      const link = base + 'painel.html?s=' + encodeURIComponent(S.srv) + '&e=' + encodeURIComponent(r.codigoEquipe || S.codigo) + '&a=' + S.area;
+      abrirModal('Painel para reuniões', `<p class="mut" style="margin-top:0">Abra este link no notebook (Chrome ou Edge) e projete. O painel mostra todos os indicadores, atualiza sozinho a cada minuto e tem botão de tela cheia. É só para consulta.</p>
+        <textarea class="in" id="txtCopia" readonly style="min-height:96px;font-size:13px">${esc(link)}</textarea>
+        <div class="btns" style="margin-top:10px"><button class="btn sec" data-a="copiarLink">Copiar link</button><a class="btn" href="${esc(link)}" target="_blank" rel="noopener">Abrir painel</a><a class="btn wa" href="https://wa.me/?text=${encodeURIComponent('Painel de indicadores dos roletes: ' + link)}" target="_blank" rel="noopener">${ICO.whats} Enviar</a></div>`);
+    } catch (e) { toast('Sem conexão com o servidor.'); }
+  },
+  copiarLink() { const el = $('#txtCopia'); try { navigator.clipboard.writeText(el.value).then(() => toast('Link copiado.'), () => { el.select(); }); } catch (e) { el.select(); } },
+  async abrirPlanilha() {
+    try { const r = await api({ action: 'links', codigo: S.codigo }); if (r.ok) window.open(r.planilha, '_blank'); else toast(msg(r.erro)); } catch (e) { toast('Sem conexão com o servidor.'); }
+  },
+  editarInsp(el) {
+    const i = dados().insp[el.dataset.id]; if (!i) return;
+    abrirModal('Editar inspetor', `<form data-f="inspEditar" data-id="${i.id}"><label class="l" for="iNome">Nome completo</label><input class="in" id="iNome" name="nome" value="${esc(i.nome)}" required>
+      <label class="l" for="iMat">Matrícula (opcional)</label><input class="in" id="iMat" name="matricula" value="${esc(i.matricula || '')}">
+      <label class="l" for="iArea">Área</label><select class="in" id="iArea" name="area">${Object.keys(AREAS).map(k => `<option value="${k}" ${i.area === k ? 'selected' : ''}>${esc(AREAD[k])}</option>`).join('')}</select>
+      <div class="erro" id="fe" style="display:none"></div><button class="btn w" style="margin-top:14px">Salvar</button></form>`);
+  },
+  async inspAtivo(el) {
+    try {
+      const r = await api({ action: 'inspAtivo', codigo: S.codigo, inspId: el.dataset.id, ativo: el.dataset.v === '1' });
+      if (!r.ok) return toast(msg(r.erro));
+      receber(r); render(); toast('Acesso atualizado.');
+    } catch (e) { toast('Sem conexão com o servidor.'); }
+  }
+};
+function abrirWhats(t) { window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); }
+function iniciarInsp(id) {
+  const D = dados(), e = D.equip[id];
+  V.insp = { equipId: id, cav: '', sel: [], nivel: 'vm', tipo: {}, obs: '', ids: [], inicio: Date.now() };
+  salvarInsp(); fecharModal(); V.tela = 'insp'; render(); scrollTo(0, 0);
+  if (e && !e.tipoCarga && !tiposCat(D, 'carga').length) toast('Dica: cadastre o NI do rolete de carga para agilizar.', 4000);
+}
+function adicionar() {
+  const I = V.insp, D = dados(), e = D.equip[I.equipId], dos = ehDos(e), cav = dos ? '' : normCav(I.cav);
+  if (!e || (!dos && !cav) || !(I.sel || []).length) return;
+  const zb = !dos && e.bal === 'tem' && !!I.zb, nivel = (dos || zb) ? 'vm' : I.nivel;
+  const padrao = padraoDe(e);
+  const ops = [], faltam = [];
+  for (const p of I.sel) {
+    if (dos !== DOS.includes(p)) continue;
+    const c = catDe(p, zb), l = tiposCat(D, c), tipoId = (I.tipo && I.tipo[c]) || padrao[c] || (l.length === 1 ? l[0].id : '');
+    if (!tipoId || !D.tipo[tipoId] || D.tipo[tipoId].cat !== c) { faltam.push(CATN[c]); continue; }
+    const d = { equipId: e.id, cav: p === 'car' ? normCav(I.ncar) : cav, pos: p, nivel, tipoId, obs: (I.obs || '').trim(), inspId: S.eu.id, status: 'pendente', criadoEm: Date.now() };
+    if (p === 'car') {
+      if (!d.cav) { toast('Digite o número do rolete de carga.'); return; }
+      if (itensAtivos(D).some(r => r.equipId === e.id && r.pos === 'car' && r.cav === d.cav)) { toast('O rolete de carga nº ' + d.cav + ' já está marcado.'); return; }
+    }
+    if (zb) d.zb = true;
+    ops.push({ c: 'rol', t: 'add', id: uid(), d });
+  }
+  if (faltam.length) { toast('Escolha o NI: ' + [...new Set(faltam)].join(', ') + '.', 4500); return; }
+  if (!ops.length) return;
+  const pes = ops.some(o => ehPes(o.d.pos));
+  const fazer = () => {
+    I.ids = (I.ids || []).concat(ops.map(o => o.id)); I.sel = []; I.obs = ''; I.zb = false; I.ncar = ''; salvarInsp();
+    enfileirar(ops);
+    // balança: o semáforo do equipamento vai automaticamente para vermelho
+    if (dos || zb) marcarFarol('vm');
+    const q = ops.length + (ops.length > 1 ? ' itens registrados' : ' item registrado');
+    if (pes) abrirModal('Rolete de pesagem', `<div class="alerta" style="font-size:16px;margin-top:0"><b>Retire o equipamento de operação</b> e <b>comunique a instrumentação</b> para acompanhar a troca do rolete de pesagem.</div>
+      <p class="mut">${esc(e.nome)} · ${ops.filter(o => ehPes(o.d.pos)).map(o => POS[o.d.pos]).join(', ')} na lista de troca (crítico). Semáforo do equipamento em vermelho.</p>
+      <button class="btn w" data-a="fechar">Entendi</button>`);
+    else if (dos) toast(q + ' para troca (crítico). Semáforo em vermelho.', 4500);
+    else if (zb) toast(q + ' no cavalete ' + cav + '. Use rolete específico para balança. Semáforo em vermelho.', 5000);
+    else toast(q + ' no cavalete ' + cav + (nivel === 'vm' ? ' (troca).' : ' (atenção).'));
+  };
+  if (I.sel.includes('cav')) {
+    const subs = itensAtivos(D).filter(r => r.equipId === e.id && r.cav === cav && CARGA.includes(r.pos));
+    if (subs.length) { confirmar('Cavalete completo', `O cavalete ${esc(cav)} já tem ${subs.map(r => POS[r.pos]).join(', ')} marcado(s). Eles serão substituídos pelo cavalete completo.`, fazer, 'Continuar'); return; }
+  }
+  fazer();
+}
+document.addEventListener('click', ev => {
+  const el = ev.target.closest('[data-a]');
+  if (!el) return;
+  const f = A[el.dataset.a];
+  if (f) { ev.preventDefault(); f(el, ev); }
+});
+document.addEventListener('input', ev => {
+  const el = ev.target, k = el.dataset && el.dataset.k;
+  if (k === 'busca') { const q = chave(el.value); document.querySelectorAll('[data-a=escolherInsp]').forEach(x => { x.hidden = q && !x.dataset.nome.includes(q); }); return; }
+  if (!k || !V.insp) return;
+  if (k === 'cav') { V.insp.cav = el.value; if ((V.insp.sel || []).length) V.insp.sel = []; }
+  else if (k === 'obs') V.insp.obs = el.value;
+  else if (k === 'ncar') V.insp.ncar = el.value;
+  salvarInsp();
+});
+document.addEventListener('change', ev => {
+  const el = ev.target, k = el.dataset && el.dataset.k;
+  if (el.name === 'bal' && el.form) {
+    const b = el.value, f = el.form;
+    f.querySelectorAll('[data-nd]').forEach(x => { x.hidden = b === 'dos'; });
+    f.querySelectorAll('[data-bl]').forEach(x => { x.hidden = !b; });
+    f.querySelectorAll('[data-ds]').forEach(x => { x.hidden = b !== 'dos'; });
+    const d = f.querySelector('#balDica'); if (d) d.textContent = BALDICA[b];
+    return;
+  }
+  if (k === 'tipo' && V.insp) { V.insp.tipo = Object.assign({}, V.insp.tipo, { [el.dataset.c]: el.value }); salvarInsp(); }
+  if ((k === 'cav' || k === 'ncar') && V.insp) render();
+});
+document.addEventListener('keydown', ev => { if (ev.key === 'Enter' && ev.target.dataset && ev.target.dataset.k === 'cav') { ev.target.blur(); render(); } });
+
+/* ===== formulários ===== */
+function erroForm(t) { const e = $('#fe'); if (e) { e.textContent = t; e.style.display = 'block'; } else toast(t); }
+const FORM = {
+  async conectar(f) {
+    let u = f.url.value.trim();
+    if (!/^https:\/\/script\.google\.com\/.+\/exec/.test(u)) return toast('O endereço deve começar com https://script.google.com/ e terminar em /exec.', 5000);
+    S.srv = u;
+    try { const r = await api({ action: 'ping' }, 20000); if (!r.ok) throw 0; ls.set('srv', u); render(); }
+    catch (e) { S.srv = ''; toast('Não foi possível conectar. Confira o endereço e a internet.', 5000); }
+  },
+  async acesso(f) {
+    const c = f.codigo.value.trim(), b = f.querySelector('button'); b.disabled = true;
+    try {
+      const r = await api({ action: 'sync', codigo: c });
+      if (!r.ok) { toast(msg(r.erro), 5000); return; }
+      S.codigo = c; ls.set('codigo', c); receber(r); S.online = true; V.fora = 'lista'; render();
+    } catch (e) { toast('Sem conexão com o servidor.', 5000); }
+    finally { if (b.isConnected) b.disabled = false; }
+  },
+  async cadastroInsp(f) {
+    const nome = f.nome.value.trim().replace(/\s+/g, ' '), mat = f.matricula.value.trim();
+    if (nome.length < 3) return erroForm(msg('nome-invalido'));
+    if (Object.values(dados().insp).some(i => chave(i.nome) === chave(nome))) return erroForm(msg('nome-existe'));
+    const b = f.querySelector('button'); b.disabled = true;
+    try {
+      const r = await api({ action: 'cadastro', codigo: S.codigo, nome, matricula: mat, area: S.area });
+      if (!r.ok) return erroForm(msg(r.erro));
+      receber(r); S.online = true;
+      escolherInsp(r.inspId);
+      toast('Cadastro feito. Agora cadastre o seu primeiro equipamento.', 5000);
+      mEquip(null);
+    } catch (e) { erroForm('Sem internet. O cadastro do inspetor precisa de conexão; tente de novo com sinal.'); }
+    finally { if (b.isConnected) b.disabled = false; }
+  },
+  async inspEditar(f) {
+    try {
+      const r = await api({ action: 'inspEditar', codigo: S.codigo, inspId: f.dataset.id, nome: f.nome.value.trim(), matricula: f.matricula.value.trim(), area: f.area.value });
+      if (!r.ok) return erroForm(msg(r.erro));
+      receber(r); fecharModal(); render(); toast('Inspetor atualizado.');
+    } catch (e) { erroForm('Sem conexão com o servidor.'); }
+  },
+  equip(f) {
+    const D = dados(), id = f.dataset.id, bal = f.bal.value, dos = bal === 'dos', nome = f.nome.value.trim();
+    const ncav = Number(dos ? f.ncar.value : f.ncav.value), nret = dos ? 0 : Number(f.nret.value);
+    if (!nome) return erroForm(msg('nome-equip'));
+    if (!Number.isInteger(ncav) || ncav < 1) return erroForm(dos ? 'Informe a quantidade de roletes de carga da balança.' : msg('ncav'));
+    if (!dos && (!Number.isInteger(nret) || nret < 0)) return erroForm(msg('nret'));
+    if (Object.values(D.equip).some(e => e.id !== id && e.ativo !== false && chave(e.nome) === chave(nome))) return erroForm(msg('equip-existe'));
+    if (id && (D.equip[id].bal || '') !== bal && itensAtivos(D).some(r => r.equipId === id)) return erroForm(msg('bal-pendencias'));
+    if (id) {
+      const maior = itensAtivos(D).filter(r => r.equipId === id && r.pos !== 'ret' && /^\d+$/.test(r.cav)).reduce((m, r) => Math.max(m, Number(r.cav)), 0);
+      if (maior > ncav) return erroForm(dos ? 'Há rolete de carga nº ' + maior + ' marcado. A quantidade não pode ser menor.' : 'Há item marcado no cavalete ' + maior + '. A quantidade não pode ser menor.');
+    }
+    const d = { nome, area: f.area.value.trim(), bal, ncav, nret, tipoCarga: f.tipoCarga.value, tipoRetorno: f.tipoRetorno.value, tipoCav: f.tipoCav.value, tipoBal: f.tipoBal.value };
+    if (id) enfileirar([{ c: 'equip', t: 'update', id, d }]);
+    else {
+      const nid = uid();
+      enfileirar([{ c: 'equip', t: 'add', id: nid, d: Object.assign({ inspId: S.eu.id, ativo: true, criadoEm: Date.now() }, d) }]);
+      fecharModal();
+      if (f.dataset.insp) { iniciarInsp(nid); return; }
+      V.equipId = nid; V.tela = 'equip'; render(); toast('Equipamento cadastrado.'); return;
+    }
+    fecharModal(); toast('Equipamento salvo.');
+  },
+  async tipo(f) {
+    const T = tiposAtuais(), id = f.dataset.id, ni = f.ni.value.trim().toUpperCase(), preco = parsePreco(f.preco.value), cat = f.cat.value;
+    if (!ni) return erroForm(msg('ni'));
+    if (!isFinite(preco) || preco < 0) return erroForm('Preço inválido. Use, por exemplo, 185,90.');
+    if (Object.values(T).some(t => t.id !== id && chave(t.ni) === chave(ni))) return erroForm(msg('ni-existe'));
+    if (id && T[id].cat !== cat && usoAtual()[id]) return erroForm(msg('em-uso'));
+    const d = { ni, cat, desc: f.desc.value.trim(), preco: Math.round(preco * 100) / 100 };
+    const nid = id || uid();
+    const op = id ? { c: 'tipo', t: 'update', id, d } : { c: 'tipo', t: 'add', id: nid, d: Object.assign({ criadoPor: S.eu ? S.eu.id : 'equipe', criadoEm: Date.now() }, d) };
+    enfileirar([op]);
+    if (!id && S.eu && V.insp && V.tela === 'insp') {
+      V.insp.tipo = Object.assign({}, V.insp.tipo, { [cat]: nid }); salvarInsp();
+      const e = dados().equip[V.insp.equipId], campo = { carga: 'tipoCarga', retorno: 'tipoRetorno', cavalete: 'tipoCav' }[cat];
+      if (e && !e[campo] && (e.inspId === S.eu.id || S.admin)) enfileirar([{ c: 'equip', t: 'update', id: e.id, d: { [campo]: nid } }]);
+    }
+    fecharModal(); render(); toast('Salvo no cadastro geral.');
+  },
+  item(f) { enfileirar([{ c: 'rol', t: 'update', id: f.dataset.id, d: { tipoId: f.tipoId.value, obs: f.obs.value.trim() } }]); fecharModal(); toast('Alteração salva.'); },
+
+};
+function escolherInsp(id) {
+  const i = dados().insp[id]; if (!i || !i.ativo) return;
+  S.eu = { id: i.id, nome: i.nome, matricula: i.matricula, area: i.area }; ls.set('ultimo', i.id);
+  V.insp = ls.get('insp.' + i.id, null); V.listaSel = null;
+  V.tela = V.insp ? 'insp' : 'inicio'; fecharModal(); render(); scrollTo(0, 0);
+  if (V.insp) toast('Você tem uma inspeção em andamento.');
+}
+document.addEventListener('submit', ev => { const f = ev.target; ev.preventDefault(); const h = FORM[f.dataset.f]; if (h) h(f); });
+
+/* ===== início ===== */
+(function () {
+  const q = new URLSearchParams(location.search);
+  if (q.get('s') && /^https:\/\/script\.google\.com\//.test(q.get('s'))) { S.srv = q.get('s'); ls.set('srv', S.srv); }
+  if (q.get('e')) { S.codigo = q.get('e'); ls.set('codigo', S.codigo); }
+  if (q.get('s') || q.get('e')) history.replaceState(null, '', location.pathname);
+  render();
+  if (S.codigo) sincronizar(true);
+  setInterval(() => { if (document.visibilityState === 'visible') sincronizar(true); }, 60000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') sincronizar(true); });
+  window.addEventListener('online', () => sincronizar(true));
+  window.addEventListener('offline', () => { S.online = false; render(true); });
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => { });
+})();
+</script>
+</body>
+</html>
