@@ -279,6 +279,7 @@ function farolTravado(D, e) {
   const p = itensAtivos(D).filter(r => r.equipId === e.id);
   return p.some(r => r.zb) || (ehDos(e) && p.length > 0);
 }
+const EMAIL_RE = /^[^\s@<>(),;:"\[\]]+@[^\s@<>(),;:"\[\]]+\.[A-Za-z]{2,}$/;
 const LEGENDA = 'L.E = lateral esquerdo · C.T = central · L.D = lateral direito · RET = rolete de retorno · CAV = cavalete completo';
 const MSG = {
   'sessao': 'Sua sessão terminou. Entre de novo.', 'login': 'Matrícula ou senha incorreta.', 'bloqueado': 'Muitas tentativas erradas. Aguarde 15 minutos.',
@@ -288,7 +289,7 @@ const MSG = {
   'senha-atual': 'A senha atual não confere.', 'sem-permissao': 'Você não tem permissão para isso.', 'duplicado': 'Essa posição já está marcada nesse cavalete.',
   'cav-fora': 'O número do cavalete é maior que a quantidade de cavaletes do equipamento.', 'equip-existe': 'Já existe um equipamento com esse nome.',
   'ni-existe': 'Esse NI já está cadastrado.', 'em-uso': 'Esse tipo está em uso e não pode ser apagado ou mudar de categoria.', 'tem-pendencias': 'O equipamento ainda tem itens marcados.',
-  'tipo': 'Escolha um tipo válido (NI).', 'farol-travado': 'O semáforo está travado em vermelho: há rolete da balança para troca.', 'critico': 'Rolete da balança só pode ficar na troca.', 'bal-pendencias': 'Não dá para mudar a balança com itens pendentes no equipamento.', 'posicao': 'Posição inválida para este equipamento.', 'ncav': 'Informe a quantidade de cavaletes.', 'nret': 'Informe a quantidade de roletes de retorno.',
+  'tipo': 'Escolha um tipo válido (NI).', 'email-invalido': 'Digite um e-mail válido, por exemplo nome@empresa.com.', 'sem-email': 'Cadastre o seu e-mail para receber os relatórios.', 'email-limite': 'Limite de e-mails de hoje atingido. O PDF continua no aparelho.', 'email-cota': 'O servidor atingiu o limite diário de e-mails. Tente amanhã.', 'pdf-invalido': 'Não foi possível enviar o PDF por e-mail.', 'farol-travado': 'O semáforo está travado em vermelho: há rolete da balança para troca.', 'critico': 'Rolete da balança só pode ficar na troca.', 'bal-pendencias': 'Não dá para mudar a balança com itens pendentes no equipamento.', 'posicao': 'Posição inválida para este equipamento.', 'ncav': 'Informe a quantidade de cavaletes.', 'nret': 'Informe a quantidade de roletes de retorno.',
   'preco': 'Preço inválido.', 'ni': 'Informe o NI.', 'ja-trocado': 'Esse item já foi trocado.', 'not_found': 'Registro não encontrado (pode ter sido apagado).',
   'proprio': 'Você não pode desativar o seu próprio acesso.', 'farol': 'Escolha a cor do semáforo.', 'area': 'Escolha a área (Pátios ou CC7).', 'nome-existe': 'Já existe um inspetor com esse nome. Toque no nome dele na lista.', 'inspetor': 'Inspetor desativado ou não encontrado.', 'offline': 'Sem conexão com o servidor.', 'equip': 'Equipamento inválido.', 'nome-equip': 'Informe o nome do equipamento.'
 };
@@ -362,7 +363,7 @@ function mudou() { _D = null; }
 function receber(r) {
   S.base = { equip: mapa(r.equip), tipo: mapa(r.tipo), rol: mapa(r.rol), insp: mapa(r.insp) };
   S.admin = !!r.admin; ls.set('admin', S.admin);
-  if (S.eu) { const i = S.base.insp[S.eu.id]; if (!i || !i.ativo) { S.eu = null; V.fora = 'lista'; } else S.eu = { id: i.id, nome: i.nome, matricula: i.matricula, area: i.area }; if (S.eu && S.eu.area !== S.area) { S.eu = null; V.fora = 'lista'; } }
+  if (S.eu) { const i = S.base.insp[S.eu.id]; if (!i || !i.ativo) { S.eu = null; V.fora = 'lista'; } else S.eu = { id: i.id, nome: i.nome, matricula: i.matricula, area: i.area, email: i.email || '' }; if (S.eu && S.eu.area !== S.area) { S.eu = null; V.fora = 'lista'; } }
   S.sync = Date.now();
   ls.set('base', S.base); ls.set('sync', S.sync);
   mudou();
@@ -400,6 +401,7 @@ async function sincronizar(silencioso) {
     }
     receber(r);
     S.online = true;
+    if (!mais) setTimeout(enviarEmails, 50);
   } catch (e) {
     S.online = false;
     if (!silencioso && navigator.onLine) toast('Não foi possível falar com o servidor. Os dados ficam guardados no aparelho.');
@@ -575,6 +577,8 @@ function vFora() {
   if (V.fora === 'cadastro') corpo = `<form class="card" data-f="cadastroInsp"><h2>Cadastrar inspetor</h2>
     <label class="l" for="cNome">Nome completo</label><input class="in" id="cNome" name="nome" autocomplete="name" required>
     <label class="l" for="cMat">Matrícula (opcional)</label><input class="in" id="cMat" name="matricula" autocomplete="off">
+    <label class="l" for="cEmail">E-mail</label><input class="in" id="cEmail" name="email" type="email" inputmode="email" autocomplete="email" placeholder="nome@empresa.com" required>
+    <div class="dica">Os relatórios e as listas de troca dos seus equipamentos chegam neste e-mail automaticamente.</div>
     <div class="erro" id="fe" style="display:none"></div>
     <button class="btn w" style="margin-top:14px">Cadastrar e abrir minha página</button>
     <div class="dica" style="margin-top:8px">Área: <b>${esc(AREAD[S.area])}</b>. Depois do cadastro, o seu nome aparece na lista da tela inicial. Nas próximas vezes é só tocar nele.</div></form>`;
@@ -670,13 +674,15 @@ function vInicio(D) {
   return `<section class="hero"><div class="row"><span class="av lg">${esc(iniciais(S.eu.nome))}</span><div class="f"><h2>${esc(S.eu.nome)}</h2><div class="hs">${S.eu.matricula ? 'Matrícula ' + esc(S.eu.matricula) : 'Inspetor'}</div></div></div>
     <div class="hk"><div><b>${nfmt(g.vmN)}</b><span><i class="dot vm"></i>Para troca</span><i>${brl(g.vmV)}</i></div><div><b>${nfmt(g.amN)}</b><span><i class="dot am"></i>Atenção</span><i>${brl(g.amV)}</i></div><div><b>${nfmt(meus.length)}</b><span>Equipamentos</span><i>${nfmt(meus.reduce((a, e) => a + totalRoletes(e), 0))} roletes</i></div></div>
     <button class="btn cl w" data-a="tela" data-v="insp">${ICO.insp} ${V.insp ? 'Continuar inspeção · ' + esc((D.equip[V.insp.equipId] || {}).nome || '') : 'Iniciar inspeção'}</button></section>
+  ${S.eu.email ? '' : `<div class="aviso tap" data-a="meuEmail" style="margin-bottom:12px"><b>Cadastre o seu e-mail</b> para receber automaticamente os relatórios e as listas de troca dos seus equipamentos. Toque aqui.</div>`}
   <div class="sec-t"><h2>Meus equipamentos</h2><button class="btn sec peq" data-a="novoEquip">+ Novo</button></div>
   <div class="card">
   ${lin || `<div class="vazio">Você ainda não tem equipamentos.<br><br><button class="btn" data-a="novoEquip">Cadastrar equipamento</button></div>`}</div>
   ${(() => { const out = outrosEquips(D), arq = Object.values(D.equip).filter(e => e.ativo === false);
     const li = e => { const r = resumoEquip(D, e); return `<div class="li tap" data-a="abrirEquip" data-id="${e.id}"><div class="f"><b>${esc(e.nome)}</b><div class="mut sm">${esc(nomeInsp(D, e.inspId))}</div></div>${r.vmN ? `<span class="chip vm">${r.vmN}</span>` : ''}${r.amN ? `<span class="chip am">${r.amN}</span>` : ''}</div>`; };
     return (out.length ? `<details class="card det"><summary>Equipamentos de outros inspetores (${out.length})</summary>${out.map(li).join('')}</details>` : '') + (arq.length ? `<details class="card det"><summary>Arquivados (${arq.length})</summary>${arq.map(li).join('')}</details>` : ''); })()}
-  <div class="card tap" data-a="tela" data-v="ind"><div class="row"><div class="f"><h3 style="margin-bottom:4px">Toda a área · ${esc(AREAS[S.area])}</h3><div class="mut">${plural(ga.vmN, 'item', 'itens')} para troca, ${brl(ga.vmV)}. ${plural(ga.amN, 'item', 'itens')} em atenção, ${brl(ga.amV)}.</div></div><span style="font-size:24px;color:#a5b1bc">›</span></div></div>${cartaoDev()}`;
+  <div class="card tap" data-a="tela" data-v="ind"><div class="row"><div class="f"><h3 style="margin-bottom:4px">Toda a área · ${esc(AREAS[S.area])}</h3><div class="mut">${plural(ga.vmN, 'item', 'itens')} para troca, ${brl(ga.vmV)}. ${plural(ga.amN, 'item', 'itens')} em atenção, ${brl(ga.amV)}.</div></div><span style="font-size:24px;color:#a5b1bc">›</span></div></div>
+  ${S.eu.email ? `<div class="card tap" data-a="meuEmail"><div class="row"><div class="f"><h3 style="margin-bottom:4px">Relatórios no e-mail</h3><div class="mut">Os PDFs dos seus equipamentos vão automaticamente para <b>${esc(S.eu.email)}</b>. Toque para alterar.</div></div><span style="font-size:24px;color:#a5b1bc">›</span></div></div>` : ''}${cartaoDev()}`;
 }
 
 /* ----- Inspeção ----- */
@@ -1092,6 +1098,44 @@ function baixarArquivo(blob, nome) {
   a.href = u; a.download = nome; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(u), 60000);
 }
+/* ===== e-mail automático: todo PDF com equipamento do inspetor vai para o e-mail dele ===== */
+let _mailFila = ls.get('emailFila', []), _mailEnv = false;
+function blobB64(blob) {
+  return new Promise((ok, erro) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = erro; r.readAsDataURL(blob); });
+}
+async function emailAuto(blob, nome, titulo, equipIds, sobre, quemInspecionou) {
+  if (!S.eu) return;
+  const D = dados();
+  // relatório com equipamento dele; a lista do fim da inspeção vai sempre para quem inspecionou
+  if (!quemInspecionou && !(equipIds || []).some(id => D.equip[id] && D.equip[id].inspId === S.eu.id)) return;
+  if (!S.eu.email) { setTimeout(() => toast('Cadastre o seu e-mail (Minha página) para receber os relatórios automaticamente.', 5500), 2600); return; }
+  let pdf; try { pdf = await blobB64(blob); } catch (e) { return; }
+  _mailFila.push({ id: uid(), inspId: S.eu.id, nome, titulo, sobre: sobre || '', pdf, t: Date.now() });
+  // guarda no aparelho no máximo uns 3 MB de PDFs esperando internet
+  while (_mailFila.length > 1 && _mailFila.reduce((a, m) => a + m.pdf.length, 0) > 3e6) _mailFila.shift();
+  try { ls.set('emailFila', _mailFila); } catch (e) { }
+  enviarEmails(true);
+}
+async function enviarEmails(avisar) {
+  if (_mailEnv || !_mailFila.length || !S.codigo || !S.srv) return;
+  _mailEnv = true;
+  try {
+    while (_mailFila.length) {
+      const m = _mailFila[0];
+      let r;
+      try { r = await api({ action: 'email', codigo: S.codigo, inspId: m.inspId, nome: m.nome, titulo: m.titulo, sobre: m.sobre, pdf: m.pdf }, 60000); }
+      catch (e) { if (avisar) setTimeout(() => toast('Sem internet: o PDF vai para o seu e-mail quando o sinal voltar.', 5000), 2600); break; }
+      _mailFila.shift(); try { ls.set('emailFila', _mailFila); } catch (e) { }
+      if (avisar) setTimeout(() => toast(r.ok ? 'PDF enviado também para o seu e-mail (' + r.para + ').' : msg(r.erro), 5000), 2600);
+    }
+  } finally { _mailEnv = false; }
+}
+function mMeuEmail() {
+  abrirModal('E-mail para os relatórios', `<form data-f="meuEmail"><p class="mut" style="margin-top:0">Os relatórios e as listas de troca dos seus equipamentos chegam neste e-mail automaticamente, sempre que você gerar o PDF.</p>
+    ${S.eu.email ? `<div class="dica" style="margin-bottom:6px">Atual: <b>${esc(S.eu.email)}</b></div>` : ''}
+    <label class="l" for="mEmail">E-mail</label><input class="in" id="mEmail" name="email" type="email" inputmode="email" autocomplete="email" placeholder="nome@empresa.com" required>
+    <div class="erro" id="fe" style="display:none"></div><button class="btn w" style="margin-top:14px">Salvar</button></form>`);
+}
 async function pdfLista(modo) {
   const D = dados(), ids = selLista(D).s;
   if (!montarLista(D, ids).n) return toast('Escolha pelo menos um equipamento.');
@@ -1270,12 +1314,17 @@ function gerarRelatorio(tipo, id) {
     if (!sem) { pdfPendencias(c, D, at); pdfCompra(c, D, at); }
     nome = sem ? 'semaforo-equipamentos' : 'relatorio-equipamentos';
   }
-  return { blob: pdfFechar(c), nome: (chave(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'relatorio') + '-' + new Date().toISOString().slice(0, 10) + '.pdf' };
+  // equipamentos que entram no relatório (para o e-mail automático)
+  const eqIds = tipo === 'equip' && id ? [id] : (tipo === 'sem' || (tipo === 'equip' && !id)) ? eqs.map(e => e.id)
+    : [...new Set(at.filter(r => !id || (tipo === 'insp' ? r.inspId === id : r.tipoId === id)).map(r => r.equipId))].concat(tipo === 'insp' && id ? eqs.filter(e => e.inspId === id).map(e => e.id) : []);
+  const titRel = { equip: id ? 'Relatório do equipamento ' + ((D.equip[id] || {}).nome || '') : 'Relatório dos equipamentos', insp: id ? 'Relatório do inspetor ' + nomeInsp(D, id) : 'Relatório por inspetor', tipo: id ? 'Relatório do NI ' + ((D.tipo[id] || {}).ni || '') : 'Lista de compras da área', sem: 'Semáforo dos equipamentos' }[tipo] || 'Relatório';
+  return { eqs: eqIds, titulo: titRel, blob: pdfFechar(c), nome: (chave(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'relatorio') + '-' + (d => d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()))(new Date()) + '.pdf' };
 }
 async function pdfRelatorio(tipo, id, modo) {
   let r;
   try { r = gerarRelatorio(tipo, id); } catch (e) { return toast('Não foi possível gerar o PDF.'); }
   entregarPdf(r.blob, r.nome, modo, 'Relatório de roletes');
+  emailAuto(r.blob, r.nome, r.titulo, r.eqs);
 }
 function mIndGrupo(tipo, id) {
   const D = dados(), at = itensAtivos(D);
@@ -1485,6 +1534,7 @@ const A = {
   indTab(el) { V.ind = el.dataset.v; render(); },
   indGrupo(el) { mIndGrupo(el.dataset.k, el.dataset.id); },
   relPdf(el) { pdfRelatorio(el.dataset.k, el.dataset.id, el.dataset.m); },
+  meuEmail() { mMeuEmail(); },
   listaTab(el) { V.lista = el.dataset.v; render(); },
   atTodos(el) { V.atencaoTodos = el.dataset.v === '1'; render(); },
   abrirEquip(el) { if (!S.eu) return; V.equipId = el.dataset.id; fecharModal(); V.tela = 'equip'; render(); scrollTo(0, 0); },
@@ -1548,6 +1598,11 @@ const A = {
     V.listaSel = temVm ? [id] : V.listaSel; ls.set('listaSel', V.listaSel);
     V.tela = 'lista'; V.lista = temVm ? 'troca' : 'atencao'; render(); scrollTo(0, 0);
     toast(temVm ? 'Inspeção finalizada. Esta é a lista para a execução.' : 'Inspeção finalizada. Não há itens vermelhos neste equipamento.', 4500);
+    // ao finalizar, a lista de troca do equipamento vai automaticamente para o e-mail do inspetor
+    if (temVm) (async () => {
+      const D2 = dados(), e = D2.equip[id];
+      try { const blob = await gerarPdf(D2, [id]); emailAuto(blob, nomePdf(), 'Lista de roletes para troca', [id], 'Equipamento: ' + (e ? e.nome : ''), true); } catch (er) { }
+    })();
   },
   listaEq(el) { const { s } = selLista(dados()); const id = el.dataset.id; V.listaSel = s.includes(id) ? s.filter(x => x !== id) : s.concat(id); ls.set('listaSel', V.listaSel); render(); },
   listaTodos(el) { const D = dados(), { disp } = selLista(D); V.listaSel = el.dataset.v === 'todos' ? disp : disp.filter(id => D.equip[id].inspId === S.eu.id); ls.set('listaSel', V.listaSel); render(); },
@@ -1617,6 +1672,7 @@ const A = {
     const i = dados().insp[el.dataset.id]; if (!i) return;
     abrirModal('Editar inspetor', `<form data-f="inspEditar" data-id="${i.id}"><label class="l" for="iNome">Nome completo</label><input class="in" id="iNome" name="nome" value="${esc(i.nome)}" required>
       <label class="l" for="iMat">Matrícula (opcional)</label><input class="in" id="iMat" name="matricula" value="${esc(i.matricula || '')}">
+      <label class="l" for="iEmail">E-mail${i.email ? ' (atual: ' + esc(i.email) + ')' : ''}</label><input class="in" id="iEmail" name="email" type="email" inputmode="email" placeholder="${i.email ? 'deixe em branco para manter' : 'nome@empresa.com'}">
       <label class="l" for="iArea">Área</label><select class="in" id="iArea" name="area">${Object.keys(AREAS).map(k => `<option value="${k}" ${i.area === k ? 'selected' : ''}>${esc(AREAD[k])}</option>`).join('')}</select>
       <div class="erro" id="fe" style="display:none"></div><button class="btn w" style="margin-top:14px">Salvar</button></form>`);
   },
@@ -1725,12 +1781,13 @@ const FORM = {
     finally { if (b.isConnected) b.disabled = false; }
   },
   async cadastroInsp(f) {
-    const nome = f.nome.value.trim().replace(/\s+/g, ' '), mat = f.matricula.value.trim();
+    const nome = f.nome.value.trim().replace(/\s+/g, ' '), mat = f.matricula.value.trim(), email = f.email.value.trim().toLowerCase();
     if (nome.length < 3) return erroForm(msg('nome-invalido'));
+    if (!EMAIL_RE.test(email)) return erroForm(msg('email-invalido'));
     if (Object.values(dados().insp).some(i => chave(i.nome) === chave(nome))) return erroForm(msg('nome-existe'));
     const b = f.querySelector('button'); b.disabled = true;
     try {
-      const r = await api({ action: 'cadastro', codigo: S.codigo, nome, matricula: mat, area: S.area });
+      const r = await api({ action: 'cadastro', codigo: S.codigo, nome, matricula: mat, area: S.area, email });
       if (!r.ok) return erroForm(msg(r.erro));
       receber(r); S.online = true;
       escolherInsp(r.inspId);
@@ -1739,9 +1796,21 @@ const FORM = {
     } catch (e) { erroForm('Sem internet. O cadastro do inspetor precisa de conexão; tente de novo com sinal.'); }
     finally { if (b.isConnected) b.disabled = false; }
   },
-  async inspEditar(f) {
+  async meuEmail(f) {
+    const email = f.email.value.trim().toLowerCase();
+    if (!EMAIL_RE.test(email)) return erroForm(msg('email-invalido'));
+    const b = f.querySelector('button'); b.disabled = true;
     try {
-      const r = await api({ action: 'inspEditar', codigo: S.codigo, inspId: f.dataset.id, nome: f.nome.value.trim(), matricula: f.matricula.value.trim(), area: f.area.value });
+      const r = await api({ action: 'meuEmail', codigo: S.codigo, inspId: S.eu.id, email });
+      if (!r.ok) return erroForm(msg(r.erro));
+      receber(r); fecharModal(); render(); toast('E-mail salvo. Os próximos relatórios chegam nele.', 4500);
+    } catch (e) { erroForm('Sem internet. Tente de novo com sinal.'); }
+    finally { if (b.isConnected) b.disabled = false; }
+  },
+  async inspEditar(f) {
+    if (f.email.value.trim() && !EMAIL_RE.test(f.email.value.trim())) return erroForm(msg('email-invalido'));
+    try {
+      const r = await api({ action: 'inspEditar', codigo: S.codigo, inspId: f.dataset.id, nome: f.nome.value.trim(), matricula: f.matricula.value.trim(), area: f.area.value, email: f.email.value.trim().toLowerCase() });
       if (!r.ok) return erroForm(msg(r.erro));
       receber(r); fecharModal(); render(); toast('Inspetor atualizado.');
     } catch (e) { erroForm('Sem conexão com o servidor.'); }
@@ -1791,7 +1860,7 @@ const FORM = {
 };
 function escolherInsp(id) {
   const i = dados().insp[id]; if (!i || !i.ativo) return;
-  S.eu = { id: i.id, nome: i.nome, matricula: i.matricula, area: i.area }; ls.set('ultimo', i.id);
+  S.eu = { id: i.id, nome: i.nome, matricula: i.matricula, area: i.area, email: i.email || '' }; ls.set('ultimo', i.id);
   V.insp = ls.get('insp.' + i.id, null); V.listaSel = null;
   V.tela = V.insp ? 'insp' : 'inicio'; fecharModal(); render(); scrollTo(0, 0);
   if (V.insp) toast('Você tem uma inspeção em andamento.');
