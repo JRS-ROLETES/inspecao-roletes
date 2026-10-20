@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Painel de Roletes</title>
+<title>Painel de Rolos</title>
 <meta name="theme-color" content="#0c1822">
 <link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,6 +103,35 @@ tr.click:hover td{background:#17293a}
 .eqd .cab .f{flex:1;min-width:220px}
 .mini{display:flex;gap:18px;flex-wrap:wrap;font-size:14.5px;color:var(--mut)}
 .mini b{color:var(--tx);font-size:18px}
+.mapa-ctl{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.mapa-ctl select{background:var(--p1);border:1px solid var(--ln);color:var(--tx);border-radius:12px;padding:10px 14px;font:inherit;font-weight:600}
+.leg{display:flex;gap:16px;flex-wrap:wrap;color:var(--mut);font-size:14px}
+.leg span{display:flex;align-items:center;gap:6px}
+.mapa{background:#fff;color:#111;border-radius:16px;padding:14px 14px 14px 0;border-left:14px solid #fff;overflow-x:auto;margin-bottom:20px}
+.mapa table{border-collapse:collapse;font-size:14px;color:#111;width:auto}
+.mapa th,.mapa td{border:1px solid #1e1e1e;padding:0;color:#111;border-bottom:1px solid #1e1e1e}
+.mapa .tit{background:#fff;text-align:left;padding:8px 12px;font-size:18px;font-weight:800;border-bottom:2px solid #111}
+.mapa .sub{text-align:right;padding:6px 12px;font-weight:700;font-size:15px}
+.mapa .eqn{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:700;font-size:14px;padding:10px 4px;height:120px;white-space:nowrap;text-align:left}
+.mapa .cin{background:#d9d9d9}
+.mapa .n{width:34px;text-align:center;font-weight:700;font-size:15px}
+.mapa .ptn{padding:8px 10px;font-weight:700;font-size:14.5px;white-space:nowrap;text-transform:uppercase}
+.mapa .gr{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:800;width:30px;text-align:center}
+.mapa .cel{width:46px;height:44px;text-align:center;cursor:pointer}
+.mapa .cel:hover{background:#eef4fa}
+.mapa .cel svg{width:30px;height:30px;display:block;margin:auto}
+.mapa .ini{border-left:4px solid #111}
+.mapa .fx,.mapa .fx2,.mapa .fx3{position:sticky;background:#fff;z-index:2}
+.mapa .fx{left:0}.mapa th.fx{background:#d9d9d9}
+.mapa td.fx,.mapa th.fx{left:0}.mapa td.n{width:36px;min-width:36px;max-width:36px;box-sizing:border-box}.mapa td.fx2{left:36px}.mapa td.gr{width:30px;min-width:30px;max-width:30px;box-sizing:border-box}.mapa td.fx3{left:66px}
+.mapa td.fx,.mapa td.fx2,.mapa td.fx3{box-shadow:inset -1px 0 0 #1e1e1e}
+.mapa .gr{background:#fff}
+.mapa .vaz{color:#bbb;font-size:12px}
+.pop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.pop .cx{background:var(--p1);border:1px solid var(--ln);border-radius:18px;max-width:560px;width:100%;padding:20px 22px;max-height:85vh;overflow:auto}
+.pop h3{font-size:20px;margin-bottom:6px}
+.pop ul{margin:8px 0 0;padding-left:20px}.pop li{margin:4px 0}
+.pop .fe{float:right;border:0;background:var(--p2);color:var(--tx);border-radius:10px;padding:6px 12px;cursor:pointer;font-weight:700}
 @media (max-width:1180px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.grid{grid-template-columns:1fr}}
 @media (max-width:640px){.wrap{padding:16px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.hora{display:none}.marca h1{font-size:21px}}
 </style>
@@ -115,14 +144,18 @@ tr.click:hover td{background:#17293a}
 const SERVIDOR_PADRAO = '';
 const AREAS = { patios: 'Pátios', cc7: 'CC7' };
 const POS = { le: 'L.E', ct: 'C.T', ld: 'L.D', ret: 'RET', cav: 'CAV', p1: 'P1', p2: 'P2', p3: 'P3', car: 'CAR', ge: 'G.E', gd: 'G.D', rge: 'GR.E', rgd: 'GR.D' };
-const POSN = { le: 'Lateral esquerdo', ct: 'Central', ld: 'Lateral direito', ret: 'Rolete de retorno', cav: 'Cavalete completo', p1: 'Rolete de pesagem 1', p2: 'Rolete de pesagem 2', p3: 'Rolete de pesagem 3', car: 'Rolete de carga', ge: 'Rolete guia esquerdo', gd: 'Rolete guia direito', rge: 'Guia do retorno esquerdo', rgd: 'Guia do retorno direito' };
+const POSN = { le: 'Lateral esquerdo', ct: 'Central', ld: 'Lateral direito', ret: 'Rolo de retorno', cav: 'Cavalete completo', p1: 'Rolo de pesagem 1', p2: 'Rolo de pesagem 2', p3: 'Rolo de pesagem 3', car: 'Rolo de carga', ge: 'Rolo guia esquerdo', gd: 'Rolo guia direito', rge: 'Guia do retorno esquerdo', rgd: 'Guia do retorno direito' };
 const ORDP = ['le', 'ct', 'ld', 'ge', 'gd', 'ret', 'rge', 'rgd', 'cav', 'p1', 'p2', 'p3', 'car'];
-const CATN = { carga: 'Rolete de carga', retorno: 'Rolete de retorno', cavalete: 'Cavalete', balanca: 'Rolete de balança', guia: 'Rolete guia' };
-const FAROL = { vd: 'Bom', am: 'Atenção', vm: 'Crítico' };
+const CATN = { carga: 'Rolo de carga', retorno: 'Rolo de retorno', cavalete: 'Cavalete', balanca: 'Rolo de balança', guia: 'Rolo guia' };
+const FAROL = { vd: 'Bom', am: 'Atenção', vm: 'Crítico', na: 'Não se aplica' };
 const FORD = { vm: 0, am: 1, vd: 2 };
+const PARTES = [{"k": "p1", "n": 1, "nome": "Chute de carregamento", "ck": ["Chute sem furos, trincas ou chapas soltas", "Revestimento de desgaste (placas/chapas) íntegro", "Sem marcas de batida que indiquem fluxo ruim ou entupimento", "Material cai no centro da correia", "Caixa de carga vedada, sem vazamento de material ou pó", "Parafusos e fixações completos e apertados"], "b": [[277, 28]], "t": [8, 848, 245, 963]}, {"k": "p2", "n": 2, "nome": "Guia lateral", "ck": ["Borracha de vedação sem desgaste excessivo ou folgas", "Vedação encostada na correia, sem aperto excessivo", "Grampos e suportes fixos e completos", "Chapas laterais sem furos ou desgaste", "Sem derramamento de material na região da guia"], "b": [[309, 84]], "t": [252, 848, 470, 963]}, {"k": "rolos", "n": 3, "nome": "Rolos (impacto, carga e retorno)", "ck": [], "b": [[380, 110], [549, 177], [351, 410]], "t": [478, 848, 1058, 963]}, {"k": "p6", "n": 6, "nome": "Tambores", "ck": ["Revestimento sem desgaste excessivo, descolamento ou partes faltando", "Sem material acumulado nos tambores (cauda, desvio e esticador)", "Mancais sem ruído anormal e sem aquecimento", "Mancais lubrificados e vedações sem vazamento", "Carcaça, soldas e ponta de eixo sem trincas", "Mancais e fixações apertados, tambor alinhado"], "b": [[40, 236], [764, 553]], "t": [8, 970, 222, 1088]}, {"k": "p7", "n": 7, "nome": "Acionamento", "ck": ["Motor sem ruído, vibração ou aquecimento anormal", "Redutor com nível de óleo correto e sem vazamento", "Respiro do redutor limpo", "Acoplamento sem desgaste ou folga", "Parafusos de fixação do motor e do redutor apertados", "Freio e contra-recuo (back-stop) funcionando", "Corrente do motor dentro do normal para a carga"], "b": [[821, 797]], "t": [228, 970, 422, 1088]}, {"k": "p8", "n": 8, "nome": "Estrutura do transportador", "ck": ["Longarinas, suportes e travessas sem corrosão ou danos", "Soldas sem trincas", "Parafusos completos e apertados", "Estrutura sem desalinhamento ou movimentação", "Sem ruído ou vibração anormal", "Bases e chumbadores íntegros"], "b": [[414, 577]], "t": [430, 970, 642, 1088]}, {"k": "p9", "n": 9, "nome": "Alinhamento da correia", "ck": ["Correia centralizada nos tambores de cabeça e de cauda", "Correia sem raspar na estrutura", "Rolos autoalinhantes girando livres e no ângulo correto", "Nenhum rolo amarrado ou travado para corrigir desvio", "Chaves de desalinhamento limpas, íntegras e sem jampeamento", "Carga centralizada na correia"], "b": [[589, 329]], "t": [650, 970, 850, 1088]}, {"k": "p10", "n": 10, "nome": "Emendas da correia", "ck": ["Emenda sem bordas levantadas", "Borracha da emenda sem trincas", "Sem cabos de aço ou lonas expostos", "Emenda nivelada com a superfície da correia", "Grampos da emenda mecânica completos e sem desgaste", "Sem deslocamento entre as marcas de referência"], "b": [[777, 430]], "t": [857, 970, 1060, 1088]}, {"k": "p11", "n": 11, "nome": "Condição física da correia", "ck": ["Cobertura superior sem cortes, rasgos ou furos", "Espessura da cobertura dentro do limite", "Bordas sem desfiamento ou trincas", "Sem objetos presos ou incrustados", "Sem queimaduras ou endurecimento da borracha", "Sem lonas ou cabos de aço expostos", "Sem flecha excessiva da correia entre os rolos"], "b": [[679, 367]], "t": [8, 1095, 222, 1215]}, {"k": "p12", "n": 12, "nome": "Chute de descarga", "ck": ["Chute sem furos ou trincas", "Revestimento de desgaste íntegro", "Sem entupimento ou acúmulo de material", "Material cai no centro da correia seguinte", "Vedação e cortinas sem vazamento de pó", "Portas de inspeção fechadas e vedadas"], "b": [[1011, 659]], "t": [228, 1095, 422, 1215]}, {"k": "p13", "n": 13, "nome": "Esticamento", "ck": ["Contrapeso na posição correta, com curso livre disponível", "Carro e guias deslizando livres", "Cabos e polias do contrapeso íntegros", "Esticador de fuso sem travamento e com ajuste igual dos dois lados", "Correia sem patinar na partida", "Proteção do contrapeso instalada"], "b": [[93, 549]], "t": [430, 1095, 642, 1215]}, {"k": "p14", "n": 14, "nome": "Raspadores", "ck": ["Lâminas com desgaste normal (sem desgaste excessivo ou desigual)", "Lâmina em contato com a correia", "Largura da lâmina cobre a faixa do material", "Tensionador funcionando e na pressão correta", "Sem material retornando (carryback) depois do raspador", "Suportes e fixações íntegros"], "b": [], "t": [650, 1095, 850, 1215]}, {"k": "p15", "n": 15, "nome": "Limpadores", "ck": ["Limpador em V antes do tambor de cauda encostado na correia", "Sem material entre a correia e o tambor de cauda", "Lâminas sem desgaste excessivo", "Suporte e fixação íntegros", "Sem acúmulo de material sob o limpador"], "b": [[60, 330]], "t": [857, 1095, 1060, 1215]}, {"k": "p16", "n": 16, "nome": "Passadiços e corredores", "ck": ["Piso sem buracos, chapas soltas ou corrosão", "Sem acúmulo de material ou obstrução", "Guarda-corpo completo (travessão superior, intermediário e rodapé)", "Escadas com degraus e corrimãos íntegros", "Iluminação adequada", "Acesso livre até o transportador"], "b": [[814, 68]], "t": [8, 1225, 280, 1360]}, {"k": "p17", "n": 17, "nome": "Proteções NR 12", "ck": ["Proteções instaladas em todos os tambores e pontos de agarramento", "Proteções fixas presas, sem partes faltando ou danificadas", "Telas sem rasgos ou aberturas que permitam alcançar partes móveis", "Proteção do acionamento e do acoplamento instalada", "Proteção do contrapeso do esticamento instalada"], "b": [[992, 426]], "t": [288, 1225, 522, 1360]}, {"k": "p18", "n": 18, "nome": "Acessórios de segurança", "ck": ["Chave de emergência por cabo testada e funcionando", "Cabo de emergência esticado ao longo de todo o transportador", "Botoeiras de emergência funcionando", "Chaves de desalinhamento funcionando", "Sensores (velocidade, rasgo, entupimento) funcionando", "Alarme sonoro de partida funcionando", "Nenhum dispositivo de segurança jampeado (bypass)"], "b": [[767, 808]], "t": [530, 1225, 782, 1360]}, {"k": "p19", "n": 19, "nome": "Limpeza do transportador", "ck": ["Sem derramamento de material sob o transportador", "Sem acúmulo nos rolos de retorno e na estrutura", "Sem acúmulo de pó", "Bandejas e calhas de limpeza desobstruídas", "Coleta e supressão de pó funcionando", "Sem material sobre os passadiços"], "b": [[358, 720]], "t": [790, 1225, 1060, 1360]}];
+const MAPA = [{"k": "p1", "n": 1, "nome": "Chute de carregamento", "g": ""}, {"k": "p2", "n": 2, "nome": "Guia lateral", "g": ""}, {"k": "r3", "n": 3, "nome": "Rolos de impacto", "g": ""}, {"k": "r4", "n": 4, "nome": "Rolos de carga", "g": ""}, {"k": "r5", "n": 5, "nome": "Rolos de retorno", "g": ""}, {"k": "p6", "n": 6, "nome": "Tambores", "g": ""}, {"k": "p7", "n": 7, "nome": "Acionamento", "g": ""}, {"k": "p8", "n": 8, "nome": "Estrutura transportador", "g": ""}, {"k": "p9", "n": 9, "nome": "Alinhamento da correia", "g": "Correia"}, {"k": "p10", "n": 10, "nome": "Emendas da correia", "g": "Correia"}, {"k": "p11", "n": 11, "nome": "Condição física correia", "g": "Correia"}, {"k": "p12", "n": 12, "nome": "Chute de descarga", "g": ""}, {"k": "p13", "n": 13, "nome": "Esticamento", "g": ""}, {"k": "p14", "n": 14, "nome": "Raspadores", "g": ""}, {"k": "p15", "n": 15, "nome": "Limpadores", "g": ""}, {"k": "p16", "n": 16, "nome": "Passadiços/corredores", "g": ""}, {"k": "p17", "n": 17, "nome": "Proteções NR 12", "g": ""}, {"k": "p18", "n": 18, "nome": "Acessórios de segurança", "g": ""}, {"k": "p19", "n": 19, "nome": "Limpeza do transportador", "g": ""}];
+const FONTES_CK = 'Itens baseados no checklist de inspeção de transportadores da Martin Engineering, no manual de manutenção de correias da Sempertrans, em guias de inspeção de transportadores e na NR-12 (transportadores contínuos).';
+const PARTE = {}; PARTES.forEach(p => { PARTE[p.k] = p; });
 const LS = 'rl.painel.';
 const ls = { get(k, d) { try { const v = localStorage.getItem(LS + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) { } } };
-const S = { ver: null, srv: ls.get('srv', SERVIDOR_PADRAO), codigo: ls.get('codigo', ''), area: ls.get('area', 'todas'), data: ls.get('data', null), sync: ls.get('sync', 0), erro: '', carregando: false };
+const S = { mapaInsp: '', ver: null, srv: ls.get('srv', SERVIDOR_PADRAO), codigo: ls.get('codigo', ''), area: ls.get('area', 'todas'), data: ls.get('data', null), sync: ls.get('sync', 0), erro: '', carregando: false };
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const brl = v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const brlC = v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
@@ -184,7 +217,7 @@ const sem = f => `<span class="sem" role="img" aria-label="Semáforo ${f ? FAROL
 function render() {
   const app = document.getElementById('app');
   if (!S.srv || !S.codigo) {
-    app.innerHTML = `<form class="con" id="fCon"><h1>Painel de Roletes</h1><p>Use o link do painel enviado pelo administrador. Sem o link, informe o servidor e o código de acesso da equipe.</p>
+    app.innerHTML = `<form class="con" id="fCon"><h1>Painel de Rolos</h1><p>Use o link do painel enviado pelo administrador. Sem o link, informe o servidor e o código de acesso da equipe.</p>
       <label for="cSrv">Endereço do servidor</label><input id="cSrv" value="${esc(S.srv)}" placeholder="https://script.google.com/macros/s/.../exec" required>
       <label for="cCod">Código de acesso</label><input id="cCod" value="${esc(S.codigo)}" required>
       ${S.erro ? `<p style="color:#ff9b91">${esc(S.erro)}</p>` : ''}<button>Abrir painel</button></form>`;
@@ -193,14 +226,15 @@ function render() {
   }
   const C = calcular(), G = C.G, agora = new Date();
   const areaTxt = S.area === 'todas' ? 'Pátios e CC7' : AREAS[S.area];
-  const cab = `<header><div class="marca"><img src="icon-192.png" alt=""><div><h1>Inspeção de Roletes</h1><p>Painel de indicadores · ${esc(areaTxt)}</p></div></div>
+  const cab = `<header><div class="marca"><img src="icon-192.png" alt=""><div><h1>Inspeção de Rolos</h1><p>Painel de indicadores · ${esc(areaTxt)}</p></div></div>
     <div class="seg" role="group" aria-label="Área">${[['patios', 'Pátios'], ['cc7', 'CC7'], ['todas', 'Todas']].map(([k, n]) => `<button class="${S.area === k ? 'on' : ''}" data-area="${k}">${n}</button>`).join('')}</div>
+    <button class="ic" id="bMapa" style="${S.ver && S.ver.t === 'mapa' ? 'background:var(--az);color:#06121c' : ''}">Mapa de faróis</button>
     <button class="ic" id="bTela">Tela cheia</button>
     <div class="hora"><b id="relogio">${p2(agora.getHours())}:${p2(agora.getMinutes())}</b>${fData(Date.now())}</div></header>
   ${S.erro ? `<div class="aviso">${esc(S.erro)}</div>` : ''}`;
   const rod = `<div class="rod"><span>Atualiza sozinho a cada minuto · última atualização ${S.sync ? p2(new Date(S.sync).getHours()) + ':' + p2(new Date(S.sync).getMinutes()) : '—'}</span><span>Desenvolvido por Jeferson Rodrigo dos Santos · Inspetor de automação e instrumentação · Pátios de Minérios - RED 2</span></div>`;
   if (S.ver) {
-    const corpo = S.ver.t === 'eq' ? vEquip(C, S.ver.id) : vInsp(C, S.ver.id);
+    const corpo = S.ver.t === 'mapa' ? vMapa(C) : S.ver.t === 'eq' ? vEquip(C, S.ver.id) : vInsp(C, S.ver.id);
     if (corpo) { app.innerHTML = `<div class="wrap">${cab}<button class="volta" id="bVolta">‹ Voltar ao painel geral</button>${corpo}${rod}</div>`; ligar(app); return; }
     S.ver = null;
   }
@@ -208,7 +242,7 @@ function render() {
     <div class="k"><div class="r"><i style="background:var(--vm)"></i>Lista de troca</div><b class="vmT">${nf(G.vmN)}</b><div class="v">${brl(G.vmV)}</div><div class="s">itens vermelhos para a execução</div></div>
     <div class="k"><div class="r"><i style="background:var(--am)"></i>Pontos de atenção</div><b class="amT">${nf(G.amN)}</b><div class="v">${brl(G.amV)}</div><div class="s">itens amarelos acompanhados</div></div>
     <div class="k"><div class="r"><i style="background:var(--az)"></i>Investimento para zerar</div><b style="font-size:clamp(26px,2.6vw,42px)">${brlC(G.vmV + G.amV)}</b><div class="s">${G.semPreco ? pl(G.semPreco, 'item sem preço cadastrado', 'itens sem preço cadastrado') : 'troca + atenção'}</div></div>
-    <div class="k"><div class="r"><i style="background:var(--vd)"></i>Roletes bons</div><b>${G.total ? pt(pct(G.bons, G.total)) : '—'}</b>${G.total ? barra(G) : ''}<div class="s">${nf(G.total)} roletes em ${pl(C.eqs.length, 'equipamento', 'equipamentos')}</div></div>
+    <div class="k"><div class="r"><i style="background:var(--vd)"></i>Rolos bons</div><b>${G.total ? pt(pct(G.bons, G.total)) : '—'}</b>${G.total ? barra(G) : ''}<div class="s">${nf(G.total)} rolos em ${pl(C.eqs.length, 'equipamento', 'equipamentos')}</div></div>
     <div class="k"><div class="r"><i style="background:#9fb4c6"></i>Trocados em 30 dias</div><b>${nf(C.tr30)}</b><div class="s">baixas dadas pelos inspetores</div></div>
   </section>`;
   const eqs = C.eqs.map(x => `<div class="eq click ${x.e.farol || ''}" data-ver="eq" data-id="${esc(x.e.id)}" role="button" tabindex="0" title="Ver o equipamento ${esc(x.e.nome)}">${sem(x.e.farol)}<div class="f"><h3>${esc(x.e.nome)}</h3>
@@ -248,6 +282,10 @@ function ligar(app) {
     try { if (d.fullscreenElement) d.exitFullscreen(); else d.documentElement.requestFullscreen().catch(() => { }); } catch (e) { }
   };
   const bv = document.getElementById('bVolta'); if (bv) bv.onclick = () => abrir(null);
+  const bm = document.getElementById('bMapa'); if (bm) bm.onclick = () => abrir(S.ver && S.ver.t === 'mapa' ? null : { t: 'mapa' });
+  const mi = document.getElementById('mInsp'); if (mi) mi.onchange = () => { S.mapaInsp = mi.value; render(); };
+  app.querySelectorAll('[data-cel2]').forEach(el => el.onclick = () => { const [a, b] = el.dataset.cel2.split('|'); popCelula(calcular(), a, b); });
+  app.querySelectorAll('[data-cel]').forEach(el => el.onclick = () => { const [a, b] = el.dataset.cel.split('|'); popCelula(calcular(), a, b); });
   app.querySelectorAll('[data-ver]').forEach(el => {
     el.onclick = ev => { ev.preventDefault(); abrir({ t: el.dataset.ver, id: el.dataset.id }); };
     el.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); abrir({ t: el.dataset.ver, id: el.dataset.id }); } };
@@ -262,12 +300,54 @@ function abrir(v, semHist) {
 window.addEventListener('popstate', ev => abrir(ev.state && ev.state.ver || null, true));
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && S.ver) abrir(null); });
 
+/* ----- mapa de faróis por parte (modelo da planilha) ----- */
+const ICF = f => f === 'vd' ? `<svg viewBox="0 0 40 40" aria-label="Bom"><circle cx="20" cy="20" r="17" fill="#c8ecc9" stroke="#3aa04a" stroke-width="2.5"/><path d="M11 21 l6 6 l12 -13" fill="none" stroke="#2e8b3d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+  : f === 'am' ? `<svg viewBox="0 0 40 40" aria-label="Atenção"><circle cx="20" cy="20" r="17" fill="#fde7a6" stroke="#e0a100" stroke-width="2.5"/><path d="M20 10 v13" stroke="#b07a00" stroke-width="4.5" stroke-linecap="round"/><circle cx="20" cy="29" r="2.8" fill="#b07a00"/></svg>`
+  : f === 'na' ? `<svg viewBox="0 0 40 40" aria-label="Não se aplica"><circle cx="20" cy="20" r="17" fill="#cfe2fb" stroke="#1f6fd6" stroke-width="2.5"/><text x="20" y="25" text-anchor="middle" font-size="12" font-weight="900" fill="#1557b0" font-family="system-ui,Arial,sans-serif">N/A</text></svg>`
+  : f === 'vm' ? `<svg viewBox="0 0 40 40" aria-label="Crítico"><circle cx="20" cy="20" r="17" fill="#f6c3c0" stroke="#d93025" stroke-width="2.5"/><path d="M13 13 l14 14 M27 13 l-14 14" stroke="#c62828" stroke-width="4.5" stroke-linecap="round"/></svg>` : '<span class="vaz">—</span>';
+function vMapa(C) {
+  const ids = C.insp.map(i => i.id).filter(id => C.I[id]).sort((a, b) => cmp(C.I[a].nome, C.I[b].nome));
+  const sel = S.mapaInsp && ids.includes(S.mapaInsp) ? [S.mapaInsp] : ids;
+  // todos os inspetores numa tabela só, um depois do outro (em série), com as partes fixas à esquerda
+  const grupos = sel.map(id => ({ i: C.I[id], eqs: C.eqs.filter(x => x.e.inspId === id).map(x => x.e).sort((a, b) => cmp(a.nome, b.nome)) })).filter(g => g.eqs.length);
+  const todos = grupos.reduce((l, g) => l.concat(g.eqs.map((e, j) => ({ e, ini: j === 0 }))), []);
+  const ini = j => todos[j].ini ? ' ini' : '';
+  const cab = `<tr><th class="cin fx" colspan="3" rowspan="3"></th>${grupos.map(g => `<th class="tit ini" colspan="${g.eqs.length}">${esc(g.i.nome.toUpperCase())}</th>`).join('')}</tr>
+    <tr>${grupos.map(g => `<th class="sub ini" colspan="${g.eqs.length}">${g.eqs.length > 2 ? 'TRANSPORTADORES' : 'TRANSP.'}</th>`).join('')}</tr>
+    <tr>${todos.map((x, j) => `<th class="${ini(j)}"><div class="eqn">${esc(x.e.nome)}</div></th>`).join('')}</tr>`;
+  const linhas = MAPA.map((m, j) => {
+    const grp = m.g === 'Correia' ? (MAPA[j - 1] && MAPA[j - 1].g === 'Correia' ? '' : `<td class="gr fx2" rowspan="${MAPA.filter(x => x.g === 'Correia').length}">CORREIA</td>`) : '';
+    const nome = m.g === 'Correia' ? `${grp}<td class="ptn fx3">${esc(m.nome)}</td>` : `<td class="ptn fx2" colspan="2">${esc(m.nome)}</td>`;
+    return `<tr><td class="n fx">${m.n}</td>${nome}${todos.map((x, k) => { const p = (x.e.partes || {})[m.k]; return `<td class="cel${ini(k)}" data-cel="${esc(x.e.id)}|${m.k}" title="${esc(x.e.nome)} · ${esc(m.nome)}">${ICF(p ? p.f : '')}</td>`; }).join('')}</tr>`;
+  }).join('');
+  const blocos = todos.length ? `<div class="mapa"><table><thead>${cab}</thead><tbody>${linhas}</tbody></table></div>` : '';
+  return `<section class="det"><div class="f"><h2>Mapa de faróis</h2><div class="m">Farol de cada parte do transportador, marcado pelo inspetor na inspeção · clique numa célula para ver o comentário e a lista de inspeção</div></div></section>
+  <div class="mapa-ctl"><label for="mInsp" style="color:var(--mut)">Inspetor</label><select id="mInsp"><option value="">Todos os inspetores</option>${ids.map(id => `<option value="${esc(id)}" ${S.mapaInsp === id ? 'selected' : ''}>${esc(C.I[id].nome)}</option>`).join('')}</select>
+    <div class="leg"><span>${ICF('vd').replace('<svg', '<svg width="22" height="22"')} Bom</span><span>${ICF('am').replace('<svg', '<svg width="22" height="22"')} Atenção</span><span>${ICF('vm').replace('<svg', '<svg width="22" height="22"')} Crítico</span><span>${ICF('na').replace('<svg', '<svg width="22" height="22"')} Não se aplica</span><span>— sem avaliação</span></div></div>
+  ${blocos || '<section class="pn"><div class="vazio">Nenhum equipamento para mostrar.</div></section>'}`;
+}
+function popCelula(C, eid, k) {
+  const e = C.d.equip.find(x => x.id === eid); if (!e) return;
+  const m = MAPA.find(x => x.k === k), x = (e.partes || {})[k], pk = /^r[345]$/.test(k) ? 'rolos' : k, p = PARTE[pk];
+  const nc = x && p ? p.ck.filter((t, i) => (x.ck || {})[i] === 'nc') : [], cf = x && p ? p.ck.filter((t, i) => (x.ck || {})[i] === 'c').length : 0;
+  const d = document.createElement('div'); d.className = 'pop';
+  d.innerHTML = `<div class="cx"><button class="fe">Fechar</button><h3>${esc(e.nome)} · ${m.n} ${esc(m.nome)}</h3>
+    ${x ? `<div style="display:flex;align-items:center;gap:10px;margin:8px 0">${ICF(x.f).replace('<svg', '<svg width="34" height="34"')}<b style="font-size:18px">${FAROL[x.f]}</b><span style="color:var(--mut)">· ${fData(x.em)} · ${esc(C.I[x.por] ? C.I[x.por].nome : '')}</span></div>
+      ${x.c ? `<p><b>Comentário:</b> ${esc(x.c)}</p>` : '<p style="color:var(--mut)">Sem comentário.</p>'}
+      ${p && p.ck.length ? `<p style="margin-bottom:0"><b>Lista de inspeção:</b> ${cf} conforme${cf === 1 ? '' : 's'}, ${nc.length} não conforme${nc.length === 1 ? '' : 's'}${p.ck.length - cf - nc.length ? ', ' + (p.ck.length - cf - nc.length) + ' sem resposta' : ''}</p>${nc.length ? `<ul>${nc.map(t => `<li style="color:#ff9b91">${esc(t)}</li>`).join('')}</ul>` : ''}` : ''}`
+      : '<p style="color:var(--mut)">Esta parte ainda não foi avaliada neste equipamento.</p>'}
+    <p style="margin-top:14px"><a href="#" data-eq="${esc(e.id)}" style="color:var(--az)">Abrir o equipamento ${esc(e.nome)}</a></p></div>`;
+  d.onclick = ev => { if (ev.target === d || ev.target.classList.contains('fe')) d.remove(); };
+  d.querySelector('[data-eq]').onclick = ev => { ev.preventDefault(); d.remove(); abrir({ t: 'eq', id: e.id }); };
+  document.body.appendChild(d);
+}
+
 /* ----- telas individuais ----- */
 const rotItem = r => r.pos === 'car' ? 'nº ' + r.cav : (r.cav || '—') + (r.aa ? ' AA' : '');
-const aviso = (r, e) => /^p\d$/.test(r.pos) ? '<div class="av">Pesagem: retirar de operação e comunicar a instrumentação</div>' : r.zb ? '<div class="av am">Zona da balança: rolete específico para balança</div>' : (e && e.bal === 'dos' ? '<div class="av">Balança dosadora: troca crítica</div>' : '');
+const aviso = (r, e) => /^p\d$/.test(r.pos) ? '<div class="av">Pesagem: retirar de operação e comunicar a instrumentação</div>' : r.zb ? '<div class="av am">Zona da balança: rolo específico para balança</div>' : (e && e.bal === 'dos' ? '<div class="av">Balança dosadora: troca crítica</div>' : '');
 const nomeI = (C, id) => C.I[id] ? C.I[id].nome : '—';
 function tabelaItens(C, e, l) {
-  if (!l.length) return '<div class="vazio">Nenhum item pendente. Todos os roletes estão bons.</div>';
+  if (!l.length) return '<div class="vazio">Nenhum item pendente. Todos os rolos estão bons.</div>';
   l = l.slice().sort((a, b) => (C.vm(a) ? 0 : 1) - (C.vm(b) ? 0 : 1) || cmp(a.cav, b.cav) || ORDP.indexOf(a.pos) - ORDP.indexOf(b.pos));
   return `<table><thead><tr><th>${e.bal === 'dos' ? 'Nº' : 'Cavalete'}</th><th>Código</th><th>Situação</th><th>NI</th><th>Descrição</th><th>Observação</th><th>Marcado por</th><th class="n">Valor</th></tr></thead><tbody>
     ${l.map(r => { const t = C.T[r.tipoId]; return `<tr><td><b style="font-size:17px">${esc(rotItem(r))}</b></td><td><span class="cod" title="${esc(POSN[r.pos] || '')}">${esc(POS[r.pos] || r.pos)}</span></td>
@@ -285,7 +365,7 @@ function compraDe(C, l) {
     <tr class="tt"><td>Total</td><td class="n vmT">${qv}</td><td class="n amT">${qa}</td><td class="n">${brl(tv)}</td><td class="n">${brl(ta)}</td></tr></tbody></table>`;
 }
 const tagBal = e => e.bal === 'dos' ? '<span class="tag dos">Balança dosadora</span>' : e.bal === 'tem' ? '<span class="tag">Com balança</span>' : '';
-const roletesTxt = (e, x) => e.bal === 'dos' ? '3 de pesagem + ' + nf(e.ncav) + ' de carga = ' + nf(x.total) + ' roletes' : nf(e.ncav) + ' cavaletes · ' + nf(e.nret) + ' de retorno · ' + nf(x.total) + ' roletes';
+const roletesTxt = (e, x) => e.bal === 'dos' ? '3 de pesagem + ' + nf(e.ncav) + ' de carga = ' + nf(x.total) + ' rolos' : nf(e.ncav) + ' cavaletes · ' + nf(e.nret) + ' de retorno · ' + nf(x.total) + ' rolos';
 const farolTxt = (C, e) => e.farol ? FAROL[e.farol] + ' · avaliado em ' + fData(e.farolEm) + (e.farolPor ? ' por ' + nomeI(C, e.farolPor) : '') : 'Semáforo sem avaliação';
 function vEquip(C, id) {
   const x = C.eqs.find(y => y.e.id === id); if (!x) return '';
@@ -295,15 +375,17 @@ function vEquip(C, id) {
       <div class="m">${esc(e.area || '')}${e.area ? ' · ' : ''}Inspetor: ${i ? `<a href="#" data-ver="insp" data-id="${esc(e.inspId)}" style="color:var(--az)">${esc(i.nome)}</a>` : '—'}${S.area === 'todas' && i ? ' · ' + esc(AREAS[i.area] || '') : ''} · ${esc(roletesTxt(e, x))}</div>
       <div class="m">${esc(farolTxt(C, e))}</div></div></section>
   <section class="kpis">
-    <div class="k"><div class="r"><i style="background:var(--vd)"></i>Roletes bons</div><b>${x.total ? pt(pct(x.bons, x.total)) : '—'}</b>${x.total ? barra(x) : ''}<div class="s">${nf(x.bons)} de ${nf(x.total)}</div></div>
-    <div class="k"><div class="r"><i style="background:var(--vm)"></i>Para troca</div><b class="vmT">${nf(x.vmN)}</b><div class="v">${brl(x.vmV)}</div><div class="s">${pt(pct(x.vmU, x.total))} dos roletes</div></div>
-    <div class="k"><div class="r"><i style="background:var(--am)"></i>Em atenção</div><b class="amT">${nf(x.amN)}</b><div class="v">${brl(x.amV)}</div><div class="s">${pt(pct(x.amU, x.total))} dos roletes</div></div>
+    <div class="k"><div class="r"><i style="background:var(--vd)"></i>Rolos bons</div><b>${x.total ? pt(pct(x.bons, x.total)) : '—'}</b>${x.total ? barra(x) : ''}<div class="s">${nf(x.bons)} de ${nf(x.total)}</div></div>
+    <div class="k"><div class="r"><i style="background:var(--vm)"></i>Para troca</div><b class="vmT">${nf(x.vmN)}</b><div class="v">${brl(x.vmV)}</div><div class="s">${pt(pct(x.vmU, x.total))} dos rolos</div></div>
+    <div class="k"><div class="r"><i style="background:var(--am)"></i>Em atenção</div><b class="amT">${nf(x.amN)}</b><div class="v">${brl(x.amV)}</div><div class="s">${pt(pct(x.amU, x.total))} dos rolos</div></div>
     <div class="k"><div class="r"><i style="background:var(--az)"></i>Investimento para zerar</div><b style="font-size:clamp(26px,2.6vw,42px)">${brlC(x.vmV + x.amV)}</b><div class="s">troca + atenção</div></div>
     <div class="k"><div class="r"><i style="background:#9fb4c6"></i>Trocados em 30 dias</div><b>${nf(tr)}</b><div class="s">baixas neste equipamento</div></div>
   </section>
   <div class="grid">
     <section class="pn"><div class="pt"><h2>Itens pendentes</h2><span>${pl(l.length, 'item', 'itens')} · troca primeiro</span></div>${tabelaItens(C, e, l)}</section>
-    <section class="pn"><div class="pt"><h2>Lista de compras do equipamento</h2></div>${compraDe(C, l)}</section>
+    <div><section class="pn"><div class="pt"><h2>Farol das partes</h2><span>marcado pelo inspetor</span></div>
+      <table><tbody>${MAPA.map(m => { const x = (e.partes || {})[m.k]; return `<tr class="click" data-cel2="${esc(e.id)}|${m.k}"><td style="width:34px;color:var(--mut)">${m.n}</td><td><b>${esc(m.nome)}</b>${x && x.c ? `<div style="font-size:12.5px;color:var(--mut)">${esc(x.c)}</div>` : ''}</td><td style="width:40px">${ICF(x ? x.f : '').replace('<svg', '<svg width="28" height="28"')}</td></tr>`; }).join('')}</tbody></table></section>
+    <section class="pn"><div class="pt"><h2>Lista de compras do equipamento</h2></div>${compraDe(C, l)}</section></div>
   </div>`;
 }
 function vInsp(C, id) {
@@ -320,7 +402,7 @@ function vInsp(C, id) {
   return `<section class="det"><div class="f"><h2>${esc(i.nome)}</h2><div class="m">${i.matricula ? 'Matrícula ' + esc(i.matricula) + ' · ' : ''}${esc(AREAS[i.area] || '')} · ${pl(meus.length, 'equipamento', 'equipamentos')}</div></div>
       <div class="cont" style="margin:0"><div><i style="background:var(--vd)"></i><b>${far.vd}</b> ${far.vd === 1 ? 'bom' : 'bons'}</div><div><i style="background:var(--am)"></i><b>${far.am}</b> em atenção</div><div><i style="background:var(--vm)"></i><b>${far.vm}</b> ${far.vm === 1 ? 'crítico' : 'críticos'}</div><div><i style="background:var(--cz)"></i><b>${far.x}</b> sem avaliação</div></div></section>
   <section class="kpis">
-    <div class="k"><div class="r"><i style="background:var(--vd)"></i>Roletes bons</div><b>${tot ? pt(pct(bons, tot)) : '—'}</b>${tot ? barra({ total: tot, amU: g.amU, vmU: g.vmU }) : ''}<div class="s">${nf(tot)} roletes nos equipamentos dele</div></div>
+    <div class="k"><div class="r"><i style="background:var(--vd)"></i>Rolos bons</div><b>${tot ? pt(pct(bons, tot)) : '—'}</b>${tot ? barra({ total: tot, amU: g.amU, vmU: g.vmU }) : ''}<div class="s">${nf(tot)} rolos nos equipamentos dele</div></div>
     <div class="k"><div class="r"><i style="background:var(--vm)"></i>Para troca</div><b class="vmT">${nf(g.vmN)}</b><div class="v">${brl(g.vmV)}</div><div class="s">itens vermelhos</div></div>
     <div class="k"><div class="r"><i style="background:var(--am)"></i>Em atenção</div><b class="amT">${nf(g.amN)}</b><div class="v">${brl(g.amV)}</div><div class="s">itens amarelos</div></div>
     <div class="k"><div class="r"><i style="background:var(--az)"></i>Investimento para zerar</div><b style="font-size:clamp(26px,2.6vw,42px)">${brlC(g.vmV + g.amV)}</b><div class="s">troca + atenção</div></div>

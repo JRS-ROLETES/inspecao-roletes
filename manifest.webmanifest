@@ -1,7 +1,7 @@
 {
-  "name": "Inspeção de Roletes",
-  "short_name": "Roletes",
-  "description": "Inspeção de roletes dos transportadores de correia: lista de troca para a execução, pontos de atenção e indicadores.",
+  "name": "Inspeção de Rolos",
+  "short_name": "Rolos",
+  "description": "Inspeção de rolos dos transportadores de correia: lista de troca para a execução, pontos de atenção e indicadores.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",

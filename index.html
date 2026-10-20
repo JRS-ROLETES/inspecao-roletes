@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Inspeção de Roletes</title>
+<title>Inspeção de Rolos</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#132331">
 <link rel="icon" href="icon-192.png">
@@ -121,6 +121,19 @@ label.l:first-child{margin-top:0}
 .cavtog.on.vm{border:1.5px solid var(--vm);background:var(--vmc)}
 .cavtog.on.am{border:1.5px solid var(--am);background:var(--amc)}
 .cavtog.ex{border-style:solid;opacity:.9}
+.chip.na{background:#dbe9fb;color:#1557b0;font-weight:800}
+.btn.na,.btn.na:hover{background:#1f6fd6;color:#fff}
+.nabox{display:flex;gap:12px;align-items:center;background:#eef5fe;border:1.5px dashed #1f6fd6;border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.nabox .f{font-size:14px;color:#1f3b63}
+.num{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;border-radius:50%;background:#1f5c8b;color:#fff;font-weight:800;font-size:14px;flex:none}
+.num.g{min-width:44px;height:44px;font-size:18px}
+.ckl{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ln)}
+.ckl .f{flex:1 1 200px;font-size:15px}
+.ckb{display:flex;gap:6px}
+.ckb button{border:1.5px solid var(--ln);background:#fff;border-radius:10px;padding:8px 11px;font-size:13.5px;font-weight:650;cursor:pointer;color:var(--tx)}
+.ckb button.on.c{background:var(--vd);border-color:var(--vd);color:#fff}
+.ckb button.on.nc{background:var(--vm);border-color:var(--vm);color:#fff}
+textarea.in{resize:vertical;min-height:80px;font:inherit}
 .cavtog.on.aa{border:1.5px solid #1f5c8b;background:#e4eef7}
 .aviso{background:var(--amc);color:#5a4200;border-radius:12px;padding:11px 13px;font-size:14px;margin:8px 0}
 .alerta{background:var(--vmc);color:#7a1010;border:1.5px solid var(--vm);border-radius:12px;padding:11px 13px;font-size:14px;margin:8px 0;line-height:1.4}
@@ -235,42 +248,68 @@ const SERVIDOR_PADRAO = '';
 
 /* ===== códigos de posição (os mesmos do servidor) ===== */
 const POS = { le: 'L.E', ct: 'C.T', ld: 'L.D', ret: 'RET', cav: 'CAV' };
-const POSN = { le: 'Lateral esquerdo', ct: 'Central', ld: 'Lateral direito', ret: 'Rolete de retorno', cav: 'Cavalete completo' };
+const POSN = { le: 'Lateral esquerdo', ct: 'Central', ld: 'Lateral direito', ret: 'Rolo de retorno', cav: 'Cavalete completo' };
 const ORD = ['le', 'ct', 'ld', 'ret', 'cav'];
-/* Balança dosadora: P1 a P3 = roletes de pesagem (amarelos na foto); CAR = rolete de carga,
+/* Balança dosadora: P1 a P3 = rolos de pesagem (amarelos na foto); CAR = rolo de carga,
    com o número digitado pelo inspetor (cada balança tem uma quantidade diferente) */
 const DOS = ['p1', 'p2', 'p3', 'car'];
 const PESAGEM = ['p1', 'p2', 'p3'];
-PESAGEM.forEach(k => { POS[k] = k.toUpperCase(); POSN[k] = 'Rolete de pesagem ' + k.slice(1); });
-POS.car = 'CAR'; POSN.car = 'Rolete de carga';
+PESAGEM.forEach(k => { POS[k] = k.toUpperCase(); POSN[k] = 'Rolo de pesagem ' + k.slice(1); });
+POS.car = 'CAR'; POSN.car = 'Rolo de carga';
 const ORD_ALL = ['le', 'ct', 'ld', 'ge', 'gd', 'ret', 'rge', 'rgd', 'cav'].concat(DOS);
 const ehPes = p => PESAGEM.includes(p);
 const ehDos = e => !!e && e.bal === 'dos';
-const BALDICA = { '': 'Se tiver balança, a inspeção pede para marcar os roletes da zona da balança.', tem: 'Na inspeção aparece a opção "Rolete da zona da balança": ele só vai para troca, pede rolete específico para balança e deixa o semáforo vermelho.', dos: 'Balança dosadora: 3 roletes de pesagem (P1 a P3) mais os roletes de carga, numerados. Todo rolete marcado vai para troca como crítico.' };
+const BALDICA = { '': 'Se tiver balança, a inspeção pede para marcar os rolos da zona da balança.', tem: 'Na inspeção aparece a opção "Rolo da zona da balança": ele só vai para troca, pede rolo específico para balança e deixa o semáforo vermelho.', dos: 'Balança dosadora: 3 rolos de pesagem (P1 a P3) mais os rolos de carga, numerados. Todo rolo marcado vai para troca como crítico.' };
 const BALN = { '': 'Não tem balança', tem: 'Tem balança no equipamento', dos: 'É uma balança dosadora' };
-const AV_PES = 'Rolete de pesagem: retirar o equipamento de operação e comunicar a instrumentação para acompanhar a troca.';
-const AV_ZB = 'Zona da balança: substituir por rolete específico para balança.';
+const AV_PES = 'Rolo de pesagem: retirar o equipamento de operação e comunicar a instrumentação para acompanhar a troca.';
+const AV_ZB = 'Zona da balança: substituir por rolo específico para balança.';
 const AV_DOS = 'Balança dosadora: troca crítica.';
-const LEGENDA_AA = 'Cavalete autoalinhador: G.E / G.D = roletes guia da carga · GR.E / GR.D = roletes guia do retorno';
-const LEGENDA_DOS = 'Balança dosadora: P1 a P3 = roletes de pesagem · CAR = rolete de carga (com o número do rolete)';
+const LEGENDA_AA = 'Cavalete autoalinhante: G.E / G.D = rolos guia da carga · GR.E / GR.D = rolos guia do retorno';
+const LEGENDA_DOS = 'Balança dosadora: P1 a P3 = rolos de pesagem · CAR = rolo de carga (com o número do rolo)';
 const CARGA = ['le', 'ct', 'ld', 'ge', 'gd'];   // posições cobertas pelo cavalete completo (CAV)
-/* Cavalete autoalinhador: tem também os dois roletes guia */
+/* Cavalete autoalinhante: tem também os dois rolos guia */
 POS.ge = 'G.E'; POS.gd = 'G.D'; POS.rge = 'GR.E'; POS.rgd = 'GR.D';
-POSN.ge = 'Rolete guia esquerdo'; POSN.gd = 'Rolete guia direito'; POSN.rge = 'Guia do retorno esquerdo'; POSN.rgd = 'Guia do retorno direito';
+POSN.ge = 'Rolo guia esquerdo'; POSN.gd = 'Rolo guia direito'; POSN.rge = 'Guia do retorno esquerdo'; POSN.rgd = 'Guia do retorno direito';
 const GUIA = ['ge', 'gd', 'rge', 'rgd'];
 const AREAS = { patios: 'Pátios', cc7: 'CC7' };
 const AREAD = { patios: 'Pátios de minérios', cc7: 'CC7' };
 const DEV = { nome: 'Jeferson Rodrigo dos Santos', cargo: 'Inspetor de automação e instrumentação', area: 'Pátios de Minérios - RED 2', whats: '5531982613138' };
-const FAROL = { vd: { n: 'Verde', s: 'Equipamento bom' }, am: { n: 'Amarelo', s: 'Equipamento em atenção' }, vm: { n: 'Vermelho', s: 'Situação crítica' } };
+const FAROL = { vd: { n: 'Verde', s: 'Equipamento bom' }, am: { n: 'Amarelo', s: 'Equipamento em atenção' }, vm: { n: 'Vermelho', s: 'Situação crítica' }, na: { n: 'Azul', s: 'Não se aplica' } };
 const FAROL_ORD = { vm: 0, am: 1, vd: 2 };
+/* ===== partes do transportador (imagem partes.jpg) e checklists ===== */
+const PARTES = [{"k": "p1", "n": 1, "nome": "Chute de carregamento", "ck": ["Chute sem furos, trincas ou chapas soltas", "Revestimento de desgaste (placas/chapas) íntegro", "Sem marcas de batida que indiquem fluxo ruim ou entupimento", "Material cai no centro da correia", "Caixa de carga vedada, sem vazamento de material ou pó", "Parafusos e fixações completos e apertados"], "b": [[277, 28]], "t": [8, 848, 245, 963]}, {"k": "p2", "n": 2, "nome": "Guia lateral", "ck": ["Borracha de vedação sem desgaste excessivo ou folgas", "Vedação encostada na correia, sem aperto excessivo", "Grampos e suportes fixos e completos", "Chapas laterais sem furos ou desgaste", "Sem derramamento de material na região da guia"], "b": [[309, 84]], "t": [252, 848, 470, 963]}, {"k": "rolos", "n": 3, "nome": "Rolos (impacto, carga e retorno)", "ck": [], "b": [[380, 110], [549, 177], [351, 410]], "t": [478, 848, 1058, 963]}, {"k": "p6", "n": 6, "nome": "Tambores", "ck": ["Revestimento sem desgaste excessivo, descolamento ou partes faltando", "Sem material acumulado nos tambores (cauda, desvio e esticador)", "Mancais sem ruído anormal e sem aquecimento", "Mancais lubrificados e vedações sem vazamento", "Carcaça, soldas e ponta de eixo sem trincas", "Mancais e fixações apertados, tambor alinhado"], "b": [[40, 236], [764, 553]], "t": [8, 970, 222, 1088]}, {"k": "p7", "n": 7, "nome": "Acionamento", "ck": ["Motor sem ruído, vibração ou aquecimento anormal", "Redutor com nível de óleo correto e sem vazamento", "Respiro do redutor limpo", "Acoplamento sem desgaste ou folga", "Parafusos de fixação do motor e do redutor apertados", "Freio e contra-recuo (back-stop) funcionando", "Corrente do motor dentro do normal para a carga"], "b": [[821, 797]], "t": [228, 970, 422, 1088]}, {"k": "p8", "n": 8, "nome": "Estrutura do transportador", "ck": ["Longarinas, suportes e travessas sem corrosão ou danos", "Soldas sem trincas", "Parafusos completos e apertados", "Estrutura sem desalinhamento ou movimentação", "Sem ruído ou vibração anormal", "Bases e chumbadores íntegros"], "b": [[414, 577]], "t": [430, 970, 642, 1088]}, {"k": "p9", "n": 9, "nome": "Alinhamento da correia", "ck": ["Correia centralizada nos tambores de cabeça e de cauda", "Correia sem raspar na estrutura", "Rolos autoalinhantes girando livres e no ângulo correto", "Nenhum rolo amarrado ou travado para corrigir desvio", "Chaves de desalinhamento limpas, íntegras e sem jampeamento", "Carga centralizada na correia"], "b": [[589, 329]], "t": [650, 970, 850, 1088]}, {"k": "p10", "n": 10, "nome": "Emendas da correia", "ck": ["Emenda sem bordas levantadas", "Borracha da emenda sem trincas", "Sem cabos de aço ou lonas expostos", "Emenda nivelada com a superfície da correia", "Grampos da emenda mecânica completos e sem desgaste", "Sem deslocamento entre as marcas de referência"], "b": [[777, 430]], "t": [857, 970, 1060, 1088]}, {"k": "p11", "n": 11, "nome": "Condição física da correia", "ck": ["Cobertura superior sem cortes, rasgos ou furos", "Espessura da cobertura dentro do limite", "Bordas sem desfiamento ou trincas", "Sem objetos presos ou incrustados", "Sem queimaduras ou endurecimento da borracha", "Sem lonas ou cabos de aço expostos", "Sem flecha excessiva da correia entre os rolos"], "b": [[679, 367]], "t": [8, 1095, 222, 1215]}, {"k": "p12", "n": 12, "nome": "Chute de descarga", "ck": ["Chute sem furos ou trincas", "Revestimento de desgaste íntegro", "Sem entupimento ou acúmulo de material", "Material cai no centro da correia seguinte", "Vedação e cortinas sem vazamento de pó", "Portas de inspeção fechadas e vedadas"], "b": [[1011, 659]], "t": [228, 1095, 422, 1215]}, {"k": "p13", "n": 13, "nome": "Esticamento", "ck": ["Contrapeso na posição correta, com curso livre disponível", "Carro e guias deslizando livres", "Cabos e polias do contrapeso íntegros", "Esticador de fuso sem travamento e com ajuste igual dos dois lados", "Correia sem patinar na partida", "Proteção do contrapeso instalada"], "b": [[93, 549]], "t": [430, 1095, 642, 1215]}, {"k": "p14", "n": 14, "nome": "Raspadores", "ck": ["Lâminas com desgaste normal (sem desgaste excessivo ou desigual)", "Lâmina em contato com a correia", "Largura da lâmina cobre a faixa do material", "Tensionador funcionando e na pressão correta", "Sem material retornando (carryback) depois do raspador", "Suportes e fixações íntegros"], "b": [], "t": [650, 1095, 850, 1215]}, {"k": "p15", "n": 15, "nome": "Limpadores", "ck": ["Limpador em V antes do tambor de cauda encostado na correia", "Sem material entre a correia e o tambor de cauda", "Lâminas sem desgaste excessivo", "Suporte e fixação íntegros", "Sem acúmulo de material sob o limpador"], "b": [[60, 330]], "t": [857, 1095, 1060, 1215]}, {"k": "p16", "n": 16, "nome": "Passadiços e corredores", "ck": ["Piso sem buracos, chapas soltas ou corrosão", "Sem acúmulo de material ou obstrução", "Guarda-corpo completo (travessão superior, intermediário e rodapé)", "Escadas com degraus e corrimãos íntegros", "Iluminação adequada", "Acesso livre até o transportador"], "b": [[814, 68]], "t": [8, 1225, 280, 1360]}, {"k": "p17", "n": 17, "nome": "Proteções NR 12", "ck": ["Proteções instaladas em todos os tambores e pontos de agarramento", "Proteções fixas presas, sem partes faltando ou danificadas", "Telas sem rasgos ou aberturas que permitam alcançar partes móveis", "Proteção do acionamento e do acoplamento instalada", "Proteção do contrapeso do esticamento instalada"], "b": [[992, 426]], "t": [288, 1225, 522, 1360]}, {"k": "p18", "n": 18, "nome": "Acessórios de segurança", "ck": ["Chave de emergência por cabo testada e funcionando", "Cabo de emergência esticado ao longo de todo o transportador", "Botoeiras de emergência funcionando", "Chaves de desalinhamento funcionando", "Sensores (velocidade, rasgo, entupimento) funcionando", "Alarme sonoro de partida funcionando", "Nenhum dispositivo de segurança jampeado (bypass)"], "b": [[767, 808]], "t": [530, 1225, 782, 1360]}, {"k": "p19", "n": 19, "nome": "Limpeza do transportador", "ck": ["Sem derramamento de material sob o transportador", "Sem acúmulo nos rolos de retorno e na estrutura", "Sem acúmulo de pó", "Bandejas e calhas de limpeza desobstruídas", "Coleta e supressão de pó funcionando", "Sem material sobre os passadiços"], "b": [[358, 720]], "t": [790, 1225, 1060, 1360]}];
+const MAPA = [{"k": "p1", "n": 1, "nome": "Chute de carregamento", "g": ""}, {"k": "p2", "n": 2, "nome": "Guia lateral", "g": ""}, {"k": "r3", "n": 3, "nome": "Rolos de impacto", "g": ""}, {"k": "r4", "n": 4, "nome": "Rolos de carga", "g": ""}, {"k": "r5", "n": 5, "nome": "Rolos de retorno", "g": ""}, {"k": "p6", "n": 6, "nome": "Tambores", "g": ""}, {"k": "p7", "n": 7, "nome": "Acionamento", "g": ""}, {"k": "p8", "n": 8, "nome": "Estrutura transportador", "g": ""}, {"k": "p9", "n": 9, "nome": "Alinhamento da correia", "g": "Correia"}, {"k": "p10", "n": 10, "nome": "Emendas da correia", "g": "Correia"}, {"k": "p11", "n": 11, "nome": "Condição física correia", "g": "Correia"}, {"k": "p12", "n": 12, "nome": "Chute de descarga", "g": ""}, {"k": "p13", "n": 13, "nome": "Esticamento", "g": ""}, {"k": "p14", "n": 14, "nome": "Raspadores", "g": ""}, {"k": "p15", "n": 15, "nome": "Limpadores", "g": ""}, {"k": "p16", "n": 16, "nome": "Passadiços/corredores", "g": ""}, {"k": "p17", "n": 17, "nome": "Proteções NR 12", "g": ""}, {"k": "p18", "n": 18, "nome": "Acessórios de segurança", "g": ""}, {"k": "p19", "n": 19, "nome": "Limpeza do transportador", "g": ""}];
+const FONTES_CK = 'Itens baseados no checklist de inspeção de transportadores da Martin Engineering, no manual de manutenção de correias da Sempertrans, em guias de inspeção de transportadores e na NR-12 (transportadores contínuos).';
+const PARTE = {}; PARTES.forEach(p => { PARTE[p.k] = p; });
+/* contorno aproximado de cada parte no desenho (para colorir a parte inspecionada) */
+const PECA = {
+  p1: ['M20 10 L250 8 L238 110 L200 150 L60 150 L30 95 Z'], p2: ['M150 110 L295 100 L292 160 L155 185 Z'],
+  rolos: ['M200 120 L390 115 L380 215 L210 205 Z', 'M320 170 L560 180 L720 300 L500 330 L360 250 Z', 'M280 330 L470 340 L620 450 L520 510 L290 400 Z'],
+  p6: ['M75 190 L170 190 L170 280 L75 280 Z', 'M665 575 L780 560 L930 520 L930 640 L780 700 L665 680 Z'], p7: ['M735 690 L900 690 L975 760 L970 835 L760 830 Z'],
+  p8: ['M180 370 L350 380 L720 530 L715 740 L600 740 L180 450 Z'], p9: ['M490 340 L600 345 L640 410 L540 415 Z', 'M610 285 L735 285 L735 340 L610 340 Z'],
+  p10: ['M690 440 L790 440 L830 500 L720 510 Z'], p11: ['M600 380 L700 380 L740 440 L640 440 Z'], p12: ['M860 600 L1010 560 L1040 760 L940 790 L870 720 Z'],
+  p13: ['M20 400 L120 410 L360 590 L350 660 L320 660 L60 520 L20 470 Z'], p15: ['M25 255 L150 255 L205 320 L200 375 L120 380 L25 310 Z'],
+  p16: ['M335 5 L560 5 L940 160 L1000 330 L930 340 L820 240 L500 135 L335 60 Z'], p17: ['M735 240 L1015 330 L1015 500 L930 500 L735 400 Z'],
+  p18: ['M610 725 L700 725 L700 820 L610 820 Z', 'M690 770 L990 800 L990 840 L690 805 Z'], p19: ['M370 640 L520 650 L570 760 L520 800 L375 700 Z']
+};
+const ROLOS3 = [['r3', 'Rolos de impacto'], ['r4', 'Rolos de carga'], ['r5', 'Rolos de retorno']];
+const PESO = { vd: 1, am: 2, vm: 3 };
+const farolIco = f => f === 'na' ? '<span class="chip na">N/A</span>' : semaforo(f);
+const pior = l => l.reduce((f, x) => (PESO[x] || 0) > (PESO[f] || 0) ? x : f, '');
+/* farol atual de uma parte (rolos = pior entre impacto, carga e retorno) */
+function farolParte(e, k) {
+  const P = (e && e.partes) || {};
+  if (k === 'rolos') return pior(['r3', 'r4', 'r5'].map(x => P[x] && P[x].f));
+  return P[k] ? P[k].f : '';
+}
 /* semáforo: três lâmpadas, acesa só a cor escolhida */
 const semaforo = (f, g) => `<span class="sem${g ? ' g' : ''}" role="img" aria-label="${f ? 'Semáforo ' + FAROL[f].n.toLowerCase() : 'Sem avaliação'}"><i class="${f === 'vm' ? 'on vm' : ''}"></i><i class="${f === 'am' ? 'on am' : ''}"></i><i class="${f === 'vd' ? 'on vd' : ''}"></i></span>`;
-const CATN = { carga: 'Rolete de carga', retorno: 'Rolete de retorno', cavalete: 'Cavalete', balanca: 'Rolete de balança', guia: 'Rolete guia' };
+const CATN = { carga: 'Rolo de carga', retorno: 'Rolo de retorno', cavalete: 'Cavalete', balanca: 'Rolo de balança', guia: 'Rolo guia' };
 const CATS = ['carga', 'retorno', 'cavalete', 'balanca', 'guia'];
-/* categoria do NI pela posição (igual ao servidor): pesagem e zona da balança pedem rolete de balança */
+/* categoria do NI pela posição (igual ao servidor): pesagem e zona da balança pedem rolo de balança */
 const catDe = (pos, zb) => pos === 'cav' ? 'cavalete' : GUIA.includes(pos) ? 'guia' : ehPes(pos) ? 'balanca' : pos === 'car' ? 'carga' : zb ? 'balanca' : pos === 'ret' ? 'retorno' : 'carga';
 /* texto do item: dosadora não tem número de cavalete */
-const rotItem = r => r.pos === 'car' ? 'Rolete de carga nº ' + r.cav : (r.cav ? 'Cavalete ' + r.cav + (r.aa ? ' (autoalinhador)' : '') + ' · ' : '') + POSN[r.pos];
+const rotItem = r => r.pos === 'car' ? 'Rolo de carga nº ' + r.cav : (r.cav ? 'Cavalete ' + r.cav + (r.aa ? ' (autoalinhante)' : '') + ' · ' : '') + POSN[r.pos];
 const cavTxt = r => (r.cav || '-') + (r.aa ? ' AA' : '');
 /* aviso que acompanha o item nas listas e PDFs */
 function avisoItem(D, r) {
@@ -287,7 +326,7 @@ function farolTravado(D, e) {
   return p.some(r => r.zb) || (ehDos(e) && p.length > 0);
 }
 const EMAIL_RE = /^[^\s@<>(),;:"\[\]]+@[^\s@<>(),;:"\[\]]+\.[A-Za-z]{2,}$/;
-const LEGENDA = 'L.E = lateral esquerdo · C.T = central · L.D = lateral direito · RET = rolete de retorno · CAV = cavalete completo';
+const LEGENDA = 'L.E = lateral esquerdo · C.T = central · L.D = lateral direito · RET = rolo de retorno · CAV = cavalete completo';
 const MSG = {
   'sessao': 'Sua sessão terminou. Entre de novo.', 'login': 'Matrícula ou senha incorreta.', 'bloqueado': 'Muitas tentativas erradas. Aguarde 15 minutos.',
   'inativo': 'Seu acesso está desativado. Fale com o administrador.', 'codigo-equipe': 'Código de acesso incorreto. Confira com o administrador.',
@@ -296,7 +335,7 @@ const MSG = {
   'senha-atual': 'A senha atual não confere.', 'sem-permissao': 'Você não tem permissão para isso.', 'duplicado': 'Essa posição já está marcada nesse cavalete.',
   'cav-fora': 'O número do cavalete é maior que a quantidade de cavaletes do equipamento.', 'equip-existe': 'Já existe um equipamento com esse nome.',
   'ni-existe': 'Esse NI já está cadastrado.', 'em-uso': 'Esse tipo está em uso e não pode ser apagado ou mudar de categoria.', 'tem-pendencias': 'O equipamento ainda tem itens marcados.',
-  'tipo': 'Escolha um tipo válido (NI).', 'email-invalido': 'Digite um e-mail válido, por exemplo nome@empresa.com.', 'sem-email': 'Cadastre o seu e-mail para receber os relatórios.', 'email-limite': 'Limite de e-mails de hoje atingido. O PDF continua no aparelho.', 'email-cota': 'O servidor atingiu o limite diário de e-mails. Tente amanhã.', 'pdf-invalido': 'Não foi possível enviar o PDF por e-mail.', 'farol-travado': 'O semáforo está travado em vermelho: há rolete da balança para troca.', 'critico': 'Rolete da balança só pode ficar na troca.', 'bal-pendencias': 'Não dá para mudar a balança com itens pendentes no equipamento.', 'posicao': 'Posição inválida para este equipamento.', 'ncav': 'Informe a quantidade de cavaletes.', 'nret': 'Informe a quantidade de roletes de retorno.',
+  'tipo': 'Escolha um tipo válido (NI).', 'email-invalido': 'Digite um e-mail válido, por exemplo nome@empresa.com.', 'sem-email': 'Cadastre o seu e-mail para receber os relatórios.', 'email-limite': 'Limite de e-mails de hoje atingido. O PDF continua no aparelho.', 'email-cota': 'O servidor atingiu o limite diário de e-mails. Tente amanhã.', 'pdf-invalido': 'Não foi possível enviar o PDF por e-mail.', 'farol-travado': 'O semáforo está travado em vermelho: há rolo da balança para troca.', 'critico': 'Rolo da balança só pode ficar na troca.', 'bal-pendencias': 'Não dá para mudar a balança com itens pendentes no equipamento.', 'posicao': 'Posição inválida para este equipamento.', 'ncav': 'Informe a quantidade de cavaletes.', 'nret': 'Informe a quantidade de rolos de retorno.',
   'preco': 'Preço inválido.', 'ni': 'Informe o NI.', 'ja-trocado': 'Esse item já foi trocado.', 'not_found': 'Registro não encontrado (pode ter sido apagado).',
   'proprio': 'Você não pode desativar o seu próprio acesso.', 'farol': 'Escolha a cor do semáforo.', 'area': 'Escolha a área (Pátios ou CC7).', 'nome-existe': 'Já existe um inspetor com esse nome. Toque no nome dele na lista.', 'inspetor': 'Inspetor desativado ou não encontrado.', 'offline': 'Sem conexão com o servidor.', 'equip': 'Equipamento inválido.', 'nome-equip': 'Informe o nome do equipamento.'
 };
@@ -352,9 +391,14 @@ function dados() {
   S.fila.forEach(o => {
     const M = D[o.c]; if (!M) return;
     if (o.t === 'add') { if (!M[o.id]) M[o.id] = Object.assign({ id: o.id }, o.d, { _fila: 1 }); }
+    else if (o.t === 'update' && o.c === 'equip' && o.d.parte) {
+      // parte inspecionada (ainda na fila): aplica como o servidor faz
+      if (M[o.id]) { const q = o.d.parte, ps = Object.assign({}, M[o.id].partes, { [q.k]: { f: q.f, c: q.c, ck: q.ck, em: q.em, por: o.por } });
+        M[o.id] = Object.assign({}, M[o.id], { partes: ps, farol: pior(Object.values(ps).map(x => x.f)), farolEm: q.em, _fila: 1 }); }
+    }
     else if (o.t === 'update') { if (M[o.id]) M[o.id] = Object.assign({}, M[o.id], o.d, { _fila: 1 }); }
     else if (o.t === 'delete') delete M[o.id];
-    // cavalete completo substitui os roletes de carga do mesmo cavalete (igual ao servidor)
+    // cavalete completo substitui os rolos de carga do mesmo cavalete (igual ao servidor)
     if (o.c === 'rol' && o.t === 'add' && o.d.pos === 'cav') Object.values(M).forEach(r => {
       if (r.id !== o.id && r.equipId === o.d.equipId && r.cav === o.d.cav && r.status !== 'trocado' && CARGA.includes(r.pos)) delete M[r.id];
     });
@@ -432,7 +476,7 @@ function sairLocal(aviso) {
 /* ===== cálculos ===== */
 const ativo = r => r.status !== 'trocado';
 const vm = r => r.nivel !== 'am';
-const unid = r => r.pos === 'cav' ? 3 : 1;           // cavalete completo = 3 roletes de carga
+const unid = r => r.pos === 'cav' ? 3 : 1;           // cavalete completo = 3 rolos de carga
 const precoDe = (D, r) => { const t = D.tipo[r.tipoId]; return t ? Number(t.preco) || 0 : 0; };
 function itensAtivos(D) { return Object.values(D.rol).filter(r => ativo(r) && D.equip[r.equipId]); }
 function totalRoletes(e) { return ehDos(e) ? 3 + (Number(e.ncav) || 0) : (Number(e.ncav) || 0) * 3 + (Number(e.nret) || 0); }
@@ -450,7 +494,7 @@ function resumoEquip(D, e) {
   g.bons = Math.max(0, g.total - g.vmU - g.amU);
   return g;
 }
-const qtdTxt = (r, c) => [r ? plural(r, 'rolete', 'roletes') : '', c ? plural(c, 'cavalete', 'cavaletes') : ''].filter(Boolean).join(' + ') || '0';
+const qtdTxt = (r, c) => [r ? plural(r, 'rolo', 'rolos') : '', c ? plural(c, 'cavalete', 'cavaletes') : ''].filter(Boolean).join(' + ') || '0';
 function barra(g) {
   if (!g.total) return '';
   const a = pct(g.amU, g.total), r = pct(g.vmU, g.total), b = Math.max(0, 100 - a - r);
@@ -465,8 +509,8 @@ const tipoTxt = t => t ? 'NI ' + t.ni + (t.desc ? ' · ' + t.desc : '') : 'Tipo 
 const ordItem = (a, b) => cmpTxt(a.cav, b.cav) || ORD_ALL.indexOf(a.pos) - ORD_ALL.indexOf(b.pos);
 
 /* ===== balança dosadora (foto + regiões de toque) =====
-   [x0, x1, y0, y1, t0, t1]: rolete desenhado e faixa de toque. P1 é o mais próximo.
-   Os roletes cinza (carga) são todos uma região só: ao tocar, o inspetor digita o número. */
+   [x0, x1, y0, y1, t0, t1]: rolo desenhado e faixa de toque. P1 é o mais próximo.
+   Os rolos cinza (carga) são todos uma região só: ao tocar, o inspetor digita o número. */
 const DZ = {
   p1: [45, 765, 560, 652, 525, 700], p2: [98, 715, 408, 487, 380, 523], p3: [132, 665, 300, 366, 293, 378]
 };
@@ -485,12 +529,12 @@ function dosSvg(est, interativo) {
   const carga = `<g${a('car')}><rect x="140" y="0" width="680" height="294" fill="transparent"/>
     ${DZC.map(([x0, x1, y0, y1]) => `<rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" rx="${(y1 - y0) / 2}" fill="${ec ? COR.vm : 'transparent'}" fill-opacity="${ec ? .45 : 0}" stroke="${ec ? COR.vm : '#ffffff'}" stroke-width="3" ${ec ? '' : 'stroke-dasharray="9 8"'} stroke-opacity="${ec || interativo ? 1 : 0}"/>`).join('')}
     ${chip(712, 150, 150, 46, 'CARGA' + (ec ? ' ✓' : ''), ec ? COR.vm : '#263845', '#fff', 24)}</g>`;
-  return `<svg viewBox="0 0 820 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Balança dosadora: P1 a P3 pesagem, demais roletes de carga">
+  return `<svg viewBox="0 0 820 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Balança dosadora: P1 a P3 pesagem, demais rolos de carga">
     <image href="dosadora.jpg" x="0" y="0" width="820" height="900"/>${carga}${['p3', 'p2', 'p1'].map(pes).join('')}</svg>`;
 }
 
-/* ===== cavalete autoalinhador (foto + regiões de toque) =====
-   viewBox 1200 x 800: em cima o cavalete de carga com os guias G.E e G.D; embaixo o rolete de
+/* ===== cavalete autoalinhante (foto + regiões de toque) =====
+   viewBox 1200 x 800: em cima o cavalete de carga com os guias G.E e G.D; embaixo o rolo de
    retorno (RET) com os guias do retorno GR.E e GR.D */
 const AZN = {
   ge: { d: 'M160 28 L218 58 L182 132 L122 104 Z', x: 74, y: 52 },
@@ -516,7 +560,7 @@ function aaSvg(est, interativo) {
     return `<g${a}>${pad}<path d="${z.d}" fill="${fill}" fill-opacity="${op}" stroke="${stroke}" stroke-width="5" stroke-linejoin="round" ${dash ? `stroke-dasharray="${dash}"` : ''}/>${lab}</g>`;
   };
   const c = est.cav;
-  return `<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cavalete autoalinhador: carga L.E, C.T, L.D, guias G.E e G.D; retorno RET com guias GR.E e GR.D">
+  return `<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cavalete autoalinhante: carga L.E, C.T, L.D, guias G.E e G.D; retorno RET com guias GR.E e GR.D">
     <image href="autoalinhador.jpg" x="0" y="0" width="1200" height="800"/>
     ${c ? `<rect x="80" y="10" width="1040" height="450" rx="22" fill="${COR[c.m]}" fill-opacity="${c.s === 'sel' ? .14 : .08}" stroke="${COR[c.m]}" stroke-width="8" ${c.s === 'ex' ? 'stroke-dasharray="22 12"' : ''}/>` : ''}
     ${['ret', 'rge', 'rgd', 'le', 'ct', 'ld', 'ge', 'gd'].map(reg).join('')}
@@ -550,7 +594,7 @@ function cavSvg(est, interativo) {
     return `<g${a}><path d="${z.d}" fill="${fill}" fill-opacity="${op}" stroke="${stroke}" stroke-width="3" stroke-linejoin="round" ${dash ? `stroke-dasharray="${dash}"` : ''}/>${lab(z.x, z.y)}</g>`;
   };
   const c = est.cav;
-  return `<svg viewBox="0 0 538 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cavalete com roletes L.E, C.T, L.D e retorno">
+  return `<svg viewBox="0 0 538 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cavalete com rolos L.E, C.T, L.D e retorno">
     <defs><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9aa3aa"/><stop offset=".45" stop-color="#e9ecee"/><stop offset="1" stop-color="#6c757c"/></linearGradient></defs>
     <image href="cavalete.jpg" x="0" y="0" width="538" height="224"/>
     ${c ? `<rect x="3" y="3" width="532" height="220" rx="12" fill="${COR[c.m]}" fill-opacity="${c.s === 'sel' ? .16 : .1}" stroke="${COR[c.m]}" stroke-width="5" ${c.s === 'ex' ? 'stroke-dasharray="12 7"' : ''}/>` : ''}
@@ -576,14 +620,14 @@ function render(bg) {
 document.addEventListener('focusout', () => setTimeout(() => { if (_pend) render(true); }, 50));
 
 function vConectar() {
-  return `<div class="ent"><div class="logo"><img src="icon-192.png" alt=""><h1>Inspeção de Roletes</h1></div>
+  return `<div class="ent"><div class="logo"><img src="icon-192.png" alt=""><h1>Inspeção de Rolos</h1></div>
   <form class="card" data-f="conectar"><h2>Conectar ao servidor</h2>
   <label class="l">Endereço do servidor</label><input class="in" name="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off" required>
   <div class="dica">Peça ao administrador o link do aplicativo. Com o link, este passo é automático.</div>
   <button class="btn w" style="margin-top:14px">Conectar</button></form></div>`;
 }
 function vAcesso() {
-  return `<div class="ent"><div class="logo"><img src="icon-192.png" alt=""><h1>Inspeção de Roletes</h1><div class="mut">Transportadores de correia · lista de troca para a execução</div></div>
+  return `<div class="ent"><div class="logo"><img src="icon-192.png" alt=""><h1>Inspeção de Rolos</h1><div class="mut">Transportadores de correia · lista de troca para a execução</div></div>
   <form class="card" data-f="acesso"><h2>Acesso da equipe</h2>
   <label class="l" for="aCod">Código de acesso</label><input class="in" id="aCod" name="codigo" autocomplete="off" required>
   <div class="dica">É o mesmo para todos os inspetores. Com o link enviado pelo administrador, este passo é automático.</div>
@@ -595,7 +639,7 @@ function statusTxt() {
   return S.enviando ? 'Enviando…' : (!S.online ? 'Sem internet' + (S.fila.length ? ' · ' + S.fila.length + ' na fila' : '') : (S.fila.length ? S.fila.length + ' na fila' : (S.sync ? 'Atualizado ' + p2(new Date(S.sync).getHours()) + ':' + p2(new Date(S.sync).getMinutes()) : 'Atualizar')));
 }
 function cartaoDev() {
-  const txt = encodeURIComponent('Olá, Jeferson! Estou usando o app Inspeção de Roletes e gostaria de falar sobre ele.');
+  const txt = encodeURIComponent('Olá, Jeferson! Estou usando o app Inspeção de Rolos e gostaria de falar sobre ele.');
   return `<section class="dev"><div class="row"><span class="av">${esc(iniciais(DEV.nome))}</span><div class="f"><div class="dk">Desenvolvido por</div><b>${esc(DEV.nome)}</b><div class="mut sm">${esc(DEV.cargo)}</div><div class="mut sm">${esc(DEV.area)}</div></div></div>
     <a class="btn wa w" href="https://wa.me/${DEV.whats}?text=${txt}" target="_blank" rel="noopener noreferrer">${ICO.whats} Falar com o desenvolvedor</a></section>`;
 }
@@ -606,14 +650,14 @@ function vArea() {
     return `<button class="area" data-a="escolherArea" data-v="${k}"><span class="area-n">${esc(AREAS[k])}</span>${AREAD[k] !== AREAS[k] ? `<span class="area-s">${esc(AREAD[k])}</span>` : ''}<span class="area-c">${plural(n, 'inspetor', 'inspetores')}</span></button>`;
   };
   return `<header class="top"><h1></h1><button class="st ${S.online ? '' : 'off'}" data-a="sync">${esc(statusTxt())}</button></header>
-  <main><section class="hero"><h2>Inspeção de Roletes</h2><div class="hs">De qual área você é?</div>
+  <main><section class="hero"><h2>Inspeção de Rolos</h2><div class="hs">De qual área você é?</div>
     <div class="areas">${card('patios')}${card('cc7')}</div></section>
   <div class="mut sm" style="text-align:center;margin:-4px 0 18px">O aparelho lembra a área escolhida. Para trocar, toque no nome da área no alto da tela.</div>
   ${cartaoDev()}</main>`;
 }
 function vFora() {
   const D = dados();
-  const tit = { lista: 'Inspeção de Roletes', cadastro: 'Cadastrar inspetor', mat: 'Roletes e cavaletes', ind: 'Indicadores', admin: 'Inspetores' }[V.fora] || 'Inspeção de Roletes';
+  const tit = { lista: 'Inspeção de Rolos', cadastro: 'Cadastrar inspetor', mat: 'Rolos e cavaletes', ind: 'Indicadores', admin: 'Inspetores' }[V.fora] || 'Inspeção de Rolos';
   let corpo;
   if (V.fora === 'cadastro') corpo = `<form class="card" data-f="cadastroInsp"><h2>Cadastrar inspetor</h2>
     <label class="l" for="cNome">Nome completo</label><input class="in" id="cNome" name="nome" autocomplete="name" required>
@@ -641,7 +685,7 @@ function vListaInsp(D) {
       ${vmN ? `<span class="chip vm">${vmN}</span>` : ''}${amN ? `<span class="chip am">${amN}</span>` : ''}<span style="font-size:24px;color:#a5b1bc">›</span></div>`;
   };
   const G = novoG(''); at.forEach(r => soma(G, r, D));
-  return `<section class="hero"><h2>Inspeção de Roletes</h2><div class="hs">${esc(AREAD[S.area])}</div>
+  return `<section class="hero"><h2>Inspeção de Rolos</h2><div class="hs">${esc(AREAD[S.area])}</div>
     <div class="hk"><div><b>${nfmt(l.length)}</b><span>Inspetores</span></div><div><b>${nfmt(G.vmN)}</b><span><i class="dot vm"></i>Para troca</span></div><div><b>${nfmt(G.amN)}</b><span><i class="dot am"></i>Atenção</span></div></div>
     <div style="height:16px"></div><button class="opc prim" data-a="fora" data-v="cadastro" style="margin:0"><span class="ic">${ICO.novo}</span><span><b>Cadastrar inspetor</b><small>Primeira vez? Cadastre o seu nome</small></span></button></section>
   <div class="sec-t"><h2>Toque no seu nome</h2></div>
@@ -649,7 +693,7 @@ function vListaInsp(D) {
     ${l.length > 8 ? '<input class="in" data-k="busca" placeholder="Procurar nome" style="margin-bottom:6px" aria-label="Procurar inspetor">' : ''}
     ${l.map(linha).join('') || `<div class="vazio">Nenhum inspetor de ${esc(AREAS[S.area])} cadastrado ainda. Toque em "Cadastrar inspetor".</div>`}</div>
   <div class="sec-t"><h2>Para todos</h2></div>
-  <button class="opc" data-a="fora" data-v="mat"><span class="ic">${ICO.mat}</span><span><b>Roletes e cavaletes</b><small>Cadastro geral de NI e preços, usado por todos</small></span></button>
+  <button class="opc" data-a="fora" data-v="mat"><span class="ic">${ICO.mat}</span><span><b>Rolos e cavaletes</b><small>Cadastro geral de NI e preços, usado por todos</small></span></button>
   <button class="opc" data-a="fora" data-v="ind"><span class="ic">${ICO.ind}</span><span><b>Indicadores da área</b><small>Itens para troca, atenção e investimento</small></span></button>
   ${S.admin ? `<div class="card"><h2>Administração</h2><div class="btns"><button class="btn vd" data-a="linkCadastro">Enviar link do app</button><button class="btn sec" data-a="abrirPlanilha">Abrir planilha</button><button class="btn sec" data-a="fora" data-v="admin">Editar inspetores</button></div><button class="btn w" style="margin-top:8px" data-a="linkPainel">${ICO.ind} Painel para reuniões (notebook)</button></div>` : ''}
   ${S.fila.length ? `<div class="aviso">${S.fila.length} registro(s) guardado(s) neste aparelho, esperando internet para enviar.</div>` : ''}
@@ -661,19 +705,19 @@ function vAdminInsp(D) {
     <button class="btn sec peq" data-a="editarInsp" data-id="${i.id}">Editar</button><button class="btn ${i.ativo ? 'lin' : 'vd'} peq" data-a="inspAtivo" data-id="${i.id}" data-v="${i.ativo ? 0 : 1}">${i.ativo ? 'Desativar' : 'Ativar'}</button></div>`).join('') || '<div class="mut">Nenhum.</div>'}</div>`;
 }
 
-/* ----- Roletes e cavaletes: cadastro geral, igual para todos ----- */
+/* ----- Rolos e cavaletes: cadastro geral, igual para todos ----- */
 function tiposAtuais() { return dados().tipo; }
 function usoAtual() { const u = {}; itensAtivos(dados()).forEach(r => { u[r.tipoId] = (u[r.tipoId] || 0) + 1; }); return u; }
 function listaMateriais() {
   const T = tiposAtuais(), U = usoAtual();
   return CATS.map(c => {
     const l = Object.values(T).filter(t => t.cat === c).sort((a, b) => cmpTxt(a.ni, b.ni));
-    return `<div class="card"><div class="row" style="margin-bottom:4px"><h3 class="f" style="margin:0">${({ carga: 'Roletes de carga', retorno: 'Roletes de retorno', cavalete: 'Cavaletes', balanca: 'Roletes de balança', guia: 'Roletes guia (autoalinhador)' })[c]}</h3><button class="btn sec peq" data-a="novoTipo" data-c="${c}">+ Novo</button></div>
+    return `<div class="card"><div class="row" style="margin-bottom:4px"><h3 class="f" style="margin:0">${({ carga: 'Rolos de carga', retorno: 'Rolos de retorno', cavalete: 'Cavaletes', balanca: 'Rolos de balança', guia: 'Rolos guia (autoalinhante)' })[c]}</h3><button class="btn sec peq" data-a="novoTipo" data-c="${c}">+ Novo</button></div>
     ${l.map(t => `<div class="li tap" data-a="editarTipo" data-id="${t.id}"><div class="f"><b>NI ${esc(t.ni)}</b><div class="mut sm">${esc(t.desc || '')}${U[t.id] ? (t.desc ? ' · ' : '') + plural(U[t.id], 'marcado', 'marcados') + ' agora' : ''}${t._fila ? ' · na fila' : ''}</div></div><b>${brl(t.preco)}</b></div>`).join('') || '<div class="mut">Nenhum cadastrado.</div>'}</div>`;
   }).join('');
 }
 function vMateriais() {
-  return `<div class="card"><h2 style="margin-bottom:4px">Roletes e cavaletes</h2><div class="mut sm">Cadastro geral, igual para todos os inspetores. É daqui que sai o NI escolhido na hora de marcar para troca. Toque num item para mudar o preço.</div></div>${listaMateriais()}`;
+  return `<div class="card"><h2 style="margin-bottom:4px">Rolos e cavaletes</h2><div class="mut sm">Cadastro geral, igual para todos os inspetores. É daqui que sai o NI escolhido na hora de marcar para troca. Toque num item para mudar o preço.</div></div>${listaMateriais()}`;
 }
 
 const ICO = {
@@ -691,7 +735,7 @@ const ICO = {
 };
 function vPrincipal() {
   const D = dados();
-  const tit = { inicio: 'Minha página', insp: 'Inspeção', lista: 'Listas', ind: 'Indicadores', mat: 'Roletes e cavaletes', conta: 'Minha página', equip: 'Equipamento' }[V.tela];
+  const tit = { inicio: 'Minha página', insp: 'Inspeção', lista: 'Listas', ind: 'Indicadores', mat: 'Rolos e cavaletes', conta: 'Minha página', equip: 'Equipamento' }[V.tela];
   const st = statusTxt();
   const corpo = { inicio: vInicio, insp: vInspecao, lista: vListas, ind: vIndicadores, mat: vMateriais, conta: vConta, equip: vEquip }[V.tela](D);
   const nav = [['inicio', 'Início'], ['insp', 'Inspeção'], ['lista', 'Listas'], ['ind', 'Indicadores'], ['mat', 'Materiais']]
@@ -709,11 +753,11 @@ function vInicio(D) {
   const lin = meus.map(e => {
     const r = resumoEquip(D, e);
     return `<div class="li tap" data-a="abrirEquip" data-id="${e.id}">${semaforo(e.farol)}<div class="f"><b>${esc(e.nome)}</b>
-      <div class="mut sm">${esc(e.area || '')}${e.area ? ' · ' : ''}${nfmt(r.total)} roletes</div>${barra(r)}</div>
+      <div class="mut sm">${esc(e.area || '')}${e.area ? ' · ' : ''}${nfmt(r.total)} rolos</div>${barra(r)}</div>
       <div style="text-align:right">${r.vmN ? `<span class="chip vm">${r.vmN} troca</span><br>` : ''}${r.amN ? `<span class="chip am">${r.amN} atenção</span>` : ''}${!r.vmN && !r.amN ? '<span class="chip vd">OK</span>' : ''}</div></div>`;
   }).join('');
   return `<section class="hero"><div class="row"><span class="av lg">${esc(iniciais(S.eu.nome))}</span><div class="f"><h2>${esc(S.eu.nome)}</h2><div class="hs">${S.eu.matricula ? 'Matrícula ' + esc(S.eu.matricula) : 'Inspetor'}</div></div></div>
-    <div class="hk"><div><b>${nfmt(g.vmN)}</b><span><i class="dot vm"></i>Para troca</span><i>${brl(g.vmV)}</i></div><div><b>${nfmt(g.amN)}</b><span><i class="dot am"></i>Atenção</span><i>${brl(g.amV)}</i></div><div><b>${nfmt(meus.length)}</b><span>Equipamentos</span><i>${nfmt(meus.reduce((a, e) => a + totalRoletes(e), 0))} roletes</i></div></div>
+    <div class="hk"><div><b>${nfmt(g.vmN)}</b><span><i class="dot vm"></i>Para troca</span><i>${brl(g.vmV)}</i></div><div><b>${nfmt(g.amN)}</b><span><i class="dot am"></i>Atenção</span><i>${brl(g.amV)}</i></div><div><b>${nfmt(meus.length)}</b><span>Equipamentos</span><i>${nfmt(meus.reduce((a, e) => a + totalRoletes(e), 0))} rolos</i></div></div>
     <button class="btn cl w" data-a="tela" data-v="insp">${ICO.insp} ${V.insp ? 'Continuar inspeção · ' + esc((D.equip[V.insp.equipId] || {}).nome || '') : 'Iniciar inspeção'}</button></section>
   ${S.eu.email ? '' : `<div class="aviso tap" data-a="meuEmail" style="margin-bottom:12px"><b>Cadastre o seu e-mail</b> para receber automaticamente os relatórios e as listas de troca dos seus equipamentos. Toque aqui.</div>`}
   <div class="sec-t"><h2>Meus equipamentos</h2><button class="btn sec peq" data-a="novoEquip">+ Novo</button></div>
@@ -747,8 +791,17 @@ function blocoTipos(D, e, I, cats) {
     <button type="button" class="btn sec peq" style="margin-top:6px" data-a="novoTipo" data-c="${c}">+ Cadastrar ${CATN[c].toLowerCase()}</button>`;
   }).join('');
 }
+/* semáforo dos rolos: impacto, carga e retorno (na dosadora, um só) */
+const rolosDe = e => ehDos(e) ? [['r4', 'Rolos da balança dosadora']] : ROLOS3;
 function blocoFarolInsp(D, e, I) {
-  if (farolTravado(D, e)) return `<div class="row" style="gap:12px">${semaforo('vm', 1)}<div class="f"><b>Vermelho · situação crítica</b><div class="mut sm">Travado automaticamente: ${ehDos(e) ? 'balança dosadora com rolete para troca' : 'rolete da zona da balança para troca'}. Libera quando os itens forem trocados.</div></div></div>`;
+  const far = I.far || {}, P = e.partes || {};
+  const trav = farolTravado(D, e) ? `<div class="alerta" style="margin-top:0">Semáforo geral do equipamento travado em vermelho: ${ehDos(e) ? 'balança dosadora com rolo para troca' : 'rolo da zona da balança para troca'}. Libera quando os itens forem trocados.</div>` : '';
+  return trav + rolosDe(e).map(([k, n]) => `<div style="margin-top:10px"><b>${n}</b>${!far[k] && P[k] ? ` <span class="mut sm">· última: ${FAROL[P[k].f].n.toLowerCase()}, ${fData(P[k].em)}</span>` : ''}
+    ${blocoFarol(far[k] || '', 'farolRolo', k)}
+    <button type="button" class="btn ${far[k] === 'na' ? 'na' : 'sec'} peq" style="margin-top:6px" data-a="farolRolo" data-k="${k}" data-v="na">${far[k] === 'na' ? '✓ ' : ''}Não se aplica (esta correia não tem ${n.toLowerCase()})</button></div>`).join('');
+}
+function blocoFarolInspAntigo(D, e, I) {
+  if (farolTravado(D, e)) return `<div class="row" style="gap:12px">${semaforo('vm', 1)}<div class="f"><b>Vermelho · situação crítica</b><div class="mut sm">Travado automaticamente: ${ehDos(e) ? 'balança dosadora com rolo para troca' : 'rolo da zona da balança para troca'}. Libera quando os itens forem trocados.</div></div></div>`;
   return `${blocoFarol(I.farol || '', 'farolInsp')}
     ${!I.farol && e.farol ? `<div class="dica">Última avaliação: ${FAROL[e.farol].n.toLowerCase()}, em ${fData(e.farolEm)} por ${esc(nomeInsp(D, e.farolPor))}.</div>` : ''}`;
 }
@@ -758,8 +811,8 @@ function rodapeInsp(D, e, I) {
   return `<div class="card"><h3>Registrados nesta inspeção (${nesta.length})</h3>
     ${nesta.length ? nesta.map(r => linhaItem(D, r, true)).join('') : '<div class="mut">Nada registrado ainda.</div>'}</div>
   ${outros.length ? `<details class="card det"><summary>Já marcados antes neste equipamento (${outros.length})</summary>${outros.map(r => linhaItem(D, r, false)).join('')}</details>` : ''}
-  <button class="btn w vd" data-a="finalizar" style="margin-bottom:8px">Finalizar inspeção e gerar lista</button>
-  <button class="btn w sec" data-a="cancelarInsp">Sair sem gerar lista</button>`;
+  <button class="btn w vd" data-a="concluirRolos" style="margin-bottom:8px">Concluir rolos e voltar às partes</button>
+  <button class="btn w sec" data-a="partes">Voltar às partes sem concluir</button>`;
 }
 function estadoDos(D, equipId) {
   const est = {}, ex = {};
@@ -771,7 +824,7 @@ function estadoDos(D, equipId) {
   car.sort((a, b) => cmpTxt(a.cav, b.cav));
   return { est, ex, car };
 }
-/* inspeção da balança dosadora: sem número de cavalete, todo rolete vai para troca (crítico) */
+/* inspeção da balança dosadora: sem número de cavalete, todo rolo vai para troca (crítico) */
 function vInspDos(D) {
   const I = V.insp, e = D.equip[I.equipId], sel = (I.sel || []).filter(p => DOS.includes(p));
   const { est, ex, car } = estadoDos(D, e.id);
@@ -781,34 +834,99 @@ function vInspDos(D) {
   const pronto = sel.length && (!temCar || (num && !numEx));
   const cats = [...new Set(sel.map(p => catDe(p)))].sort((a, b) => ORD_CAT[b] - ORD_CAT[a]);
   return `<div class="card"><div class="row"><div class="f"><div class="mut sm">Inspecionando</div><h2 style="margin:0">${esc(e.nome)} <span class="tag dos">Balança dosadora</span></h2>
-    <div class="mut sm">3 roletes de pesagem + ${nfmt(e.ncav)} roletes de carga</div></div><button class="btn sec peq" data-a="trocarEquipInsp">Trocar</button></div></div>
-  <div class="card"><h3 style="margin-bottom:2px">Semáforo do equipamento</h3><div class="mut sm" style="margin-bottom:10px">Na balança dosadora, qualquer rolete para troca deixa o semáforo vermelho.</div>
+    <div class="mut sm">3 rolos de pesagem + ${nfmt(e.ncav)} rolos de carga</div></div><button class="btn sec peq" data-a="trocarEquipInsp">Trocar</button></div></div>
+  <div class="card"><h3 style="margin-bottom:2px">Semáforo dos rolos</h3><div class="mut sm">Pela sua avaliação. Na balança dosadora, qualquer rolo para troca deixa o semáforo geral vermelho.</div>
     ${blocoFarolInsp(D, e, I)}</div>
   <div class="card">
-    <div class="alerta" style="margin-top:0"><b>Balança dosadora:</b> todo rolete marcado vai para a lista de troca e é considerado <b>crítico</b>.</div>
-    <label class="l">Toque no rolete ruim</label>
+    <div class="alerta" style="margin-top:0"><b>Balança dosadora:</b> todo rolo marcado vai para a lista de troca e é considerado <b>crítico</b>.</div>
+    <label class="l">Toque no rolo ruim</label>
     <div class="cavbox">${dosSvg(est, true)}</div>
     <div class="dosch">${DOS.map(p => `<button type="button" class="${ehPes(p) ? 'pes' : ''}${sel.includes(p) ? ' on' : ''}${ex[p] ? ' ex' : ''}" data-a="pos" data-p="${p}">${p === 'car' ? 'Carga' : POS[p]}<small>${ehPes(p) ? 'Pesagem' : 'Digite o nº'}${ex[p] ? ' · marcado' : ''}</small></button>`).join('')}</div>
-    <div class="dica">Amarelos (P1, P2 e P3) = roletes de pesagem. Os demais são roletes de carga: toque e digite o número do rolete.</div>
-    ${temCar ? `<label class="l">Número do rolete de carga</label>
+    <div class="dica">Amarelos (P1, P2 e P3) = rolos de pesagem. Os demais são rolos de carga: toque e digite o número do rolo.</div>
+    ${temCar ? `<label class="l">Número do rolo de carga</label>
     <div class="stepper"><button type="button" data-a="carMais" data-v="-1" aria-label="Anterior">−</button><input class="in" data-k="ncar" inputmode="numeric" value="${esc(I.ncar || '')}" placeholder="nº"><button type="button" data-a="carMais" data-v="1" aria-label="Próximo">+</button></div>
-    <div class="dica">Esta balança tem ${nfmt(e.ncav)} roletes de carga, além dos 3 de pesagem.</div>
-    ${numFora ? `<div class="aviso">A ${esc(e.nome)} tem ${nfmt(e.ncav)} roletes de carga. Confira o número.</div>` : ''}
-    ${numEx ? `<div class="aviso">O rolete de carga nº ${esc(num)} já está marcado para troca.</div>` : ''}` : ''}
-    ${car.length ? `<div class="mut sm" style="margin-top:8px">Roletes de carga já marcados: ${car.map(r => `<span class="chip vm tap" data-a="item" data-id="${r.id}">nº ${esc(r.cav)}</span>`).join(' ')}</div>` : ''}
-    ${sel.some(ehPes) ? `<div class="alerta"><b>Rolete de pesagem.</b> Retirar o equipamento de operação e comunicar a instrumentação para acompanhar a troca.</div>` : ''}
+    <div class="dica">Esta balança tem ${nfmt(e.ncav)} rolos de carga, além dos 3 de pesagem.</div>
+    ${numFora ? `<div class="aviso">A ${esc(e.nome)} tem ${nfmt(e.ncav)} rolos de carga. Confira o número.</div>` : ''}
+    ${numEx ? `<div class="aviso">O rolo de carga nº ${esc(num)} já está marcado para troca.</div>` : ''}` : ''}
+    ${car.length ? `<div class="mut sm" style="margin-top:8px">Rolos de carga já marcados: ${car.map(r => `<span class="chip vm tap" data-a="item" data-id="${r.id}">nº ${esc(r.cav)}</span>`).join(' ')}</div>` : ''}
+    ${sel.some(ehPes) ? `<div class="alerta"><b>Rolo de pesagem.</b> Retirar o equipamento de operação e comunicar a instrumentação para acompanhar a troca.</div>` : ''}
     ${blocoTipos(D, e, I, cats)}
     <label class="l">Observação (opcional)</label><input class="in" data-k="obs" maxlength="120" value="${esc(I.obs || '')}" placeholder="Ex.: rolamento travado, ruído">
-    <button class="btn w vm" style="margin-top:14px" data-a="adicionar" ${pronto ? '' : 'disabled'}>${!sel.length ? 'Escolha o rolete' : temCar && !num ? 'Digite o número do rolete de carga' : 'Registrar ' + sel.map(p => p === 'car' ? 'carga nº ' + esc(num) : POS[p]).join(', ') + ' para troca'}</button>
+    <button class="btn w vm" style="margin-top:14px" data-a="adicionar" ${pronto ? '' : 'disabled'}>${!sel.length ? 'Escolha o rolo' : temCar && !num ? 'Digite o número do rolo de carga' : 'Registrar ' + sel.map(p => p === 'car' ? 'carga nº ' + esc(num) : POS[p]).join(', ') + ' para troca'}</button>
   </div>
   ${rodapeInsp(D, e, I)}`;
 }
 function vInspecao(D) {
   if (!V.insp || !D.equip[V.insp.equipId]) return vEscolherEquip(D);
-  if (ehDos(D.equip[V.insp.equipId])) return vInspDos(D);
+  const I = V.insp;
+  if (!I.parte) return vPartes(D);
+  const volta = `<button class="voltar" data-a="partes">‹ Partes do equipamento</button>`;
+  if (I.parte !== 'rolos') return volta + vParte(D, I.parte);
+  return volta + (ehDos(D.equip[I.equipId]) ? vInspDos(D) : vRolos(D));
+}
+/* ===== escolha da parte do transportador ===== */
+function partesSvg(e, I) {
+  const C = { vd: '#2e7d32', am: '#e0a100', vm: '#c62828', na: '#1f6fd6' };
+  // colorida = inspecionada nesta inspeção ou avaliada hoje (fechar e reabrir não apaga as cores)
+  const hoje = new Date().toDateString(), P = e.partes || {}, deHoje = k => (k === 'rolos' ? ['r3', 'r4', 'r5'] : [k]).some(x => P[x] && P[x].em && new Date(P[x].em).toDateString() === hoje);
+  const feitas = {}; PARTES.forEach(p => { if ((I.feitas || {})[p.k] || deHoje(p.k)) feitas[p.k] = true; });
+  const marca = (k, x, y, r) => { const f = farolParte(e, k); return f ? `<g pointer-events="none"><circle cx="${x}" cy="${y}" r="${r}" fill="${C[f]}" stroke="#fff" stroke-width="4"/><text x="${x}" y="${y + r * .38}" text-anchor="middle" font-size="${r * (f === 'na' ? .8 : 1.15)}" font-weight="900" fill="#fff" font-family="system-ui,Arial,sans-serif">${f === 'vd' ? '✓' : f === 'am' ? '!' : f === 'na' ? 'N/A' : '✕'}</text></g>` : ''; };
+  // a imagem começa em preto e branco; cada parte inspecionada nesta inspeção fica colorida
+  const clips = PARTES.filter(p => feitas[p.k]).map(p => { const [x0, y0, x1, y1] = p.t; return `<clipPath id="cl-${p.k}"><rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" rx="14"/>${(PECA[p.k] || []).map(d => `<path d="${d}"/>`).join('')}${p.b.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="34"/>`).join('')}</clipPath>`; }).join('');
+  return `<svg viewBox="0 0 1070 1384" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Partes do transportador de correia">
+    <defs><filter id="pb"><feColorMatrix type="saturate" values="0"/></filter>${clips}</defs>
+    <image href="partes.jpg" x="0" y="0" width="1070" height="1384" filter="url(#pb)" opacity=".85"/>
+    ${PARTES.filter(p => feitas[p.k]).map(p => `<image href="partes.jpg" x="0" y="0" width="1070" height="1384" clip-path="url(#cl-${p.k})" pointer-events="none"/>`).join('')}
+    ${PARTES.map(p => { const [x0, y0, x1, y1] = p.t, f = farolParte(e, p.k), cor = f ? C[f] : '#1f5c8b';
+      return `<g class="pz" data-a="parte" data-k="${p.k}" role="button" aria-label="${esc(p.nome)}">
+        <rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" rx="14" fill="${feitas[p.k] ? cor : 'transparent'}" fill-opacity="${feitas[p.k] ? .12 : 0}" stroke="${f ? cor : 'transparent'}" stroke-width="${f ? 7 : 0}"/>
+        ${p.b.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="40" fill="transparent"/>`).join('')}
+        ${marca(p.k, x1 - 26, y0 + 26, 22)}${p.b.map(([x, y]) => marca(p.k, x + 30, y - 26, 17)).join('')}
+        ${feitas[p.k] ? `<g pointer-events="none"><rect x="${x0 + 8}" y="${y1 - 40}" width="150" height="32" rx="10" fill="#132331"/><text x="${x0 + 83}" y="${y1 - 17}" text-anchor="middle" font-size="20" font-weight="700" fill="#fff" font-family="system-ui,Arial,sans-serif">✓ inspecionada</text></g>` : ''}</g>`; }).join('')}
+  </svg>`;
+}
+function vPartes(D) {
+  const I = V.insp, e = D.equip[I.equipId], feitas = I.feitas || {}, n = Object.keys(feitas).length;
+  const lista = PARTES.map(p => { const f = farolParte(e, p.k);
+    return `<div class="li tap" data-a="parte" data-k="${p.k}"><span class="num">${p.n}</span><div class="f"><b>${esc(p.nome)}</b><div class="mut sm">${feitas[p.k] ? 'Inspecionada agora · ' : ''}${f ? FAROL[f].s : 'Sem avaliação'}</div></div>${farolIco(f)}</div>`; }).join('');
+  return `<div class="card"><div class="row"><div class="f"><div class="mut sm">Inspecionando</div><h2 style="margin:0">${esc(e.nome)}${ehDos(e) ? ' <span class="tag dos">Balança dosadora</span>' : e.bal === 'tem' ? ' <span class="tag">Com balança</span>' : ''}</h2>
+    <div class="mut sm">${n ? plural(n, 'parte inspecionada', 'partes inspecionadas') + ' nesta inspeção · ' + plural(PARTES.length - n, 'falta', 'faltam') + ' ' + (PARTES.length - n) : 'Toque na parte da correia que vai inspecionar'}</div></div><button class="btn sec peq" data-a="trocarEquipInsp">Trocar</button></div>
+    ${e.farol ? `<div class="row" style="gap:10px;margin-top:10px">${semaforo(e.farol)}<div class="mut sm">Semáforo geral: <b>${FAROL[e.farol].s.toLowerCase()}</b> (a pior cor entre as partes)</div></div>` : ''}</div>
+  <div class="card"><h3 style="margin-bottom:6px">Escolha a parte</h3><div class="mut sm" style="margin-bottom:8px">Toque no número do desenho ou no quadro da legenda. As partes ficam coloridas conforme você inspeciona; a bolinha mostra o farol atual (azul = não se aplica).</div>
+    <div class="cavbox" style="padding:4px">${partesSvg(e, I)}</div></div>
+  <details class="card det"><summary>Lista das partes (${PARTES.length})</summary>${lista}</details>
+  <button class="btn w vd" data-a="finalizar" style="margin-bottom:8px">Finalizar inspeção e gerar lista</button>
+  <button class="btn w sec" data-a="cancelarInsp">Sair da inspeção</button>`;
+}
+/* ===== inspeção de uma parte: checklist, farol e comentário ===== */
+function rascunhoParte(e, k) {
+  const I = V.insp; I.pt = I.pt || {};
+  if (!I.pt[k]) { const s0 = (e.partes || {})[k]; I.pt[k] = { f: '', c: '', ck: {}, ant: s0 || null }; }
+  return I.pt[k];
+}
+function vParte(D, k) {
+  const I = V.insp, e = D.equip[I.equipId], p = PARTE[k], r = rascunhoParte(e, k), [x0, y0, x1, y1] = p.t;
+  const nc = Object.values(r.ck).filter(v => v === 'nc').length, resp = Object.keys(r.ck).length;
+  const ant = r.ant;
+  const naAgora = r.ant && r.ant.f === 'na';
+  return `<div class="nabox"><div class="f"><b>Esta correia não tem ${esc(p.nome.toLowerCase())}?</b><br>Marque "Não se aplica" e o farol desta parte fica azul.${naAgora ? '<br><b>Hoje está marcada como não se aplica.</b>' : ''}</div><button type="button" class="btn na peq" data-a="naParte">Não se aplica</button></div>
+  <div class="card"><div class="row" style="gap:12px;align-items:center"><span class="num g">${p.n}</span><div class="f"><div class="mut sm">${esc(e.nome)}</div><h2 style="margin:0">${esc(p.nome)}</h2></div></div>
+    <div class="cavbox" style="margin-top:10px;padding:4px"><svg viewBox="${x0} ${y0} ${x1 - x0} ${y1 - y0}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(p.nome)}"><image href="partes.jpg" x="0" y="0" width="1070" height="1384"/></svg></div>
+    ${ant ? `<div class="dica">Última avaliação: <b>${FAROL[ant.f].n.toLowerCase()}</b> em ${fData(ant.em)} por ${esc(nomeInsp(D, ant.por))}${ant.c ? ' · "' + esc(ant.c) + '"' : ''}</div>` : ''}</div>
+  <div class="card"><div class="row"><h3 class="f" style="margin:0">Lista de inspeção</h3><span class="mut sm">${resp}/${p.ck.length}${nc ? ` · <b style="color:var(--vm)">${nc} não conforme${nc > 1 ? 's' : ''}</b>` : ''}</span></div>
+    ${p.ck.map((t, i) => { const v = r.ck[i]; return `<div class="ckl"><div class="f">${esc(t)}</div><div class="ckb"><button type="button" class="${v === 'c' ? 'on c' : ''}" data-a="ck" data-i="${i}" data-v="c">Conforme</button><button type="button" class="${v === 'nc' ? 'on nc' : ''}" data-a="ck" data-i="${i}" data-v="nc">Não conforme</button></div></div>`; }).join('')}
+    <button type="button" class="btn sec peq" style="margin-top:10px" data-a="ckTodos">Marcar os que faltam como conforme</button>
+    <div class="dica" style="margin-top:8px">${esc(FONTES_CK)}</div></div>
+  <div class="card"><h3 style="margin-bottom:2px">Farol da parte</h3><div class="mut sm">Pela sua percepção, independente da lista acima.</div>
+    ${blocoFarol(r.f, 'farolParte')}
+    <label class="l" for="pCom">Comentário (opcional): o que motivou esse farol</label>
+    <textarea class="in" id="pCom" data-k="coment" rows="3" maxlength="400" placeholder="Ex.: revestimento do tambor de cabeça com desgaste irregular">${esc(r.c)}</textarea>
+    <button class="btn w ${r.f || 'sec'}" style="margin-top:14px" data-a="salvarParte" ${r.f ? '' : 'disabled'}>${r.f ? 'Salvar ' + esc(p.nome.toLowerCase()) : 'Escolha o farol da parte'}</button></div>`;
+}
+function vRolos(D) {
   const I = V.insp, e = D.equip[I.equipId], cav = normCav(I.cav), sel = I.sel || [], zb = e.bal === 'tem' && !!I.zb, niv = zb ? 'vm' : I.nivel;
   const { est, ex } = estadoCav(D, e.id, cav);
-  const aa = !!I.aa || Object.values(ex).some(r => r.aa);   // cavalete autoalinhador (marcado agora ou já marcado antes)
+  const aa = !!I.aa || Object.values(ex).some(r => r.aa);   // cavalete autoalinhante (marcado agora ou já marcado antes)
   sel.forEach(p => { est[p] = { m: niv, s: 'sel' }; if (p === 'cav') CARGA.forEach(q => { est[q] = { m: niv, s: 'sel' }; }); });
   const cats = [...new Set(sel.map(p => catDe(p, zb)))];
   const tSel = blocoTipos(D, e, I, cats);
@@ -816,23 +934,23 @@ function vInspecao(D) {
   const exTxt = Object.values(ex).sort(ordItem).map(r => `<span class="chip ${vm(r) ? 'vm' : 'am'}">${POS[r.pos]}</span>`).join(' ');
   const cavSel = sel.includes('cav'), cavEx = ex.cav;
   return `<div class="card"><div class="row"><div class="f"><div class="mut sm">Inspecionando</div><h2 style="margin:0">${esc(e.nome)}</h2>
-    <div class="mut sm">${nfmt(e.ncav)} cavaletes · ${nfmt(e.nret)} roletes de retorno${e.bal === 'tem' ? ' · <span class="tag">Com balança</span>' : ''}</div></div><button class="btn sec peq" data-a="trocarEquipInsp">Trocar</button></div></div>
-  <div class="card"><h3 style="margin-bottom:2px">Semáforo do equipamento</h3><div class="mut sm" style="margin-bottom:10px">Pela sua avaliação, independente da quantidade de roletes marcados.</div>
+    <div class="mut sm">${nfmt(e.ncav)} cavaletes · ${nfmt(e.nret)} rolos de retorno${e.bal === 'tem' ? ' · <span class="tag">Com balança</span>' : ''}</div></div><button class="btn sec peq" data-a="trocarEquipInsp">Trocar</button></div></div>
+  <div class="card"><h3 style="margin-bottom:2px">Semáforo dos rolos</h3><div class="mut sm">Pela sua avaliação, independente da quantidade de rolos marcados.</div>
     ${blocoFarolInsp(D, e, I)}</div>
   <div class="card">
     <label class="l">Número do cavalete</label>
     <div class="stepper"><button type="button" data-a="cavMais" data-v="-1" aria-label="Anterior">−</button><input class="in" data-k="cav" inputmode="numeric" value="${esc(I.cav || '')}" placeholder="nº"><button type="button" data-a="cavMais" data-v="1" aria-label="Próximo">+</button></div>
     ${cavFora ? `<div class="aviso">O ${esc(e.nome)} tem ${nfmt(e.ncav)} cavaletes. Confira o número.</div>` : ''}
     ${exTxt ? `<div class="mut sm" style="margin-top:6px">Já marcados neste cavalete: ${exTxt} (toque na posição para ver)</div>` : ''}
-    ${e.bal === 'tem' ? `<button type="button" class="cavtog ${zb ? 'on vm' : ''}" data-a="zb" style="margin-top:12px"><span class="cod" style="${zb ? 'background:' + COR.vm : ''}">BAL</span><span class="f"><b>Rolete da zona da balança</b><br><span class="mut sm">Marque se o rolete faz parte da zona da balança</span></span>${zb ? '✓' : ''}</button>
-    ${zb ? `<div class="alerta"><b>Zona da balança:</b> este rolete só pode ir para a troca e deve ser substituído por um <b>rolete específico para balança</b>. O semáforo do equipamento vai automaticamente para vermelho.</div>` : ''}` : ''}
-    <button type="button" class="cavtog ${aa ? 'on aa' : ''}" data-a="aa" style="margin-top:12px"><span class="cod" style="${aa ? 'background:#1f5c8b' : ''}">AA</span><span class="f"><b>Cavalete autoalinhador</b><br><span class="mut sm">${aa ? 'Foto do autoalinhador, com os roletes guia da carga e do retorno' : 'Marque se este cavalete é autoalinhador'}</span></span>${aa ? '✓' : ''}</button>
+    ${e.bal === 'tem' ? `<button type="button" class="cavtog ${zb ? 'on vm' : ''}" data-a="zb" style="margin-top:12px"><span class="cod" style="${zb ? 'background:' + COR.vm : ''}">BAL</span><span class="f"><b>Rolo da zona da balança</b><br><span class="mut sm">Marque se o rolo faz parte da zona da balança</span></span>${zb ? '✓' : ''}</button>
+    ${zb ? `<div class="alerta"><b>Zona da balança:</b> este rolo só pode ir para a troca e deve ser substituído por um <b>rolo específico para balança</b>. O semáforo do equipamento vai automaticamente para vermelho.</div>` : ''}` : ''}
+    <button type="button" class="cavtog ${aa ? 'on aa' : ''}" data-a="aa" style="margin-top:12px"><span class="cod" style="${aa ? 'background:#1f5c8b' : ''}">AA</span><span class="f"><b>Cavalete autoalinhante</b><br><span class="mut sm">${aa ? 'Foto do autoalinhante, com os rolos guia da carga e do retorno' : 'Marque se este cavalete é autoalinhante'}</span></span>${aa ? '✓' : ''}</button>
     <label class="l">Como está o item?</label>
     <div class="nivel">
       <button type="button" class="vm ${niv === 'vm' ? 'on' : ''}" data-a="nivel" data-v="vm"><b><span class="dot vm"></span>Vermelho</b><span>Trocar: vai para a lista da execução</span></button>
       <button type="button" class="am ${niv === 'am' ? 'on' : ''}" data-a="nivel" data-v="am" ${zb ? 'disabled' : ''}><b><span class="dot am"></span>Amarelo</b><span>Atenção: fica só na sua lista</span></button>
     </div>
-    <label class="l">Toque no rolete ruim</label>
+    <label class="l">Toque no rolo ruim</label>
     <div class="cavbox">${aa ? aaSvg(est, true) : cavSvg(est, true)}</div>
     ${aa ? `<div class="dica">${LEGENDA_AA}.</div>` : ''}
     <button type="button" class="cavtog ${cavSel ? 'on ' + niv : ''} ${cavEx ? 'ex' : ''}" data-a="pos" data-p="cav">
@@ -843,8 +961,14 @@ function vInspecao(D) {
   </div>
   ${rodapeInsp(D, e, I)}`;
 }
-function blocoFarol(f, acao) {
-  return `<div class="farois">${['vd', 'am', 'vm'].map(k => `<button type="button" class="${k}${f === k ? ' on' : ''}" data-a="${acao}" data-v="${k}"><span class="lz"></span><b>${FAROL[k].n}</b><small>${FAROL[k].s}</small></button>`).join('')}</div>`;
+function blocoFarol(f, acao, chave) {
+  return `<div class="farois">${['vd', 'am', 'vm'].map(k => `<button type="button" class="${k}${f === k ? ' on' : ''}" data-a="${acao}" data-v="${k}"${chave ? ` data-k="${chave}"` : ''}><span class="lz"></span><b>${FAROL[k].n}</b><small>${/^farol(Parte|Rolo)/.test(acao) ? ({ vd: 'Bom', am: 'Atenção', vm: 'Crítico' })[k] : FAROL[k].s}</small></button>`).join('')}</div>`;
+}
+function setFarolRolo(k, f, quieto) {
+  const I = V.insp; if (!I) return;
+  I.far = Object.assign({}, I.far, { [k]: f }); I.feitas = Object.assign({}, I.feitas, { rolos: true }); salvarInsp();
+  enfileirar([{ c: 'equip', t: 'update', id: I.equipId, d: { parte: { k, f, c: '', ck: {}, em: Date.now() } } }]);
+  if (!quieto) toast(({ r3: 'Rolos de impacto', r4: 'Rolos de carga', r5: 'Rolos de retorno' })[k] + ': ' + (f === 'na' ? 'não se aplica' : FAROL[f].n.toLowerCase()) + '.');
 }
 function marcarFarol(f) {
   const I = V.insp; if (!I) return;
@@ -909,12 +1033,12 @@ function vTroca(D) {
   const mat = `<div class="card"><h2>Resumo de material</h2><table class="t"><thead><tr><th>NI</th><th>Item</th><th class="n">Qtd</th></tr></thead><tbody>
     ${L.material.map(m => `<tr><td><b>${m.t ? esc(m.t.ni) : '—'}</b></td><td>${m.t ? esc(CATN[m.t.cat]) + (m.t.desc ? '<br><span class="mut sm">' + esc(m.t.desc) + '</span>' : '') : ''}</td><td class="n"><b>${m.n}</b></td></tr>`).join('')}
     <tr><td colspan="2"><b>Total de itens</b></td><td class="n"><b>${L.n}</b></td></tr></tbody></table></div>`;
-  return chips + `<div class="card"><h2>Lista de roletes para troca</h2>
+  return chips + `<div class="card"><h2>Lista de rolos para troca</h2>
     <div class="mut">${fData(Date.now())} · Gerada por ${esc(S.eu.nome)} · ${plural(L.n, 'item', 'itens')}</div>
     ${L.grupos.some(g => !ehDos(g.e)) ? `<div class="cavbox" style="margin-top:10px">${cavSvg({}, false)}</div>
     <div class="sm" style="margin-top:6px"><b>Legenda:</b> ${LEGENDA}</div>` : ''}
     ${L.grupos.some(g => g.l.some(r => r.aa)) ? `<div class="cavbox" style="margin-top:10px">${aaSvg({}, false)}</div>
-    <div class="sm" style="margin-top:6px"><b>Cavalete autoalinhador (AA):</b> G.E / G.D = roletes guia da carga · GR.E / GR.D = roletes guia do retorno</div>` : ''}
+    <div class="sm" style="margin-top:6px"><b>Cavalete autoalinhante (AA):</b> G.E / G.D = rolos guia da carga · GR.E / GR.D = rolos guia do retorno</div>` : ''}
     ${L.grupos.some(g => ehDos(g.e)) ? `<div class="cavbox" style="margin-top:10px">${dosSvg({}, false)}</div>
     <div class="sm" style="margin-top:6px"><b>Legenda:</b> ${LEGENDA_DOS}</div>` : ''}
     ${L.grupos.some(g => g.l.some(r => ehPes(r.pos))) ? `<div class="alerta"><b>Atenção:</b> ${AV_PES}</div>` : ''}</div>
@@ -923,10 +1047,10 @@ function vTroca(D) {
   ${grupos}${mat}`;
 }
 function textoLista(D, ids) {
-  const L = montarLista(D, ids), T = ['*LISTA DE ROLETES PARA TROCA*', (AREAD[S.area] ? AREAD[S.area] + ' · ' : '') + fData(Date.now()) + ' · ' + S.eu.nome, ''];
+  const L = montarLista(D, ids), T = ['*LISTA DE ROLOS PARA TROCA*', (AREAD[S.area] ? AREAD[S.area] + ' · ' : '') + fData(Date.now()) + ' · ' + S.eu.nome, ''];
   L.grupos.forEach(g => {
     T.push('*' + g.e.nome + '*' + (g.e.area ? ' (' + g.e.area + ')' : '') + (ehDos(g.e) ? ' · balança dosadora' : ''));
-    g.l.forEach(r => { const t = D.tipo[r.tipoId], a = avisoItem(D, r); T.push((r.pos === 'car' ? 'Rolete de carga nº ' + r.cav : (r.cav ? 'Cavalete ' + r.cav + ' · ' : '') + POS[r.pos]) + ' · NI ' + (t ? t.ni : '—') + (r.obs ? ' · ' + r.obs : '') + (a ? ' · ⚠ ' + a : '')); });
+    g.l.forEach(r => { const t = D.tipo[r.tipoId], a = avisoItem(D, r); T.push((r.pos === 'car' ? 'Rolo de carga nº ' + r.cav : (r.cav ? 'Cavalete ' + r.cav + ' · ' : '') + POS[r.pos]) + ' · NI ' + (t ? t.ni : '—') + (r.obs ? ' · ' + r.obs : '') + (a ? ' · ⚠ ' + a : '')); });
     T.push('');
   });
   T.push('*Material*');
@@ -1053,7 +1177,7 @@ async function gerarPdf(D, ids) {
   const L = montarLista(D, ids), P = new Pdf(), M = 36, LW = P.W - 2 * M, fig = await figuraCavalete(), figDos = L.grupos.some(g => ehDos(g.e)) ? await figuraDos() : null, figAA = L.grupos.some(g => g.l.some(r => r.aa)) ? await figuraAA() : null;
   const AZ = '#1f5c8b', ESC = '#263845', MUT = '#5d6b78', LN = '#d6dde4';
   P.ret(0, 0, P.W, 64, { fundo: AZ });
-  P.texto('LISTA DE ROLETES PARA TROCA', M, 30, { tam: 17, neg: true, cor: '#ffffff' });
+  P.texto('LISTA DE ROLOS PARA TROCA', M, 30, { tam: 17, neg: true, cor: '#ffffff' });
   P.texto((AREAD[S.area] ? AREAD[S.area] + '  ·  ' : '') + fData(Date.now()) + '  ·  Gerada por ' + S.eu.nome + '  ·  ' + plural(L.n, 'item', 'itens') + '  ·  ' + plural(L.grupos.length, 'equipamento', 'equipamentos'), M, 49, { tam: 9.5, cor: '#dce8f3' });
   let y = 80;
   const fw = 250, fh = fig ? fw * fig.h / fig.w : 0;
@@ -1078,7 +1202,7 @@ async function gerarPdf(D, ids) {
   let dosG = false;
   const cab = () => {
     P.ret(M, y, LW, 18, { fundo: '#e4eef7' }); let x = M;
-    C.forEach(c => { P.texto(dosG && c.t === 'Cavalete' ? 'Nº rolete' : c.t, c.t === 'Trocado' ? x + c.w / 2 : x + 5, y + 12.5, { tam: 8.5, neg: true, cor: AZ, al: c.t === 'Trocado' ? 'centro' : undefined }); x += c.w; });
+    C.forEach(c => { P.texto(dosG && c.t === 'Cavalete' ? 'Nº rolo' : c.t, c.t === 'Trocado' ? x + c.w / 2 : x + 5, y + 12.5, { tam: 8.5, neg: true, cor: AZ, al: c.t === 'Trocado' ? 'centro' : undefined }); x += c.w; });
     y += 18;
   };
   L.grupos.forEach(g => {
@@ -1088,15 +1212,15 @@ async function gerarPdf(D, ids) {
     P.texto((g.e.area ? g.e.area + '  ·  ' : '') + 'Inspetor: ' + nomeInsp(D, g.e.inspId) + '  ·  ' + plural(g.l.length, 'item', 'itens'), M + LW - 8, y + 16, { tam: 8.5, cor: '#dce8f3', al: 'dir' });
     y += 24; dosG = ehDos(g.e);
     if (dosG) {
-      // balança dosadora: figura com P1 a P3 (pesagem) e os roletes de carga (CAR + número)
+      // balança dosadora: figura com P1 a P3 (pesagem) e os rolos de carga (CAR + número)
       const fd = figDos, dw = 150, dh = fd ? dw * fd.h / fd.w : 0;
       if (y + dh + 30 > fim()) pagina();
       if (fd) P.imagem(fd, M, y + 8, dw, dh);
       const tx = M + (fd ? dw + 16 : 0);
       P.texto('Balança dosadora', tx, y + 24, { tam: 11, neg: true });
-      P.texto('P1, P2 e P3 = roletes de pesagem (amarelos)', tx, y + 42, { tam: 9 });
-      P.texto('CAR = rolete de carga, com o número na 1ª coluna', tx, y + 56, { tam: 9 });
-      P.texto('Todo rolete desta balança é troca crítica.', tx, y + 74, { tam: 9, neg: true, cor: '#b71c1c' });
+      P.texto('P1, P2 e P3 = rolos de pesagem (amarelos)', tx, y + 42, { tam: 9 });
+      P.texto('CAR = rolo de carga, com o número na 1ª coluna', tx, y + 56, { tam: 9 });
+      P.texto('Todo rolo desta balança é troca crítica.', tx, y + 74, { tam: 9, neg: true, cor: '#b71c1c' });
       if (g.l.some(r => ehPes(r.pos))) {
         P.ret(tx, y + 86, M + LW - tx, 40, { fundo: '#fde7e7' });
         P.quebra(AV_PES, 9, true, M + LW - tx - 16).forEach((l, k) => P.texto(l, tx + 8, y + 100 + k * 11, { tam: 9, neg: true, cor: '#b71c1c' }));
@@ -1104,16 +1228,16 @@ async function gerarPdf(D, ids) {
       y += Math.max(dh + 16, 134);
     }
     if (!dosG && g.l.some(r => r.aa)) {
-      // correia com cavalete autoalinhador: desenho com os roletes guia
+      // correia com cavalete autoalinhante: desenho com os rolos guia
       const fa = figAA, aw = 190, ah = fa ? aw * fa.h / fa.w : 0;
       if (y + ah + 30 > fim()) pagina();
       if (fa) P.imagem(fa, M, y + 8, aw, ah);
       const tx = M + (fa ? aw + 16 : 0);
-      P.texto('Cavalete autoalinhador (AA)', tx, y + 26, { tam: 11, neg: true });
-      P.texto('G.E / G.D = roletes guia da carga', tx, y + 44, { tam: 9 });
-      P.texto('GR.E / GR.D = roletes guia do retorno', tx, y + 58, { tam: 9 });
+      P.texto('Cavalete autoalinhante (AA)', tx, y + 26, { tam: 11, neg: true });
+      P.texto('G.E / G.D = rolos guia da carga', tx, y + 44, { tam: 9 });
+      P.texto('GR.E / GR.D = rolos guia do retorno', tx, y + 58, { tam: 9 });
       P.texto('L.E, C.T, L.D = carga · RET = retorno · CAV = cavalete completo', tx, y + 72, { tam: 9 });
-      P.texto('Os cavaletes autoalinhadores aparecem com "AA" ao lado do número.', tx, y + 90, { tam: 8.5, cor: MUT });
+      P.texto('Os cavaletes autoalinhantes aparecem com "AA" ao lado do número.', tx, y + 90, { tam: 8.5, cor: MUT });
       y += Math.max(ah + 16, 110);
     }
     cab();
@@ -1155,14 +1279,14 @@ async function gerarPdf(D, ids) {
   P.texto('Total de itens', M + 5, y + 15, { tam: 10, neg: true });
   P.texto(String(qt), M + LW - 6, y + 15, { tam: 11, neg: true, al: 'dir' });
   const np = P.pages.length;
-  P.pages.forEach((pg, i) => { P.p = pg; P.linha(M, P.H - 30, P.W - M, P.H - 30, LN); P.texto('Inspeção de Roletes  ·  ' + LEGENDA, M, P.H - 18, { tam: 7, cor: MUT }); P.texto('Página ' + (i + 1) + ' de ' + np, P.W - M, P.H - 18, { tam: 7.5, cor: MUT, al: 'dir' }); });
+  P.pages.forEach((pg, i) => { P.p = pg; P.linha(M, P.H - 30, P.W - M, P.H - 30, LN); P.texto('Inspeção de Rolos  ·  ' + LEGENDA, M, P.H - 18, { tam: 7, cor: MUT }); P.texto('Página ' + (i + 1) + ' de ' + np, P.W - M, P.H - 18, { tam: 7.5, cor: MUT, al: 'dir' }); });
   return P.blob();
 }
 /* nome do arquivo com os equipamentos, a data e a hora: cada PDF tem nome próprio
    (com o mesmo nome, o celular podia abrir um PDF antigo de outro equipamento) */
 const carimbo = () => { const d = new Date(); return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + '-' + p2(d.getHours()) + 'h' + p2(d.getMinutes()); };
 const nomeArq = t => chave(t).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
-const nomePdf = (D, ids) => { const n = (ids || []).map(id => D && D.equip[id] ? D.equip[id].nome : '').filter(Boolean); return 'lista-roletes-' + (n.length ? nomeArq(n.length > 3 ? n.slice(0, 3).join('-') + '-e-mais-' + (n.length - 3) : n.join('-')) + '-' : '') + carimbo() + '.pdf'; };
+const nomePdf = (D, ids) => { const n = (ids || []).map(id => D && D.equip[id] ? D.equip[id].nome : '').filter(Boolean); return 'lista-rolos-' + (n.length ? nomeArq(n.length > 3 ? n.slice(0, 3).join('-') + '-e-mais-' + (n.length - 3) : n.join('-')) + '-' : '') + carimbo() + '.pdf'; };
 function baixarArquivo(blob, nome) {
   const u = URL.createObjectURL(blob), a = document.createElement('a');
   a.href = u; a.download = nome; document.body.appendChild(a); a.click(); a.remove();
@@ -1179,10 +1303,13 @@ async function emailAuto(blob, nome, titulo, equipIds, sobre, quemInspecionou) {
   // relatório com equipamento dele; a lista do fim da inspeção vai sempre para quem inspecionou
   if (!quemInspecionou && !(equipIds || []).some(id => D.equip[id] && D.equip[id].inspId === S.eu.id)) return;
   if (!S.eu.email) { setTimeout(() => toast('Cadastre o seu e-mail (Minha página) para receber os relatórios automaticamente.', 5500), 2600); return; }
-  let pdf; try { pdf = await blobB64(blob); } catch (e) { return; }
-  _mailFila.push({ id: uid(), inspId: S.eu.id, nome, titulo, sobre: sobre || '', pdf, t: Date.now() });
+  // um PDF ou vários no mesmo e-mail: blob pode ser uma lista [{blob, nome}]
+  const lista = Array.isArray(blob) ? blob : [{ blob, nome }];
+  let pdfs; try { pdfs = await Promise.all(lista.map(async a => ({ nome: a.nome, pdf: await blobB64(a.blob) }))); } catch (e) { return; }
+  _mailFila.push({ id: uid(), inspId: S.eu.id, nome, titulo, sobre: sobre || '', pdfs, t: Date.now() });
   // guarda no aparelho no máximo uns 3 MB de PDFs esperando internet
-  while (_mailFila.length > 1 && _mailFila.reduce((a, m) => a + m.pdf.length, 0) > 3e6) _mailFila.shift();
+  const tam = m => m.pdfs ? m.pdfs.reduce((a, x) => a + x.pdf.length, 0) : (m.pdf || '').length;
+  while (_mailFila.length > 1 && _mailFila.reduce((a, m) => a + tam(m), 0) > 3e6) _mailFila.shift();
   try { ls.set('emailFila', _mailFila); } catch (e) { }
   enviarEmails(true);
 }
@@ -1193,10 +1320,10 @@ async function enviarEmails(avisar) {
     while (_mailFila.length) {
       const m = _mailFila[0];
       let r;
-      try { r = await api({ action: 'email', codigo: S.codigo, inspId: m.inspId, nome: m.nome, titulo: m.titulo, sobre: m.sobre, pdf: m.pdf }, 60000); }
+      try { r = await api({ action: 'email', codigo: S.codigo, inspId: m.inspId, titulo: m.titulo, sobre: m.sobre, pdfs: m.pdfs || [{ nome: m.nome, pdf: m.pdf }] }, 90000); }
       catch (e) { if (avisar) setTimeout(() => toast('Sem internet: o PDF vai para o seu e-mail quando o sinal voltar.', 5000), 2600); break; }
       _mailFila.shift(); try { ls.set('emailFila', _mailFila); } catch (e) { }
-      if (avisar) setTimeout(() => toast(r.ok ? 'PDF enviado também para o seu e-mail (' + r.para + ').' : msg(r.erro), 5000), 2600);
+      if (avisar) setTimeout(() => toast(r.ok ? ((m.pdfs || []).length > 1 ? 'Os ' + m.pdfs.length + ' PDFs foram enviados para o seu e-mail (' : 'PDF enviado também para o seu e-mail (') + r.para + ').' : msg(r.erro), 5000), 2600);
     }
   } finally { _mailEnv = false; }
 }
@@ -1211,7 +1338,7 @@ async function pdfLista(modo) {
   if (!montarLista(D, ids).n) return toast('Escolha pelo menos um equipamento.');
   let blob;
   try { blob = await gerarPdf(D, ids); } catch (e) { return toast('Não foi possível gerar o PDF.'); }
-  entregarPdf(blob, nomePdf(D, ids), modo, 'Lista de roletes para troca');
+  entregarPdf(blob, nomePdf(D, ids), modo, 'Lista de rolos para troca');
 }
 async function entregarPdf(blob, nome, modo, titulo) {
   if (modo === 'whats') {
@@ -1227,6 +1354,63 @@ async function entregarPdf(blob, nome, modo, titulo) {
   baixarArquivo(blob, nome); toast('PDF baixado.');
 }
 
+/* ===== Resumo da inspeção do equipamento completo (vai junto no e-mail ao finalizar) ===== */
+const nomeResumo = e => 'resumo-inspecao-' + nomeArq(e.nome) + '-' + carimbo() + '.pdf';
+const FAROL_PDF = { vd: ['#2e7d32', 'BOM', '#ffffff'], am: ['#e0a100', 'ATENÇÃO', '#132331'], vm: ['#c62828', 'CRÍTICO', '#ffffff'], na: ['#1f6fd1', 'N/A', '#ffffff'] };
+async function gerarResumoInsp(D, id, I) {
+  const e = D.equip[id], P0 = (e && e.partes) || {}, ini = (I && I.inicio) || 0;
+  const dono = (D.insp[e.inspId] || {}).nome || '';
+  const c = pdfNovo('RESUMO DA INSPEÇÃO DO EQUIPAMENTO', e.nome + '  ·  ' + fDH(ini || Date.now()) + ' a ' + fDH(Date.now()) + '  ·  Inspetor: ' + S.eu.nome);
+  const linhas = MAPA.map(m => {
+    const r = P0[m.k];
+    const pt = PARTE[m.k] || PARTE.rolos;
+    const nc = r && r.ck ? Object.keys(r.ck).filter(i => r.ck[i] === 'nc').map(i => pt.ck[+i]).filter(Boolean) : [];
+    const ok = r && r.ck ? Object.keys(r.ck).filter(i => r.ck[i] === 'c').length : 0;
+    return { m, r, nc, ok, agora: !!(r && r.em && r.em >= ini) };
+  });
+  const cont = f => linhas.filter(x => x.r && x.r.f === f).length;
+  const aval = linhas.filter(x => x.r && x.r.f).length;
+  const geral = pior(linhas.map(x => x.r && x.r.f));
+  const nesta = (I && I.ids || []).map(k => D.rol[k]).filter(Boolean);
+  const vmN = nesta.filter(vm).length;
+  pdfResumo(c, [
+    ['Farol geral', geral ? FAROL[geral].n : 'Sem avaliação', geral ? FAROL_PDF[geral][0] : PDFC.MUT],
+    ['Partes avaliadas', aval + ' de ' + MAPA.length, PDFC.AZ],
+    ['Bom / Atenção / Crítico', cont('vd') + ' / ' + cont('am') + ' / ' + cont('vm'), PDFC.AM],
+    ['Itens não conformes', String(linhas.reduce((a, x) => a + x.nc.length, 0)), PDFC.VM],
+    ['Rolos marcados', nesta.length + (nesta.length ? ' (' + vmN + ' p/ troca)' : ''), PDFC.ESC]
+  ]);
+  c.P.texto('Responsável pelo equipamento: ' + (dono || '-') + '   ·   Não se aplica: ' + cont('na') + '   ·   Sem avaliação: ' + (MAPA.length - aval), c.M, c.y - 4, { tam: 8.5, cor: PDFC.MUT });
+  c.y += 10;
+  pdfTitulo(c, 'Farol de cada parte', 'como o inspetor marcou');
+  const W = c.LW;
+  const cols = [{ t: 'Nº', w: 26, al: 'centro' }, { t: 'Parte', w: 128 }, { t: 'Farol', w: 62, al: 'centro' }, { t: 'Checklist', w: 58, al: 'centro' }, { t: 'Não conformes e comentário', w: W - 26 - 128 - 62 - 58 - 70 }, { t: 'Avaliado em', w: 70, al: 'centro' }];
+  pdfTabela(c, cols, linhas.map(x => {
+    const f = x.r && x.r.f, fp = f && FAROL_PDF[f];
+    const det = [];
+    x.nc.forEach(t => det.push('• NC: ' + t));
+    if (x.r && x.r.c) det.push('Comentário: ' + x.r.c);
+    if (!det.length) det.push(!f ? 'Parte não avaliada' : f === 'na' ? 'Não se aplica a este equipamento' : x.ok ? 'Todos os itens conformes' : '-');
+    const ln = [
+      String(x.m.n),
+      { t: (x.m.g ? x.m.g + ': ' : '') + x.m.nome, neg: true },
+      fp ? { t: fp[1], fundo: fp[0], corT: fp[2] } : { t: '—', cor: PDFC.MUT },
+      x.r && x.r.ck && Object.keys(x.r.ck).length ? x.ok + ' C · ' + x.nc.length + ' NC' : '-',
+      { t: det.join('\n'), cor: x.nc.length ? PDFC.VM : !f ? PDFC.MUT : PDFC.ESC },
+      { t: x.r && x.r.em ? fDH(x.r.em) + (x.agora ? '' : ' (anterior)') : '-', tam: 7.5, cor: x.agora ? PDFC.ESC : PDFC.MUT }
+    ];
+    return ln;
+  }));
+  c.y += 14;
+  pdfTitulo(c, 'Rolos marcados nesta inspeção', nesta.length ? plural(nesta.length, 'item', 'itens') : '');
+  if (!nesta.length) { c.cabe(20); c.P.texto('Nenhum rolo foi marcado nesta inspeção.', c.M, c.y + 10, { tam: 9.5, cor: PDFC.MUT }); c.y += 24; }
+  else pdfTabela(c, [{ t: 'Cavalete', w: 60 }, { t: 'Posição', w: 150 }, { t: 'Nível', w: 70, al: 'centro' }, { t: 'Tipo / NI', w: 120 }, { t: 'Observação', w: W - 400 }],
+    nesta.sort(ordItem).map(r => {
+      return [cavTxt(r), r.pos === 'car' ? 'Rolo de carga nº ' + r.cav : POSN[r.pos], vm(r) ? { t: 'TROCA', fundo: PDFC.VM } : { t: 'ATENÇÃO', fundo: PDFC.AM, corT: PDFC.ESC }, tipoTxt(D.tipo[r.tipoId]) || '-', r.obs || '-'];
+    }));
+  if (vmN) { c.cabe(20); c.P.texto('A lista de rolos para troca segue em outro PDF, no mesmo e-mail.', c.M, c.y + 12, { tam: 9, cor: PDFC.MUT }); c.y += 22; }
+  return pdfFechar(c);
+}
 /* ===== Relatórios dos indicadores em PDF: pendências e lista de compra ===== */
 const PDFC = { AZ: '#1f5c8b', ESC: '#132331', MUT: '#5d6b78', LN: '#d6dde4', VM: '#c62828', AM: '#e0a100', VD: '#2e7d32' };
 const ORD_CAT = { carga: 1, retorno: 2, cavalete: 3, balanca: 4, guia: 5 };
@@ -1243,7 +1427,7 @@ function pdfNovo(titulo, sub) {
 }
 function pdfFechar(c) {
   const P = c.P, np = P.pages.length;
-  P.pages.forEach((pg, i) => { P.p = pg; P.linha(c.M, P.H - 30, P.W - c.M, P.H - 30, PDFC.LN); P.texto('Inspeção de Roletes  ·  ' + (AREAD[S.area] || '') + '  ·  gerado em ' + fDH(Date.now()), c.M, P.H - 18, { tam: 7.5, cor: PDFC.MUT }); P.texto('Página ' + (i + 1) + ' de ' + np, P.W - c.M, P.H - 18, { tam: 7.5, cor: PDFC.MUT, al: 'dir' }); });
+  P.pages.forEach((pg, i) => { P.p = pg; P.linha(c.M, P.H - 30, P.W - c.M, P.H - 30, PDFC.LN); P.texto('Inspeção de Rolos  ·  ' + (AREAD[S.area] || '') + '  ·  gerado em ' + fDH(Date.now()), c.M, P.H - 18, { tam: 7.5, cor: PDFC.MUT }); P.texto('Página ' + (i + 1) + ' de ' + np, P.W - c.M, P.H - 18, { tam: 7.5, cor: PDFC.MUT, al: 'dir' }); });
   return P.blob();
 }
 function pdfTitulo(c, t, sub) {
@@ -1276,7 +1460,7 @@ function pdfTabela(c, cols, linhas) {
   c.cabe(40); cab();
   linhas.forEach((ln, i) => {
     const cel = ln.map(v => typeof v === 'object' && v !== null ? v : { t: v });
-    const lin = cel.map((v, j) => v.fundo ? [String(v.t)] : P.quebra(String(v.t == null ? '' : v.t), v.tam || 8.5, !!v.neg, cols[j].w - 10));
+    const lin = cel.map((v, j) => v.fundo ? [String(v.t)] : String(v.t == null ? '' : v.t).split('\n').flatMap(x => P.quebra(x, v.tam || 8.5, !!v.neg, cols[j].w - 10)));
     const h = Math.max(20, 9 + Math.max(...lin.map(l => l.length)) * 10.5);
     if (c.y + h > c.fim()) { c.pagina(); cab(); }
     if (ln.total) P.ret(c.M, c.y, c.LW, h, { fundo: '#fdecea' }); else if (i % 2) P.ret(c.M, c.y, c.LW, h, { fundo: '#f6f8fa' });
@@ -1339,7 +1523,7 @@ function pdfCompra(c, D, itens, titulo) {
 function pdfEquipamentos(c, D, eqs, titulo) {
   pdfTitulo(c, titulo || 'Equipamentos', plural(eqs.length, 'equipamento', 'equipamentos'));
   const l = eqs.map(e => Object.assign(resumoEquip(D, e), { e })).sort((a, b) => ((FAROL_ORD[a.e.farol] ?? 3) - (FAROL_ORD[b.e.farol] ?? 3)) || (b.vmV - a.vmV) || cmpTxt(a.nome, b.nome));
-  pdfTabela(c, [{ t: 'Semáforo', w: 70, al: 'centro' }, { t: 'Equipamento', w: 72 }, { t: 'Inspetor', w: 108 }, { t: 'Roletes', w: 44, al: 'dir' }, { t: 'Bons', w: 44, al: 'dir' }, { t: 'Atenção', w: 46, al: 'dir' }, { t: 'Troca', w: 42, al: 'dir' }, { t: 'Valor troca', w: c.LW - 426, al: 'dir' }],
+  pdfTabela(c, [{ t: 'Semáforo', w: 70, al: 'centro' }, { t: 'Equipamento', w: 72 }, { t: 'Inspetor', w: 108 }, { t: 'Rolos', w: 44, al: 'dir' }, { t: 'Bons', w: 44, al: 'dir' }, { t: 'Atenção', w: 46, al: 'dir' }, { t: 'Troca', w: 42, al: 'dir' }, { t: 'Valor troca', w: c.LW - 426, al: 'dir' }],
     l.map(g => [etqFarol(g.e.farol), { t: g.nome, neg: true }, nomeInsp(D, g.e.inspId), nfmt(g.total), pctTxt(pct(g.bons, g.total)), pctTxt(pct(g.amU, g.total)), pctTxt(pct(g.vmU, g.total)), { t: brl(g.vmV), neg: true }]));
 }
 /* tipo = equip | insp | tipo | sem; id = chave, ou '' para o total da seção */
@@ -1350,7 +1534,7 @@ function gerarRelatorio(tipo, id) {
   if (tipo === 'equip' && id) {
     const e = D.equip[id], it = at.filter(r => r.equipId === id), g = resumoEquip(D, e);
     c = pdfNovo('Relatório do equipamento ' + e.nome, ar + '  ·  Inspetor: ' + nomeInsp(D, e.inspId) + '  ·  ' + dt);
-    pdfResumo(c, [['Semáforo', e.farol ? FAROL[e.farol].s : 'Sem avaliação', e.farol ? { vd: PDFC.VD, am: PDFC.AM, vm: PDFC.VM }[e.farol] : '#b8c2cc'], ['Roletes', nfmt(g.total) + ' (' + nfmt(e.ncav) + ' cavaletes)', PDFC.AZ], ['Bons / atenção / troca', pctTxt(pct(g.bons, g.total)) + ' / ' + pctTxt(pct(g.amU, g.total)) + ' / ' + pctTxt(pct(g.vmU, g.total)), PDFC.VD]]);
+    pdfResumo(c, [['Semáforo', e.farol ? FAROL[e.farol].s : 'Sem avaliação', e.farol ? { vd: PDFC.VD, am: PDFC.AM, vm: PDFC.VM }[e.farol] : '#b8c2cc'], ['Rolos', nfmt(g.total) + ' (' + nfmt(e.ncav) + ' cavaletes)', PDFC.AZ], ['Bons / atenção / troca', pctTxt(pct(g.bons, g.total)) + ' / ' + pctTxt(pct(g.amU, g.total)) + ' / ' + pctTxt(pct(g.vmU, g.total)), PDFC.VD]]);
     if (e.farol) { c.P.texto('Semáforo avaliado em ' + fData(e.farolEm) + ' por ' + nomeInsp(D, e.farolPor) + '.', c.M, c.y - 4, { tam: 8.5, cor: PDFC.MUT }); c.y += 10; }
     pdfCaixasItens(c, g); pdfPendencias(c, D, it); pdfCompra(c, D, it); nome = 'relatorio-' + e.nome;
   } else if (tipo === 'insp' && id) {
@@ -1378,7 +1562,7 @@ function gerarRelatorio(tipo, id) {
     c = pdfNovo(sem ? 'Semáforo dos equipamentos' : 'Relatório dos equipamentos', ar + '  ·  ' + dt);
     const n = { vd: 0, am: 0, vm: 0, x: 0 }; eqs.forEach(e => { n[FAROL[e.farol] ? e.farol : 'x']++; });
     const G = resumoItens(D, at); G.total = eqs.reduce((s, e) => s + totalRoletes(e), 0); G.bons = Math.max(0, G.total - G.vmU - G.amU);
-    pdfResumo(c, [['Verdes', String(n.vd), PDFC.VD], ['Amarelos', String(n.am), PDFC.AM], ['Vermelhos', String(n.vm), PDFC.VM], ['Sem avaliação', String(n.x), '#b8c2cc'], ['Roletes bons', pctTxt(pct(G.bons, G.total)), PDFC.AZ]]);
+    pdfResumo(c, [['Verdes', String(n.vd), PDFC.VD], ['Amarelos', String(n.am), PDFC.AM], ['Vermelhos', String(n.vm), PDFC.VM], ['Sem avaliação', String(n.x), '#b8c2cc'], ['Rolos bons', pctTxt(pct(G.bons, G.total)), PDFC.AZ]]);
     pdfCaixasItens(c, G);
     pdfEquipamentos(c, D, eqs);
     if (!sem) { pdfPendencias(c, D, at); pdfCompra(c, D, at); }
@@ -1393,13 +1577,13 @@ function gerarRelatorio(tipo, id) {
 async function pdfRelatorio(tipo, id, modo) {
   let r;
   try { r = gerarRelatorio(tipo, id); } catch (e) { return toast('Não foi possível gerar o PDF.'); }
-  entregarPdf(r.blob, r.nome, modo, 'Relatório de roletes');
+  entregarPdf(r.blob, r.nome, modo, 'Relatório de rolos');
   emailAuto(r.blob, r.nome, r.titulo, r.eqs);
 }
 function mIndGrupo(tipo, id) {
   const D = dados(), at = itensAtivos(D);
   let tit, it, extra = '';
-  if (tipo === 'equip') { const e = D.equip[id]; if (!e) return; tit = e.nome; it = at.filter(r => r.equipId === id); const g = resumoEquip(D, e); extra = `<div class="row" style="gap:10px;margin-bottom:6px">${semaforo(e.farol, 1)}<div class="f"><b>${e.farol ? FAROL[e.farol].s : 'Semáforo sem avaliação'}</b><div class="mut sm">Inspetor: ${esc(nomeInsp(D, e.inspId))} · ${nfmt(g.total)} roletes</div></div></div>${barra(g)}`; }
+  if (tipo === 'equip') { const e = D.equip[id]; if (!e) return; tit = e.nome; it = at.filter(r => r.equipId === id); const g = resumoEquip(D, e); extra = `<div class="row" style="gap:10px;margin-bottom:6px">${semaforo(e.farol, 1)}<div class="f"><b>${e.farol ? FAROL[e.farol].s : 'Semáforo sem avaliação'}</b><div class="mut sm">Inspetor: ${esc(nomeInsp(D, e.inspId))} · ${nfmt(g.total)} rolos</div></div></div>${barra(g)}`; }
   else if (tipo === 'insp') { tit = nomeInsp(D, id); it = at.filter(r => r.inspId === id); }
   else { const t = D.tipo[id]; tit = 'NI ' + (t ? t.ni : ''); it = at.filter(r => r.tipoId === id); extra = t ? `<div class="mut" style="margin-bottom:8px">${esc(CATN[t.cat])}${t.desc ? ' · ' + esc(t.desc) : ''} · ${brl(t.preco)} un.</div>` : ''; }
   const g = resumoItens(D, it), eqN = new Set(it.map(r => r.equipId)).size, tN = new Set(it.map(r => r.tipoId)).size;
@@ -1413,10 +1597,10 @@ function totalSecao(D, at, eqs) {
   const g = resumoItens(D, at), nNi = new Set(at.map(r => r.tipoId)).size;
   const nIns = Object.values(D.insp).filter(i => i.area === S.area && i.ativo).length;
   const info = {
-    sem: ['Total da seção', plural(eqs.length, 'equipamento', 'equipamentos') + ' com semáforo e estado dos roletes', 'Relatório do semáforo (PDF)', 'equipamento'],
+    sem: ['Total da seção', plural(eqs.length, 'equipamento', 'equipamentos') + ' com semáforo e estado dos rolos', 'Relatório do semáforo (PDF)', 'equipamento'],
     equip: ['Total da seção', plural(eqs.length, 'equipamento', 'equipamentos') + ', todas as pendências e a lista de compra', 'Relatório dos equipamentos (PDF)', 'equipamento'],
     insp: ['Total da seção', plural(nIns, 'inspetor', 'inspetores') + ', pendências de cada um e a lista de compra', 'Relatório dos inspetores (PDF)', 'inspetor'],
-    tipo: ['Lista de compras da área', plural(nNi, 'NI', 'NIs') + ' de rolete e cavalete, com quantidades e valores', 'Lista de compras (PDF)', 'NI']
+    tipo: ['Lista de compras da área', plural(nNi, 'NI', 'NIs') + ' de rolo e cavalete, com quantidades e valores', 'Lista de compras (PDF)', 'NI']
   }[V.ind];
   return `<section class="tot"><b>${info[0]}</b><div class="ts">${esc(info[1])}</div>
     <div class="tg"><div><span>Para troca</span><b>${nfmt(g.vmN)}</b><i>${brl(g.vmV)}</i></div><div><span>Em atenção</span><b>${nfmt(g.amN)}</b><i>${brl(g.amV)}</i></div><div><span>Total</span><b>${nfmt(g.vmN + g.amN)}</b><i>${brl(g.vmV + g.amV)}</i></div></div>
@@ -1434,7 +1618,7 @@ function vIndicadores(D) {
   const trocados30 = Object.values(D.rol).filter(r => r.status === 'trocado' && (r.trocadoEm || 0) > Date.now() - 30 * 864e5).length;
   let grupos;
   if (V.ind === 'sem') grupos = [];
-  else if (V.ind === 'equip') grupos = eqs.map(e => Object.assign(resumoEquip(D, e), { k: e.id, sub: (e.area ? e.area + ' · ' : '') + nfmt(totalRoletes(e)) + ' roletes' }));
+  else if (V.ind === 'equip') grupos = eqs.map(e => Object.assign(resumoEquip(D, e), { k: e.id, sub: (e.area ? e.area + ' · ' : '') + nfmt(totalRoletes(e)) + ' rolos' }));
   else if (V.ind === 'insp') {
     const m = new Map();
     Object.values(D.insp).filter(i => i.area === S.area && i.ativo).forEach(i => m.set(i.id, Object.assign(novoG(i.nome), { k: i.id })));
@@ -1458,8 +1642,8 @@ function vIndicadores(D) {
     <div class="kpi"><span>Investimento para zerar tudo</span><b style="font-size:19px">${brl(G.vmV + G.amV)}</b></div>
     <div class="kpi vd"><span>Trocados (30 dias)</span><b>${nfmt(trocados30)}</b></div>
   </div>
-  <div class="card"><h3>Estado dos roletes da área</h3>
-    <div class="mut sm">${nfmt(G.total)} roletes em ${plural(eqs.length, 'equipamento', 'equipamentos')} (cavaletes × 3 + retorno)</div>
+  <div class="card"><h3>Estado dos rolos da área</h3>
+    <div class="mut sm">${nfmt(G.total)} rolos em ${plural(eqs.length, 'equipamento', 'equipamentos')} (cavaletes × 3 + retorno)</div>
     ${G.total ? barra(G) : '<div class="mut">Cadastre os equipamentos com a quantidade de cavaletes.</div>'}
     <div class="sm" style="margin-top:6px">${nfmt(G.bons)} bons · ${nfmt(G.amU)} em atenção · ${nfmt(G.vmU)} para troca</div>
     ${G.semPreco ? `<div class="aviso">${plural(G.semPreco, 'item marcado está', 'itens marcados estão')} com NI sem preço. O investimento está incompleto.</div>` : ''}</div>
@@ -1477,7 +1661,7 @@ function vSemaforo(D, eqs) {
   return `<div class="fsum">${[['vd', 'Bons'], ['am', 'Atenção'], ['vm', 'Críticos'], ['x', 'Sem avaliação']].map(([k, t]) => `<div><b>${n[k]}</b><span><i class="dt" style="background:${cor[k]}"></i>${t}</span></div>`).join('')}</div>
   <div class="card">${l.map(g => `<div class="li tap" data-a="indGrupo" data-k="equip" data-id="${g.e.id}" style="align-items:flex-start">${semaforo(g.e.farol, 1)}
     <div class="f"><div class="row" style="gap:8px"><b class="f">${esc(g.nome)}</b>${g.e.farol ? `<span class="chip ${g.e.farol}">${FAROL[g.e.farol].n}</span>` : '<span class="chip az">Sem avaliação</span>'}</div>
-      <div class="mut sm">${esc(nomeInsp(D, g.e.inspId))} · ${nfmt(g.total)} roletes</div>
+      <div class="mut sm">${esc(nomeInsp(D, g.e.inspId))} · ${nfmt(g.total)} rolos</div>
       ${barra(g)}
       <div class="mut sm" style="margin-top:4px">${g.e.farol ? 'Avaliado em ' + fData(g.e.farolEm) + ' por ' + esc(nomeInsp(D, g.e.farolPor)) : 'O semáforo é preenchido na inspeção.'}</div></div></div>`).join('') || '<div class="vazio">Nenhum equipamento cadastrado nesta área.</div>'}</div>`;
 }
@@ -1485,10 +1669,10 @@ function textoInd(D) {
   const at = itensAtivos(D), G = novoG(''), eqs = Object.values(D.equip).filter(e => e.ativo !== false);
   at.forEach(r => soma(G, r, D));
   G.total = eqs.reduce((s, e) => s + totalRoletes(e), 0);
-  const T = ['*INDICADORES DE ROLETES*', (AREAD[S.area] || '') + ' · ' + fData(Date.now()), '',
+  const T = ['*INDICADORES DE ROLOS*', (AREAD[S.area] || '') + ' · ' + fData(Date.now()), '',
     '*Lista de troca:* ' + G.vmN + ' itens · ' + brl(G.vmV), '*Pontos de atenção:* ' + G.amN + ' itens · ' + brl(G.amV),
     '*Investimento para zerar tudo:* ' + brl(G.vmV + G.amV)];
-  if (G.total) T.push('*Roletes bons:* ' + pctTxt(pct(Math.max(0, G.total - G.vmU - G.amU), G.total)) + ' de ' + nfmt(G.total));
+  if (G.total) T.push('*Rolos bons:* ' + pctTxt(pct(Math.max(0, G.total - G.vmU - G.amU), G.total)) + ' de ' + nfmt(G.total));
   const sf = { vd: '🟢', am: '🟡', vm: '🔴' };
   T.push('', '*Semáforo dos equipamentos*');
   eqs.slice().sort((a, b) => ((FAROL_ORD[a.farol] ?? 3) - (FAROL_ORD[b.farol] ?? 3)) || cmpTxt(a.nome, b.nome)).forEach(e => {
@@ -1509,13 +1693,15 @@ function vEquip(D) {
   const tp = id => D.tipo[id] ? 'NI ' + D.tipo[id].ni : 'não definido';
   return `<button class="voltar" data-a="tela" data-v="inicio">‹ Minha página</button><div class="card">
     <h2 style="margin-bottom:2px">${esc(e.nome)}</h2><div class="mut">${esc(e.area || '')}${e.area ? ' · ' : ''}Inspetor: ${esc(nomeInsp(D, e.inspId))}${e.ativo === false ? ' · arquivado' : ''}</div>
-    <div class="sm" style="margin-top:8px">${ehDos(e) ? '<span class="tag dos">Balança dosadora</span> 3 roletes de pesagem + ' + nfmt(e.ncav) + ' de carga · <b>' + nfmt(r.total) + ' roletes</b>' : `${e.bal === 'tem' ? '<span class="tag">Com balança</span> ' : ''}${nfmt(e.ncav)} cavaletes × 3 = ${nfmt(e.ncav * 3)} roletes de carga · ${nfmt(e.nret)} de retorno · <b>${nfmt(r.total)} roletes</b>`}</div>
+    <div class="sm" style="margin-top:8px">${ehDos(e) ? '<span class="tag dos">Balança dosadora</span> 3 rolos de pesagem + ' + nfmt(e.ncav) + ' de carga · <b>' + nfmt(r.total) + ' rolos</b>' : `${e.bal === 'tem' ? '<span class="tag">Com balança</span> ' : ''}${nfmt(e.ncav)} cavaletes × 3 = ${nfmt(e.ncav * 3)} rolos de carga · ${nfmt(e.nret)} de retorno · <b>${nfmt(r.total)} rolos</b>`}</div>
     ${barra(r)}
     <div class="sm" style="margin-top:6px">${nfmt(r.bons)} bons · ${nfmt(r.amU)} em atenção · ${nfmt(r.vmU)} para troca</div>
     <div class="row" style="margin-top:12px;gap:10px">${semaforo(e.farol, 1)}<div class="f"><b>${e.farol ? FAROL[e.farol].s : 'Semáforo sem avaliação'}</b><div class="mut sm">${e.farol ? 'Avaliado em ' + fData(e.farolEm) + ' por ' + esc(nomeInsp(D, e.farolPor)) : 'É preenchido pelo inspetor na inspeção.'}</div></div></div>
     <div class="mut sm" style="margin-top:8px">Padrão: carga ${esc(tp(e.tipoCarga))}${ehDos(e) ? '' : ` · retorno ${esc(tp(e.tipoRetorno))} · cavalete ${esc(tp(e.tipoCav))}`}${e.bal ? ` · balança ${esc(tp(e.tipoBal))}` : ''}</div>
     <div class="btns" style="margin-top:12px">${e.ativo !== false ? `<button class="btn" data-a="iniciarInsp" data-id="${e.id}">Inspecionar</button>` : ''}${r.vmN ? `<button class="btn vd" data-a="listaDe" data-id="${e.id}">Lista de troca</button>` : ''}${meu ? `<button class="btn sec" data-a="editarEquip" data-id="${e.id}">Editar</button>` : ''}</div></div>
   <div class="kpis"><div class="kpi vm"><span>Para troca</span><b>${r.vmN}</b><i>${brl(r.vmV)}</i></div><div class="kpi am"><span>Atenção</span><b>${r.amN}</b><i>${brl(r.amV)}</i></div></div>
+  <details class="card det" open><summary>Farol das partes (${Object.keys(e.partes || {}).length ? 'última inspeção de cada parte' : 'ainda sem avaliação'})</summary>
+    ${MAPA.map(m => { const x = (e.partes || {})[m.k]; return `<div class="li"><span class="num">${m.n}</span><div class="f"><b>${esc(m.nome)}</b><div class="mut sm">${x ? fData(x.em) + ' · ' + esc(nomeInsp(D, x.por)) + (x.c ? ' · ' + esc(x.c) : '') + (Object.values(x.ck || {}).filter(v => v === 'nc').length ? ' · <b style="color:var(--vm)">' + Object.values(x.ck).filter(v => v === 'nc').length + ' não conforme(s)</b>' : '') : 'Sem avaliação'}</div></div>${farolIco(x ? x.f : '')}</div>`; }).join('')}</details>
   <div class="card"><h3>Itens marcados</h3>${at.map(x => linhaItem(D, x, false)).join('') || '<div class="mut">Nenhum.</div>'}</div>
   ${tr.length ? `<details class="card det"><summary>Trocados recentemente (${tr.length})</summary>${tr.map(x => `<div class="li"><span class="cod">${POS[x.pos]}</span><div class="f"><b>${esc(rotItem(x))}</b><div class="mut sm">${fDH(x.trocadoEm)} · baixa por ${esc(nomeInsp(D, x.trocadoPor))}</div></div>${x.trocadoPor === S.eu.id || S.admin ? `<button class="btn sec peq" data-a="desfazerBaixa" data-id="${x.id}">Desfazer</button>` : ''}</div>`).join('')}</details>` : ''}`;
 }
@@ -1542,18 +1728,18 @@ function mEquip(id, paraInsp) {
     <div class="dica" id="balDica">${BALDICA[e.bal || '']}</div>
     <div data-nd ${ehDos(e) ? 'hidden' : ''}>
     <label class="l">Quantidade de cavaletes de carga</label><input class="in" name="ncav" inputmode="numeric" value="${esc(e.ncav || '')}">
-    <div class="dica">Cada cavalete tem 3 roletes (L.E, C.T e L.D).</div>
-    <label class="l">Quantidade de roletes de retorno</label><input class="in" name="nret" inputmode="numeric" value="${esc(e.nret == null ? '' : e.nret)}">
-    <div class="dica">Os roletes por baixo da correia. O app soma: cavaletes × 3 + retorno.</div></div>
-    <label class="l">Rolete de carga padrão</label>${selTipo(D, 'carga', 'tipoCarga', e.tipoCarga)}
+    <div class="dica">Cada cavalete tem 3 rolos (L.E, C.T e L.D).</div>
+    <label class="l">Quantidade de rolos de retorno</label><input class="in" name="nret" inputmode="numeric" value="${esc(e.nret == null ? '' : e.nret)}">
+    <div class="dica">Os rolos por baixo da correia. O app soma: cavaletes × 3 + retorno.</div></div>
+    <label class="l">Rolo de carga padrão</label>${selTipo(D, 'carga', 'tipoCarga', e.tipoCarga)}
     <div data-nd ${ehDos(e) ? 'hidden' : ''}>
-    <label class="l">Rolete de retorno padrão</label>${selTipo(D, 'retorno', 'tipoRetorno', e.tipoRetorno)}
+    <label class="l">Rolo de retorno padrão</label>${selTipo(D, 'retorno', 'tipoRetorno', e.tipoRetorno)}
     <label class="l">Cavalete padrão</label>${selTipo(D, 'cavalete', 'tipoCav', e.tipoCav)}
-    <label class="l">Rolete guia padrão (cavalete autoalinhador)</label>${selTipo(D, 'guia', 'tipoGuia', e.tipoGuia)}</div>
-    <div data-ds ${ehDos(e) ? '' : 'hidden'}><label class="l">Quantidade de roletes de carga da balança</label><input class="in" name="ncar" inputmode="numeric" value="${esc(ehDos(e) ? e.ncav || '' : '')}">
-    <div class="dica">Sem contar os 3 roletes de pesagem (P1, P2 e P3). Na inspeção, o inspetor digita o número do rolete de carga.</div></div>
-    <div data-bl ${e.bal ? '' : 'hidden'}><label class="l">Rolete de balança padrão</label>${selTipo(D, 'balanca', 'tipoBal', e.tipoBal)}</div>
-    <div class="dica">O padrão já vem escolhido na inspeção. Os NI vêm do cadastro geral de Roletes e cavaletes.</div>
+    <label class="l">Rolo guia padrão (cavalete autoalinhante)</label>${selTipo(D, 'guia', 'tipoGuia', e.tipoGuia)}</div>
+    <div data-ds ${ehDos(e) ? '' : 'hidden'}><label class="l">Quantidade de rolos de carga da balança</label><input class="in" name="ncar" inputmode="numeric" value="${esc(ehDos(e) ? e.ncav || '' : '')}">
+    <div class="dica">Sem contar os 3 rolos de pesagem (P1, P2 e P3). Na inspeção, o inspetor digita o número do rolo de carga.</div></div>
+    <div data-bl ${e.bal ? '' : 'hidden'}><label class="l">Rolo de balança padrão</label>${selTipo(D, 'balanca', 'tipoBal', e.tipoBal)}</div>
+    <div class="dica">O padrão já vem escolhido na inspeção. Os NI vêm do cadastro geral de Rolos e cavaletes.</div>
     <div class="erro" id="fe" style="display:none"></div>
     <button class="btn w" style="margin-top:14px">Salvar</button>
     ${id && e.ativo !== false ? `<button type="button" class="btn w lin" style="margin-top:8px" data-a="arquivarEquip" data-id="${id}">Arquivar equipamento</button>` : ''}
@@ -1566,7 +1752,7 @@ function mTipo(id, cat) {
   abrirModal(id ? 'NI ' + t.ni : 'Novo ' + CATN[t.cat].toLowerCase(), `<form data-f="tipo" data-id="${id || ''}">
     <label class="l" for="tCat">Categoria</label><select class="in" id="tCat" name="cat">${CATS.map(c => `<option value="${c}" ${t.cat === c ? 'selected' : ''}>${CATN[c]}</option>`).join('')}</select>
     <label class="l" for="tNi">NI</label><input class="in" id="tNi" name="ni" maxlength="30" value="${esc(t.ni || '')}" required>
-    <label class="l" for="tDesc">Descrição (opcional)</label><input class="in" id="tDesc" name="desc" maxlength="70" value="${esc(t.desc || '')}" placeholder="Ex.: Rolete carga Ø152 x 380 mm">
+    <label class="l" for="tDesc">Descrição (opcional)</label><input class="in" id="tDesc" name="desc" maxlength="70" value="${esc(t.desc || '')}" placeholder="Ex.: Rolo carga Ø152 x 380 mm">
     <label class="l" for="tPreco">Preço de compra (R$)</label><input class="in" id="tPreco" name="preco" inputmode="decimal" value="${esc(precoIn(t.preco))}" placeholder="0,00" required>
     <div class="dica">O cadastro é um só para todos os inspetores. Mudar o preço atualiza o investimento em todos os indicadores.</div>
     <div class="erro" id="fe" style="display:none"></div>
@@ -1634,7 +1820,7 @@ const A = {
   zb() { V.insp.zb = !V.insp.zb; salvarInsp(); render(); },
   aa() {
     const I = V.insp, D = dados(), { ex } = estadoCav(D, I.equipId, normCav(I.cav));
-    if (Object.values(ex).some(r => r.aa)) { toast('Este cavalete já tem itens marcados como autoalinhador.'); return; }
+    if (Object.values(ex).some(r => r.aa)) { toast('Este cavalete já tem itens marcados como autoalinhante.'); return; }
     I.aa = !I.aa; if (!I.aa) I.aaCav = ''; if (!I.aa) I.sel = (I.sel || []).filter(p => !GUIA.includes(p)); salvarInsp(); render();
   },
   pos(el) {
@@ -1646,7 +1832,7 @@ const A = {
       const s0 = I.sel || [];
       I.sel = s0.includes(p) ? s0.filter(x => x !== p) : s0.concat(p); salvarInsp(); render(); return;
     }
-    if (!cav) { toast('Digite primeiro o número do cavalete e depois toque no rolete.'); const i = document.querySelector('[data-k=cav]'); i && i.focus(); return; }
+    if (!cav) { toast('Digite primeiro o número do cavalete e depois toque no rolo.'); const i = document.querySelector('[data-k=cav]'); i && i.focus(); return; }
     const { ex } = estadoCav(D, I.equipId, cav);
     if (ex[p]) { mItem(ex[p].id); return; }
     if (CARGA.includes(p) && ex.cav) { mItem(ex.cav.id); return; }
@@ -1659,14 +1845,47 @@ const A = {
   },
   adicionar() { adicionar(); },
   desfazer(el) { enfileirar([{ c: 'rol', t: 'delete', id: el.dataset.id }]); V.insp.ids = (V.insp.ids || []).filter(x => x !== el.dataset.id); salvarInsp(); render(); toast('Registro desfeito.'); },
+  partes() { V.insp.parte = null; salvarInsp(); render(); scrollTo(0, 0); },
+  parte(el) { const I = V.insp; I.parte = el.dataset.k; if (I.parte === 'rolos') I.rolos = true; salvarInsp(); render(); scrollTo(0, 0); },
+  ck(el) { const I = V.insp, r = I.pt[I.parte]; const i = el.dataset.i; r.ck[i] = r.ck[i] === el.dataset.v ? undefined : el.dataset.v; if (!r.ck[i]) delete r.ck[i]; salvarInsp(); render(); },
+  ckTodos() { const I = V.insp, r = I.pt[I.parte]; PARTE[I.parte].ck.forEach((t, i) => { if (!r.ck[i]) r.ck[i] = 'c'; }); salvarInsp(); render(); },
+  farolParte(el) { const I = V.insp, r = I.pt[I.parte]; r.f = el.dataset.v; salvarInsp(); render(); },
+  salvarParte() {
+    const I = V.insp, k = I.parte, r = I.pt[k], p = PARTE[k]; if (!r || !r.f) return;
+    enfileirar([{ c: 'equip', t: 'update', id: I.equipId, d: { parte: { k, f: r.f, c: String(r.c || '').trim(), ck: r.ck, em: Date.now() } } }]);
+    I.feitas = Object.assign({}, I.feitas, { [k]: true }); delete I.pt[k]; I.parte = null; salvarInsp(); render(); scrollTo(0, 0);
+    toast(p.nome + ': farol ' + FAROL[r.f].n.toLowerCase() + ' salvo.');
+  },
+  naParte() {
+    const I = V.insp, k = I.parte, p = PARTE[k];
+    enfileirar([{ c: 'equip', t: 'update', id: I.equipId, d: { parte: { k, f: 'na', c: '', ck: {}, em: Date.now() } } }]);
+    I.feitas = Object.assign({}, I.feitas, { [k]: true }); delete I.pt[k]; I.parte = null; salvarInsp(); render(); scrollTo(0, 0);
+    toast(p.nome + ': não se aplica (farol azul).');
+  },
+  farolRolo(el) { setFarolRolo(el.dataset.k, el.dataset.v); },
+  farolRoloFinal(el) { setFarolRolo(el.dataset.k, el.dataset.v, true); fecharModal(); A[V.insp.depois || 'finalizar'](); },
+  concluirRolos() {
+    const I = V.insp, D = dados();
+    I.depois = 'concluirRolos';
+    const falta = rolosDe(D.equip[I.equipId]).filter(([k]) => !(I.far || {})[k]);
+    if (falta.length) {
+      const [k, n] = falta[0];
+      abrirModal('Farol dos rolos', `<p class="mut" style="margin-top:0">Para concluir os rolos, avalie pela sua experiência: <b>${n.toLowerCase()}</b>${falta.length > 1 ? ' (faltam ' + falta.length + ')' : ''}.</p>${blocoFarol('', 'farolRoloFinal', k)}<button type="button" class="btn sec peq w" style="margin-top:8px" data-a="farolRoloFinal" data-k="${k}" data-v="na">Não se aplica (esta correia não tem ${n.toLowerCase()})</button>`);
+      return;
+    }
+    I.depois = ''; I.feitas = Object.assign({}, I.feitas, { rolos: true }); I.parte = null; salvarInsp(); render(); scrollTo(0, 0);
+    toast('Rolos concluídos. Escolha a próxima parte da correia.', 4000);
+  },
   farolInsp(el) { const D = dados(); if (el.dataset.v !== 'vm' && farolTravado(D, D.equip[V.insp.equipId])) { toast(msg('farol-travado')); return; } marcarFarol(el.dataset.v); toast('Semáforo: ' + FAROL[el.dataset.v].s.toLowerCase() + '.'); },
   farolFinal(el) { marcarFarol(el.dataset.v); fecharModal(); A.finalizar(); },
   finalizar() {
     const I = V.insp, D = dados(), id = I.equipId;
-    // balança: semáforo vermelho automático, sem perguntar
-    if (farolTravado(D, D.equip[id]) && I.farol !== 'vm') marcarFarol('vm');
-    if (!I.farol) {
-      abrirModal('Semáforo do ' + ((D.equip[id] || {}).nome || 'equipamento'), `<p class="mut" style="margin-top:0">Antes de gerar a lista, avalie o equipamento pela sua experiência, independente da quantidade de roletes marcados.</p>${blocoFarol('', 'farolFinal')}`);
+    I.depois = 'finalizar';
+    // se abriu os rolos, pede o farol de impacto, carga e retorno que ainda faltar
+    const falta = I.rolos ? rolosDe(D.equip[id]).filter(([k]) => !(I.far || {})[k]) : [];
+    if (falta.length) {
+      const [k, n] = falta[0];
+      abrirModal('Farol dos rolos', `<p class="mut" style="margin-top:0">Antes de gerar a lista, avalie pela sua experiência: <b>${n.toLowerCase()}</b>${falta.length > 1 ? ' (faltam ' + falta.length + ')' : ''}.</p>${blocoFarol('', 'farolRoloFinal', k)}<button type="button" class="btn sec peq w" style="margin-top:8px" data-a="farolRoloFinal" data-k="${k}" data-v="na">Não se aplica (esta correia não tem ${n.toLowerCase()})</button>`);
       return;
     }
     const temVm = itensAtivos(D).some(r => r.equipId === id && vm(r));
@@ -1674,10 +1893,14 @@ const A = {
     V.listaSel = temVm ? [id] : V.listaSel; ls.set('listaSel', { i: S.eu.id, s: V.listaSel });
     V.tela = 'lista'; V.lista = temVm ? 'troca' : 'atencao'; render(); scrollTo(0, 0);
     toast(temVm ? 'Inspeção finalizada. Esta é a lista para a execução.' : 'Inspeção finalizada. Não há itens vermelhos neste equipamento.', 4500);
-    // ao finalizar, a lista de troca do equipamento vai automaticamente para o e-mail do inspetor
-    if (temVm) (async () => {
-      const D2 = dados(), e = D2.equip[id];
-      try { const blob = await gerarPdf(D2, [id]); emailAuto(blob, nomePdf(D2, [id]), 'Lista de roletes para troca', [id], 'Equipamento: ' + (e ? e.nome : ''), true); } catch (er) { }
+    // ao finalizar, vai para o e-mail do inspetor, num e-mail só: o resumo da inspeção do equipamento
+    // completo e, se houver itens vermelhos, a lista de rolos para troca
+    (async () => {
+      const D2 = dados(), e = D2.equip[id]; if (!e) return;
+      const anexos = [];
+      try { anexos.push({ blob: await gerarResumoInsp(D2, id, I), nome: nomeResumo(e) }); } catch (er) { }
+      if (temVm) try { anexos.push({ blob: await gerarPdf(D2, [id]), nome: nomePdf(D2, [id]) }); } catch (er) { }
+      if (anexos.length) emailAuto(anexos, anexos[0].nome, temVm ? 'Resumo da inspeção e lista de rolos para troca' : 'Resumo da inspeção', [id], 'Equipamento: ' + e.nome, true);
     })();
   },
   listaEq(el) { const { s } = selLista(dados()); const id = el.dataset.id; V.listaSel = s.includes(id) ? s.filter(x => x !== id) : s.concat(id); ls.set('listaSel', { i: S.eu.id, s: V.listaSel }); render(); },
@@ -1689,7 +1912,7 @@ const A = {
   pdfBaixar() { pdfLista('baixar'); },
   baixa(el) {
     const D = dados(), r = D.rol[el.dataset.id]; if (!r) return;
-    confirmar('Confirmar troca', `${r.pos === 'car' ? '<b>Rolete de carga nº ' + esc(r.cav) + '</b>' : (r.cav ? 'Cavalete <b>' + esc(r.cav) + '</b> · ' : '') + '<b>' + POS[r.pos] + '</b> (' + POSN[r.pos] + ')'} de ${esc((D.equip[r.equipId] || {}).nome || '')} foi trocado?`,
+    confirmar('Confirmar troca', `${r.pos === 'car' ? '<b>Rolo de carga nº ' + esc(r.cav) + '</b>' : (r.cav ? 'Cavalete <b>' + esc(r.cav) + '</b> · ' : '') + '<b>' + POS[r.pos] + '</b> (' + POSN[r.pos] + ')'} de ${esc((D.equip[r.equipId] || {}).nome || '')} foi trocado?`,
       () => { enfileirar([{ c: 'rol', t: 'update', id: r.id, d: { status: 'trocado', trocadoEm: Date.now(), trocadoPor: S.eu.id } }]); toast('Baixa registrada.'); }, 'Sim, foi trocado', 'vd');
   },
   baixaEquip(el) {
@@ -1726,7 +1949,7 @@ const A = {
       if (!r.ok) return toast(msg(r.erro));
       if (!r.codigoEquipe) return toast('Troque o CODIGO_EQUIPE no servidor antes de enviar o link.', 5000);
       const link = location.origin + location.pathname + '?s=' + encodeURIComponent(S.srv) + '&e=' + encodeURIComponent(r.codigoEquipe);
-      abrirWhats('*Inspeção de Roletes*\nAbra no Chrome, toque em "Cadastrar inspetor" (só na primeira vez) e depois no menu ⋮ > "Instalar app":\n' + link);
+      abrirWhats('*Inspeção de Rolos*\nAbra no Chrome, toque em "Cadastrar inspetor" (só na primeira vez) e depois no menu ⋮ > "Instalar app":\n' + link);
     } catch (e) { toast('Sem conexão com o servidor.'); }
   },
   async linkPainel() {
@@ -1737,7 +1960,7 @@ const A = {
       const link = base + 'painel.html?s=' + encodeURIComponent(S.srv) + '&e=' + encodeURIComponent(r.codigoEquipe || S.codigo) + '&a=' + S.area;
       abrirModal('Painel para reuniões', `<p class="mut" style="margin-top:0">Abra este link no notebook (Chrome ou Edge) e projete. O painel mostra todos os indicadores, atualiza sozinho a cada minuto e tem botão de tela cheia. É só para consulta.</p>
         <textarea class="in" id="txtCopia" readonly style="min-height:96px;font-size:13px">${esc(link)}</textarea>
-        <div class="btns" style="margin-top:10px"><button class="btn sec" data-a="copiarLink">Copiar link</button><a class="btn" href="${esc(link)}" target="_blank" rel="noopener">Abrir painel</a><a class="btn wa" href="https://wa.me/?text=${encodeURIComponent('Painel de indicadores dos roletes: ' + link)}" target="_blank" rel="noopener">${ICO.whats} Enviar</a></div>`);
+        <div class="btns" style="margin-top:10px"><button class="btn sec" data-a="copiarLink">Copiar link</button><a class="btn" href="${esc(link)}" target="_blank" rel="noopener">Abrir painel</a><a class="btn wa" href="https://wa.me/?text=${encodeURIComponent('Painel de indicadores dos rolos: ' + link)}" target="_blank" rel="noopener">${ICO.whats} Enviar</a></div>`);
     } catch (e) { toast('Sem conexão com o servidor.'); }
   },
   copiarLink() { const el = $('#txtCopia'); try { navigator.clipboard.writeText(el.value).then(() => toast('Link copiado.'), () => { el.select(); }); } catch (e) { el.select(); } },
@@ -1763,12 +1986,12 @@ const A = {
 function abrirWhats(t) { window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); }
 function iniciarInsp(id) {
   const D = dados(), e = D.equip[id];
-  V.insp = { equipId: id, cav: '', sel: [], nivel: 'vm', tipo: {}, obs: '', ids: [], inicio: Date.now() };
+  V.insp = { equipId: id, cav: '', sel: [], nivel: 'vm', tipo: {}, obs: '', ids: [], inicio: Date.now(), parte: null, far: {}, feitas: {}, pt: {} };
   salvarInsp(); fecharModal(); V.tela = 'insp'; render(); scrollTo(0, 0);
-  if (e && !e.tipoCarga && !tiposCat(D, 'carga').length) toast('Dica: cadastre o NI do rolete de carga para agilizar.', 4000);
+  if (e && !e.tipoCarga && !tiposCat(D, 'carga').length) toast('Dica: cadastre o NI do rolo de carga para agilizar.', 4000);
 }
-/* O autoalinhador fica ligado enquanto o inspetor está no mesmo cavalete. Ele só desliga sozinho
-   quando o inspetor passa para outro cavalete depois de registrar itens como autoalinhador. */
+/* O autoalinhante fica ligado enquanto o inspetor está no mesmo cavalete. Ele só desliga sozinho
+   quando o inspetor passa para outro cavalete depois de registrar itens como autoalinhante. */
 function trocouCav(I) { if (I.aaCav && normCav(I.cav) !== I.aaCav) { I.aa = false; I.aaCav = ''; } }
 function adicionar() {
   const I = V.insp, D = dados(), e = D.equip[I.equipId], dos = ehDos(e), cav = dos ? '' : normCav(I.cav);
@@ -1783,8 +2006,8 @@ function adicionar() {
     if (!tipoId || !D.tipo[tipoId] || D.tipo[tipoId].cat !== c) { faltam.push(CATN[c]); continue; }
     const d = { equipId: e.id, cav: p === 'car' ? normCav(I.ncar) : cav, pos: p, nivel, tipoId, obs: (I.obs || '').trim(), inspId: S.eu.id, status: 'pendente', criadoEm: Date.now() };
     if (p === 'car') {
-      if (!d.cav) { toast('Digite o número do rolete de carga.'); return; }
-      if (itensAtivos(D).some(r => r.equipId === e.id && r.pos === 'car' && r.cav === d.cav)) { toast('O rolete de carga nº ' + d.cav + ' já está marcado.'); return; }
+      if (!d.cav) { toast('Digite o número do rolo de carga.'); return; }
+      if (itensAtivos(D).some(r => r.equipId === e.id && r.pos === 'car' && r.cav === d.cav)) { toast('O rolo de carga nº ' + d.cav + ' já está marcado.'); return; }
     }
     if (zb) d.zb = true;
     if (aaOn) d.aa = true;
@@ -1797,13 +2020,13 @@ function adicionar() {
     I.ids = (I.ids || []).concat(ops.map(o => o.id)); I.sel = []; I.obs = ''; I.zb = false; I.ncar = ''; if (aaOn) { I.aa = true; I.aaCav = cav; } salvarInsp();
     enfileirar(ops);
     // balança: o semáforo do equipamento vai automaticamente para vermelho
-    if (dos || zb) marcarFarol('vm');
+    if (dos || zb) setFarolRolo('r4', 'vm', true);
     const q = ops.length + (ops.length > 1 ? ' itens registrados' : ' item registrado');
-    if (pes) abrirModal('Rolete de pesagem', `<div class="alerta" style="font-size:16px;margin-top:0"><b>Retire o equipamento de operação</b> e <b>comunique a instrumentação</b> para acompanhar a troca do rolete de pesagem.</div>
+    if (pes) abrirModal('Rolo de pesagem', `<div class="alerta" style="font-size:16px;margin-top:0"><b>Retire o equipamento de operação</b> e <b>comunique a instrumentação</b> para acompanhar a troca do rolo de pesagem.</div>
       <p class="mut">${esc(e.nome)} · ${ops.filter(o => ehPes(o.d.pos)).map(o => POS[o.d.pos]).join(', ')} na lista de troca (crítico). Semáforo do equipamento em vermelho.</p>
       <button class="btn w" data-a="fechar">Entendi</button>`);
     else if (dos) toast(q + ' para troca (crítico). Semáforo em vermelho.', 4500);
-    else if (zb) toast(q + ' no cavalete ' + cav + '. Use rolete específico para balança. Semáforo em vermelho.', 5000);
+    else if (zb) toast(q + ' no cavalete ' + cav + '. Use rolo específico para balança. Semáforo em vermelho.', 5000);
     else toast(q + ' no cavalete ' + cav + (nivel === 'vm' ? ' (troca).' : ' (atenção).'));
   };
   if (I.sel.includes('cav')) {
@@ -1825,6 +2048,7 @@ document.addEventListener('input', ev => {
   if (k === 'cav') { V.insp.cav = el.value; trocouCav(V.insp); if ((V.insp.sel || []).length) V.insp.sel = []; }
   else if (k === 'obs') V.insp.obs = el.value;
   else if (k === 'ncar') V.insp.ncar = el.value;
+  else if (k === 'coment' && V.insp.pt && V.insp.parte && V.insp.pt[V.insp.parte]) V.insp.pt[V.insp.parte].c = el.value;
   salvarInsp();
 });
 document.addEventListener('change', ev => {
@@ -1901,13 +2125,13 @@ const FORM = {
     const D = dados(), id = f.dataset.id, bal = f.bal.value, dos = bal === 'dos', nome = f.nome.value.trim();
     const ncav = Number(dos ? f.ncar.value : f.ncav.value), nret = dos ? 0 : Number(f.nret.value);
     if (!nome) return erroForm(msg('nome-equip'));
-    if (!Number.isInteger(ncav) || ncav < 1) return erroForm(dos ? 'Informe a quantidade de roletes de carga da balança.' : msg('ncav'));
+    if (!Number.isInteger(ncav) || ncav < 1) return erroForm(dos ? 'Informe a quantidade de rolos de carga da balança.' : msg('ncav'));
     if (!dos && (!Number.isInteger(nret) || nret < 0)) return erroForm(msg('nret'));
     if (Object.values(D.equip).some(e => e.id !== id && e.ativo !== false && chave(e.nome) === chave(nome))) return erroForm(msg('equip-existe'));
     if (id && (D.equip[id].bal || '') !== bal && itensAtivos(D).some(r => r.equipId === id)) return erroForm(msg('bal-pendencias'));
     if (id) {
       const maior = itensAtivos(D).filter(r => r.equipId === id && r.pos !== 'ret' && /^\d+$/.test(r.cav)).reduce((m, r) => Math.max(m, Number(r.cav)), 0);
-      if (maior > ncav) return erroForm(dos ? 'Há rolete de carga nº ' + maior + ' marcado. A quantidade não pode ser menor.' : 'Há item marcado no cavalete ' + maior + '. A quantidade não pode ser menor.');
+      if (maior > ncav) return erroForm(dos ? 'Há rolo de carga nº ' + maior + ' marcado. A quantidade não pode ser menor.' : 'Há item marcado no cavalete ' + maior + '. A quantidade não pode ser menor.');
     }
     const d = { nome, area: f.area.value.trim(), bal, ncav, nret, tipoCarga: f.tipoCarga.value, tipoRetorno: f.tipoRetorno.value, tipoCav: f.tipoCav.value, tipoBal: f.tipoBal.value, tipoGuia: f.tipoGuia.value };
     if (id) enfileirar([{ c: 'equip', t: 'update', id, d }]);
